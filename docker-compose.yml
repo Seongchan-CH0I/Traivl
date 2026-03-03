@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app # 로컬 코드 수정 시 실시간 반영(Hot Reload)
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
