@@ -1,4 +1,3 @@
-/* app/globals.css */
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
 
 :root {
@@ -45,7 +44,6 @@ body {
     flex: 1;
     overflow-y: auto;
     padding-bottom: 70px;
-    /* Space for bottom nav */
 }
 
 /* Bottom Navigation */
@@ -100,6 +98,7 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(124, 115, 255, 0.4);
+    transition: transform 0.3s ease;
 }
 
 /* Page Styles */
@@ -359,7 +358,6 @@ body {
     left: 0;
     right: 0;
     pointer-events: none;
-    /* 컨테이너는 클릭 안되게 투명하게 */
     display: flex;
     justify-content: flex-end;
     max-width: 480px;
@@ -370,7 +368,6 @@ body {
 
 .floating-action-btn {
     pointer-events: auto;
-    /* 버튼 자체는 클릭되게 */
     background: var(--gradient-bg);
     color: white;
     border: none;
@@ -448,7 +445,6 @@ body {
 .progress-fill {
     height: 100%;
     background-color: #e91e63;
-    /* Pinkish-red similar to design */
     transition: width 0.3s ease;
 }
 
@@ -516,7 +512,6 @@ body {
     font-size: 12px;
     color: var(--text-sub);
 }
-
 /* ... 기존 코드 유지 ... */
 
 /* AI Menu Overlay */
@@ -542,15 +537,16 @@ body {
 /* AI Floating Buttons Container */
 .ai-options-container {
     position: absolute;
-    bottom: 80px;
-    /* 네비게이션 바 위쪽 */
+    bottom: 115px; 
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px; 
     z-index: 110;
+    width: 100%;
     pointer-events: none;
 }
 
@@ -558,17 +554,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    pointer-events: none;
+    transform: translateY(30px) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .ai-option-item.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
 }
 
 /* 순차적 애니메이션 지연 */
@@ -585,31 +580,66 @@ body {
 }
 
 .ai-circle-btn {
-    width: 56px;
-    height: 56px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
-    background-color: white;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(255, 88, 88, 0.2); /* 따뜻한 계열 그림자 */
     cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
+/* 1번: 사진 통역 (상큼한 코랄/핑크 그라데이션) */
+.ai-option-item:nth-child(1) .ai-circle-btn {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+/* 2번: 음성 통역 (진한 레드/오렌지 - 가장 강조됨) */
+.ai-option-item:nth-child(2) .ai-circle-btn {
+    width: 72px; 
+    height: 72px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); /* 핑크에서 강렬한 레드로 */
+    margin-bottom: 12px;
+}
+.ai-option-item:nth-child(2) .ai-circle-btn svg {
+    width: 28px; /* 너무 크지 않게 밸런스 조정 */
+    height: 28px;
+}
+
+/* 3번: AI 채팅 (기존의 따뜻한 옐로우/오렌지 유지) */
+.ai-option-item:nth-child(3) .ai-circle-btn {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+/* 아이콘은 모두 깨끗한 화이트 */
+.ai-circle-btn svg {
+    color: white !important;
+}
+
+/* 라벨: 따뜻한 배경과 어울리는 깔끔한 스타일 */
 .ai-option-label {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     color: white;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 4px 10px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
 }
 
-/* 중앙 버튼 회전 애니메이션 */
-.nav-item.main-action .main-action-circle {
-    transition: transform 0.3s ease;
+/* 아치형 배치 */
+.ai-option-item:nth-child(1),
+.ai-option-item:nth-child(3) {
+      margin-bottom: -5px;
 }
 
+/* 중앙 메인 버튼 별 - 기존 보라색 그라데이션과 대비되어 더 돋보임 */
 .nav-item.main-action.active .main-action-circle {
+    transform: rotate(135deg) scale(1.1);
+    box-shadow: 0 0 30px rgba(140, 82, 255, 0.6);
     transform: rotate(135deg);
     /* 별 모양을 X자 느낌으로 회전 */
 }
