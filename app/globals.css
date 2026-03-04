@@ -516,89 +516,706 @@ body {
     font-size: 12px;
     color: var(--text-sub);
 }
+
 /* ... 기존 코드 유지 ... */
 
 /* AI Menu Overlay */
 .ai-menu-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 90;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
 }
 
 .ai-menu-overlay.show {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
 
 /* AI Floating Buttons Container */
 .ai-options-container {
-  position: absolute;
-  bottom: 80px; /* 네비게이션 바 위쪽 */
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  z-index: 110;
-  pointer-events: none;
+    position: absolute;
+    bottom: 80px;
+    /* 네비게이션 바 위쪽 */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 110;
+    pointer-events: none;
 }
 
 .ai-option-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
 }
 
 .ai-option-item.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 /* 순차적 애니메이션 지연 */
-.ai-option-item.show:nth-child(1) { transition-delay: 0.1s; }
-.ai-option-item.show:nth-child(2) { transition-delay: 0.05s; }
-.ai-option-item.show:nth-child(3) { transition-delay: 0s; }
+.ai-option-item.show:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.ai-option-item.show:nth-child(2) {
+    transition-delay: 0.05s;
+}
+
+.ai-option-item.show:nth-child(3) {
+    transition-delay: 0s;
+}
 
 .ai-circle-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: white;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  cursor: pointer;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
 .ai-option-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* 중앙 버튼 회전 애니메이션 */
 .nav-item.main-action .main-action-circle {
-  transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .nav-item.main-action.active .main-action-circle {
-  transform: rotate(135deg); /* 별 모양을 X자 느낌으로 회전 */
+    transform: rotate(135deg);
+    /* 별 모양을 X자 느낌으로 회전 */
+}
+
+/* Route Creation Modal */
+.rc-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.rc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid transparent;
+    min-height: 56px;
+}
+
+.rc-header.border {
+    border-bottom-color: #f0f0f0;
+}
+
+.rc-back-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.rc-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 180px;
+}
+
+.rc-title-area {
+    padding: 10px 20px 20px;
+    text-align: left;
+}
+
+.rc-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.rc-subtitle {
+    font-size: 14px;
+    color: var(--text-sub);
+}
+
+/* Step 1: Continent */
+.rc-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 20px;
+}
+
+.rc-continent {
+    border-radius: 16px;
+    height: 140px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.rc-continent.asia {
+    background: linear-gradient(135deg, #0abde3, #1dd1a1);
+}
+
+.rc-continent.europe {
+    background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+}
+
+.rc-continent.selected {
+    border-color: var(--primary-color);
+    transform: scale(0.98);
+}
+
+/* Bottom fixed area */
+.rc-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+.rc-bottom-info {
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rc-btn-primary {
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--gradient-bg);
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.rc-btn-outline {
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px;
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Step 2: Country */
+.rc-list-y {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px;
+}
+
+.rc-country-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fffafb;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.rc-country-item.selected {
+    border-color: var(--primary-color);
+    background: #fcf9ff;
+}
+
+.rc-country-code {
+    width: 40px;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
+.rc-country-name {
+    font-size: 16px;
+}
+
+/* Step 3: City */
+.rc-city-card {
+    height: 120px;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid transparent;
+    cursor: pointer;
+}
+
+.rc-city-card.selected {
+    border-color: var(--primary-color);
+}
+
+.rc-city-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rc-city-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    color: white;
+}
+
+.rc-city-overlay h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.rc-city-overlay p {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* Step 4: Theme */
+.rc-theme-banner {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    margin: 0 20px 20px;
+    padding: 16px;
+    border-radius: 12px;
+    color: white;
+}
+
+.rc-theme-banner .header {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rc-theme-banner .bar-bg {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.rc-theme-banner .bar-fill {
+    height: 100%;
+    background: white;
+    width: 40%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.rc-theme-banner .footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-top: 8px;
+    opacity: 0.9;
+}
+
+.rc-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 20px 20px;
+}
+
+.rc-chip {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+    font-size: 13px;
+    color: var(--text-sub);
+    background: white;
+    cursor: pointer;
+}
+
+.rc-chip.selected {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+    background: #fcf9ff;
+}
+
+.rc-selected-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    scrollbar-width: none;
+}
+
+.rc-selected-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.rc-selected-chip-small {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    font-size: 11px;
+    color: var(--text-main);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Step 5: Result */
+.rc-res-header {
+    text-align: left;
+    padding: 10px 20px 30px;
+}
+
+.rc-res-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.rc-res-subtitle {
+    font-size: 14px;
+    color: var(--text-sub);
+}
+
+.rc-timeline {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    margin-top: 16px;
+    margin-bottom: 40px;
+}
+
+.rc-timeline::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+}
+
+.rc-time-item {
+    display: flex;
+    gap: 16px;
+    z-index: 1;
+}
+
+.rc-time-badge {
+    background: white;
+    border: 2px solid var(--primary-color);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 40px;
+    flex-shrink: 0;
+}
+
+.rc-time-card {
+    flex: 1;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+}
+
+.rc-time-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.rc-time-card .info {
+    padding: 16px;
+}
+
+.rc-time-card .info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.rc-time-card .info p {
+    font-size: 12px;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rc-res-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+/* Journey Map */
+.journey-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* 하단바 영역까지 덮기 위해 0으로 변경 */
+    background-color: #eaf1fa;
+    z-index: 200;
+    /* 하단바(z-index: 100) 보다 높게 설정하여 덮어버림 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.jm-top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 20px;
+    z-index: 2;
+}
+
+.jm-circle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.jm-map-area {
+    flex: 1;
+    position: relative;
+}
+
+.jm-marker-current {
+    position: absolute;
+    top: 80px;
+    left: 100px;
+    background: #3182f6;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    transform: translate(-50%, -100%);
+    margin-top: -12px;
+}
+
+.jm-marker-current::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #3182f6 transparent transparent;
+}
+
+.jm-marker-dot-current {
+    position: absolute;
+    top: 80px;
+    left: 100px;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: white;
+    border: 3px solid #3182f6;
+    border-radius: 50%;
+}
+
+.jm-marker-dest {
+    position: absolute;
+    top: 160px;
+    left: 300px;
+    background: #ff4757;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    transform: translate(-50%, -100%);
+    margin-top: -12px;
+}
+
+.jm-marker-dest::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #ff4757 transparent transparent;
+}
+
+.jm-marker-dot-dest {
+    position: absolute;
+    top: 160px;
+    left: 300px;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: white;
+    border: 3px solid #ff4757;
+    border-radius: 50%;
+}
+
+.jm-path-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.jm-float-msg {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 24px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.jm-bottom-sheet {
+    background: white;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    padding: 30px 24px 40px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+    text-align: center;
+}
+
+.jm-sheet-subtitle {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+}
+
+.jm-sheet-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.jm-btn-row {
+    display: flex;
+    gap: 12px;
+}
+
+.jm-btn-main {
+    flex: 1;
+    background: #1a1b2b;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.jm-btn-sub {
+    flex: 1;
+    background: #f5f6f8;
+    color: var(--text-main);
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
 }
