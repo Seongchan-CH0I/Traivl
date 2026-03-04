@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+# 필요에 따라 아래 주석을 풀고 사용하세요
+# langchain
+# openai
+# psycopg2-binary
+# redis

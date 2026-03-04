@@ -1,11 +1,67 @@
 version: '3.8'
+
 services:
-  app:
-    build: .
+  # 1. Database: pgvector (여행 데이터 저장 및 벡터 검색)
+  database:
+    image: ankane/pgvector:latest
+    container_name: travel_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: ${POSTGRES_DB:-travel_data}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # 초기 SQL 스크립트 마운트
+    networks:
+      - travel-network
+
+  # 2. Cache: Redis (AI 결과값 및 날씨/지도 데이터 캐싱)
+  redis:
+    image: redis:latest
+    container_name: travel_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - travel-network
+
+  # 3. AI Layer: FastAPI (민혁 담당 - TSP 최적화 및 LLM 추론)
+  ai-server:
+    build: ./ai-engine
+    container_name: fastapi_server
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    volumes:
+      - ./ai-engine:/app # 실시간 반영(Hot Reload)용 마운트
+    networks:
+      - travel-network
+
+  # 4. Web & API Layer: Next.js (성찬/주상 담당)
+  front_backend:
+    build: "./front_backend"
+    container_name: nextjs_app
+    env_file:
+      - .env
     ports:
       - "3000:3000"
+    depends_on:
+      - database
+      - ai-server
+      - redis
     volumes:
-      - .:/app # 로컬 코드 수정 시 실시간 반영(Hot Reload)
-      - /app/node_modules
+      - "./front_backend:/app" # 로컬 코드 수정 시 실시간 반영 (Hot Reload)
+      - /app/node_modules # 컨테이너 내부의 모듈 보호
     environment:
       - NODE_ENV=development
+    networks:
+      - travel-network
+
+networks:
+  travel-network:
+    driver: bridge
