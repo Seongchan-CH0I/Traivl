@@ -1,0 +1,254 @@
+/* app/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #8c52ff;
+  --text-main: #111111;
+  --text-sub: #666666;
+  --bg-color: #ffffff;
+  --nav-bg: #ffffff;
+  --nav-inactive: #b0b0b0;
+  --nav-active: #111111;
+  --gradient-bg: linear-gradient(135deg, #7c73ff 0%, #d868cd 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', sans-serif;
+  background-color: #f7f7f7;
+  color: var(--text-main);
+}
+
+/* Mobile App Layout Wrapper */
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 70px; /* Space for bottom nav */
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background-color: var(--nav-bg);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #eeeeee;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom); /* iOS support */
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--nav-inactive);
+  font-size: 10px;
+  cursor: pointer;
+  gap: 4px;
+}
+
+.nav-item.active {
+  color: var(--nav-active);
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-item.main-action {
+  position: relative;
+  top: -15px;
+}
+
+.main-action-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--gradient-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(124, 115, 255, 0.4);
+}
+
+/* Page Styles */
+.home-page {
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-top: 10px;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.notification-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffb74d; /* Bell color */
+}
+
+.bell-icon {
+  width: 24px;
+  height: 24px;
+  fill: #ffb74d;
+}
+
+/* Banner */
+.banner {
+  background: var(--gradient-bg);
+  border-radius: 16px;
+  padding: 24px 20px;
+  color: white;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.banner h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.banner p {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.banner-btn {
+  background-color: white;
+  color: var(--primary-color);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Horizontal Sections */
+.horizontal-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.flame-icon {
+  width: 20px;
+  height: 20px;
+  color: #ff5722; /* Fire color */
+  fill: #ff5722;
+}
+
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 10px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Circular items */
+.scroll-item.circular {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 70px;
+}
+
+.scroll-item.circular img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.scroll-item.circular span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* Rectangular items */
+.scroll-item.rectangular {
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.scroll-item.rectangular img {
+  width: 140px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.scroll-item.rectangular .info {
+  padding: 12px;
+  background-color: white;
+}
+
+.scroll-item.rectangular h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.scroll-item.rectangular p {
+  font-size: 11px;
+  color: var(--text-sub);
+}
