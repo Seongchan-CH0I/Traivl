@@ -252,3 +252,90 @@ body {
   font-size: 11px;
   color: var(--text-sub);
 }
+
+/* ... 기존 코드 유지 ... */
+
+/* AI Menu Overlay */
+.ai-menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.ai-menu-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* AI Floating Buttons Container */
+.ai-options-container {
+  position: absolute;
+  bottom: 80px; /* 네비게이션 바 위쪽 */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  z-index: 110;
+  pointer-events: none;
+}
+
+.ai-option-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.ai-option-item.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* 순차적 애니메이션 지연 */
+.ai-option-item.show:nth-child(1) { transition-delay: 0.1s; }
+.ai-option-item.show:nth-child(2) { transition-delay: 0.05s; }
+.ai-option-item.show:nth-child(3) { transition-delay: 0s; }
+
+.ai-circle-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+.ai-option-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+/* 중앙 버튼 회전 애니메이션 */
+.nav-item.main-action .main-action-circle {
+  transition: transform 0.3s ease;
+}
+
+.nav-item.main-action.active .main-action-circle {
+  transform: rotate(135deg); /* 별 모양을 X자 느낌으로 회전 */
+}
