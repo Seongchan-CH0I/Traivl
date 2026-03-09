@@ -5,7 +5,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -15,9 +16,12 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "husky": "^9.1.7",
     "prisma": "^5.22.0",
     "typescript": "latest"
   }
