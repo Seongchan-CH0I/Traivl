@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   app:
     build: .
@@ -9,3 +8,22 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@db:5432/traivldb
+    depends_on:
+      - db
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: traivl-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: traivldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - traivl-db-data:/var/lib/postgresql/data # DB 데이터 영구 저장
+
+volumes:
+  traivl-db-data:
