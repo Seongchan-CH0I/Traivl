@@ -1,14 +1,19 @@
-/* 1. 외부 폰트 임포트 */
+/* 1. 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
 
-/* 2. Tailwind v4 엔진 불러오기 */
+/* 2. Tailwind v4 엔진 임포트 (이게 예전의 @tailwind 역할을 다 합니다) */
 @import "tailwindcss";
 
-/* 3. 레이어 순서 정의 (중요!) 
-   legacy(기존코드)보다 utilities(테일윈드)가 뒤에 있으므로 테일윈드가 이깁니다. */
+/* 3. 테일윈드 설정 (v4 방식) */
+@theme {
+  --font-pretendard: "Pretendard", sans-serif;
+  --color-brand: #8c52ff;
+}
+
+/* 4. 레이어 순서 선언 (테일윈드가 기존 코드를 이기게 함) */
 @layer legacy, base, components, utilities;
 
-/* 4. 기존 1500줄 코드를 legacy 레이어로 감싸기 */
+/* 5. 기존 1500줄 코드 격리 */
 @layer legacy {
 :root {
     --primary-color: #8c52ff;
@@ -1260,4 +1265,4 @@ body {
     cursor: pointer;
 }
 }
-@tailwind utilities;
+

@@ -23,11 +23,11 @@ export default function CalendarPage() {
     /* 핵심 1: tailwind.config.ts에서 설정한 ID를 여기에 부여 */
     /* 핵심 2: 기존 global.css의 틀인 app-container를 함께 사용 */
     <div id="tailwind-feed" className="app-container">
-      
+
       {/* 핵심 3: 기존 global.css의 content 영역 안에 배치하되, 
           새 디자인을 위해 배경색 등에 ! (important) 사용 */}
       <div className="content !bg-[#F9FBFF] p-6 !pb-32">
-        
+
         {/* 상단 헤더 */}
         <div className="mt-4 mb-10">
           <h1 className="text-3xl font-black !text-slate-900 tracking-tight">나의 여행 일정</h1>
@@ -35,7 +35,7 @@ export default function CalendarPage() {
         </div>
 
         {/* 다른 루트 추천 버튼 */}
-        <button 
+        <button
           onClick={handleRefresh}
           className="flex items-center justify-center gap-3 w-full py-4 mb-10 !bg-white rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.03)] border border-slate-100 !text-slate-700 font-bold hover:bg-slate-50 active:scale-[0.98] transition-all"
         >
