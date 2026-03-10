@@ -7,7 +7,7 @@ import Banner from '../components/home/Banner';
 import PopularCities from '../components/home/PopularCities';
 import HotPlaces from '../components/home/HotPlaces';
 import RecommendCities from '../components/home/RecommendCities';
-import RecommendPlaces from '../components/home/RecommendPlaces';
+import KyotoRecommendPlaces from '../components/home/KyotoRecommendPlaces';
 import KyotoRestaurants from '../components/home/KyotoRestaurants';
 import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
@@ -43,7 +43,7 @@ export default function HomePage() {
                 />
                 <Header title="어디로 떠나볼까요?" />
                 <RecommendCities />
-                <RecommendPlaces city="교토" />
+                <KyotoRecommendPlaces city="교토" />
                 <KyotoRestaurants />
                 <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
             </main>

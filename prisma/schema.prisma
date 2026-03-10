@@ -5,11 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [vector]
+  provider = "postgresql"
 }
-
 model Place {
   id          Int      @id @default(autoincrement())
   name        String
@@ -19,3 +16,5 @@ model Place {
 
   createdAt   DateTime @default(now())
 }
+
+

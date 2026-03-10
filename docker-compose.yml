@@ -1,10 +1,24 @@
+version: '3.8'
+
 services:
+  db:
+    image: ankane/pgvector:latest
+    container_name: traivl-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: traivldb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     build: .
     ports:
       - "3000:3000"
     volumes:
-      - .:/app # 로컬 코드 수정 시 실시간 반영(Hot Reload)
+      - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
@@ -12,18 +26,5 @@ services:
     depends_on:
       - db
 
-  db:
-    image: pgvector/pgvector:pg16
-    container_name: traivl-postgres
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: traivldb
-    ports:
-      - "5432:5432"
-    volumes:
-      - traivl-db-data:/var/lib/postgresql/data # DB 데이터 영구 저장
-
 volumes:
-  traivl-db-data:
+  postgres_data:

@@ -10,7 +10,8 @@
     "commitlint": "commitlint --edit"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/config": "^7.4.2",
+    "@tailwindcss/postcss": "^4.2.1",
     "lucide-react": "^0.576.0",
     "next": "^16.1.6",
     "react": "^19.2.4",
@@ -19,11 +20,15 @@
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",
     "@commitlint/config-conventional": "^20.4.3",
+    "@prisma/client": "^7.4.2",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "autoprefixer": "^10.4.27",
     "husky": "^9.1.7",
-    "prisma": "^5.22.0",
+    "postcss": "^8.5.8",
+    "prisma": "^7.4.2",
+    "tailwindcss": "^4.2.1",
     "typescript": "latest"
   }
 }

@@ -13,7 +13,10 @@
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    /* 'node'를 'bundler'로 변경하여 Tailwind v4 모듈을 인식하도록 합니다 */
+    "moduleResolution": "bundler", 
+    /* 최신 모듈 해석 시 .mts, .ts 파일을 더 잘 찾게 도와줍니다 */
+    "allowImportingTsExtensions": true, 
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
