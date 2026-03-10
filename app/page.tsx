@@ -7,11 +7,12 @@ import Banner from '../components/home/Banner';
 import PopularCities from '../components/home/PopularCities';
 import HotPlaces from '../components/home/HotPlaces';
 import RecommendCities from '../components/home/RecommendCities';
-import RecommendPlaces from '../components/home/RecommendPlaces';
+import KyotoRecommendPlaces from '../components/home/KyotoRecommendPlaces';
 import KyotoRestaurants from '../components/home/KyotoRestaurants';
 import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
 import JourneyMap from '../components/route/JourneyMap';
+import RecommendPlaces from '../components/home/KyotoRecommendPlaces';
 
 export default function HomePage() {
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
@@ -89,7 +90,7 @@ export default function HomePage() {
                 )}
 
                 <RecommendCities />
-                <RecommendPlaces city={surveyResult ? surveyResult.name.split(',')[0] : "교토"} />
+                <RecommendPlaces city="교토" />
                 <KyotoRestaurants />
                 <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
             </main>

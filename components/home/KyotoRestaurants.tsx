@@ -1,7 +1,14 @@
 export default function KyotoRestaurants() {
     return (
         <section className="list-section">
-            <h2 className="section-title">놓치면 후회할 교토 맛집 🍲</h2>
+            {/* 이 부분을 section-header-row로 감싸서 가로 배치를 활성화합니다 */}
+            <div className="section-header-row">
+                <h2 className="section-title mb-0">놓치면 후회할 교토 맛집 🍲</h2>
+                <div className="filter-chips">
+                    <button className="chip active">맛집</button>    
+                </div>
+            </div>
+
             <div className="list-container">
                 <div className="list-item">
                     <img src="https://images.unsplash.com/photo-1617196034738-26c5f7c37778?w=150&h=150&fit=crop" alt="카츠쿠라" />

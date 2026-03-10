@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import './globals.css';
 import { Home, AlignRight, Star, Calendar, User, Camera, Mic, MessageSquare } from 'lucide-react';
+import Link from 'next/link'; 
+import { usePathname } from 'next/navigation'; 
 
 export default function RootLayout({
     children,
@@ -10,12 +12,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     const [isAiMenuOpen, setIsAiMenuOpen] = useState(false);
+    const pathname = usePathname(); 
 
     return (
-        <html lang="ko">
-            <body>
+        <html lang="ko" suppressHydrationWarning>
+            <body suppressHydrationWarning>
                 <div className="app-container">
-                    {/* 어두운 배경 오버레이 */}
                     <div 
                         className={`ai-menu-overlay ${isAiMenuOpen ? 'show' : ''}`} 
                         onClick={() => setIsAiMenuOpen(false)}
@@ -25,7 +27,7 @@ export default function RootLayout({
                         {children}
                     </div>
 
-                    {/* AI 팝업 메뉴 버튼들 */}
+                    {/* AI 메뉴 옵션들 */}
                     <div className="ai-options-container">
                         <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`}>
                             <button className="ai-circle-btn"><Camera color="#8c52ff" /></button>
@@ -42,16 +44,19 @@ export default function RootLayout({
                     </div>
 
                     <nav className="bottom-nav">
-                        <button className="nav-item active">
+                        {/* 홈 버튼 */}
+                        <Link href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}>
                             <Home className="nav-icon" />
                             <span>홈</span>
-                        </button>
-                        <button className="nav-item">
+                        </Link>
+
+                        {/* 피드 버튼 */}
+                        <Link href="/feed" className={`nav-item ${pathname === '/feed' ? 'active' : ''}`}>
                             <AlignRight className="nav-icon" />
                             <span>피드</span>
-                        </button>
+                        </Link>
                         
-                        {/* AI 메뉴 토글 버튼 */}
+                        {/* 중앙 AI 액션 버튼 */}
                         <button 
                             className={`nav-item main-action ${isAiMenuOpen ? 'active' : ''}`}
                             onClick={() => setIsAiMenuOpen(!isAiMenuOpen)}
@@ -61,14 +66,17 @@ export default function RootLayout({
                             </div>
                         </button>
 
-                        <button className="nav-item">
+                        {/* 내 일정 버튼 */}
+                        <Link href="/calendar" className={`nav-item ${pathname === '/calendar' ? 'active' : ''}`}>
                             <Calendar className="nav-icon" />
                             <span>내 일정</span>
-                        </button>
-                        <button className="nav-item">
+                        </Link>
+
+                        {/* ✅ 수정됨: 내 정보 버튼 (클릭 시 /profile로 이동) */}
+                        <Link href="/profile" className={`nav-item ${pathname === '/profile' ? 'active' : ''}`}>
                             <User className="nav-icon" />
                             <span>내 정보</span>
-                        </button>
+                        </Link>
                     </nav>
                 </div>
             </body>

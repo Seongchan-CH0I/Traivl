@@ -1,5 +1,15 @@
+/* 1. 외부 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
 
+/* 2. Tailwind v4 엔진 불러오기 */
+@import "tailwindcss";
+
+/* 3. 레이어 순서 정의 (중요!) 
+   legacy(기존코드)보다 utilities(테일윈드)가 뒤에 있으므로 테일윈드가 이깁니다. */
+@layer legacy, base, components, utilities;
+
+/* 4. 기존 1500줄 코드를 legacy 레이어로 감싸기 */
+@layer legacy {
 :root {
     --primary-color: #8c52ff;
     --text-main: #111111;
@@ -1249,3 +1259,5 @@ body {
     font-weight: 600;
     cursor: pointer;
 }
+}
+@tailwind utilities;

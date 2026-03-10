@@ -5,7 +5,7 @@ export default function RecommendPlaces({ city }: { city: string }) {
                 <h2 className="section-title mb-0">{city} 실시간 인기 장소 Top10</h2>
                 <div className="filter-chips">
                     <button className="chip active">관광지</button>
-                    <button className="chip">맛집</button>
+                    
                 </div>
             </div>
             <div className="scroll-container mt-3">
