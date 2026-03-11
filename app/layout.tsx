@@ -15,7 +15,8 @@ export default function RootLayout({
     // 상태 정의: 
     // - 사진 번역: 'camera', 'result'
     // - 음성 번역: 'audio_idle', 'audio_recording', 'audio_result'
-    const [translationState, setTranslationState] = useState<'idle' | 'camera' | 'result' | 'audio_idle' | 'audio_recording' | 'audio_result'>('idle');
+    // - AI 채팅: 'ai_chat'
+    const [translationState, setTranslationState] = useState<'idle' | 'camera' | 'result' | 'audio_idle' | 'audio_recording' | 'audio_result' | 'ai_chat'>('idle');
     const pathname = usePathname(); 
     
     // --- Translation Mock Data ---
@@ -63,6 +64,45 @@ export default function RootLayout({
         }, 2500);
     };
 
+    // --- AI Chat State & Handlers ---
+    const [chatInput, setChatInput] = useState('');
+    const [chatMessages, setChatMessages] = useState([
+        { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: '오전 10:46' }
+    ]);
+
+    const handleAiChatClick = () => {
+        setIsAiMenuOpen(false);
+        setTranslationState('ai_chat');
+    };
+
+    const handleSendChatMessage = (text: string) => {
+        if (!text.trim()) return;
+
+        // 사용자 메시지 추가
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        
+        const newUserMsg = { id: Date.now(), sender: 'user', text, time: timeString };
+        setChatMessages(prev => [...prev, newUserMsg]);
+        setChatInput('');
+
+        // 하드코딩된 AI 응답 처리 (실제 API 연동 시 이 부분을 fetch API 등으로 교체)
+        setTimeout(() => {
+            let aiResponse = '죄송합니다. 아직 답변을 드릴 수 없는 질문입니다. 다른 궁금한 점을 물어보세요! 😊';
+            
+            if (text.includes('화장실')) {
+                aiResponse = '현재 위치에서 가장 가까운 화장실은 200m 거리의 편의점 내부에 있습니다. 🚻';
+            } else if (text.includes('버스') || text.includes('교통')) {
+                aiResponse = '근처 정류장에서 15분마다 시내로 향하는 버스를 이용하실 수 있습니다. 🚌';
+            } else if (text.includes('맛집') || text.includes('식당')) {
+                aiResponse = '주변에 평점이 높은 현지인 맛집 3곳을 추천해드릴 수 있습니다. 목록을 볼까요? 🍣';
+            }
+            
+            const newAiMsg = { id: Date.now() + 1, sender: 'ai', text: aiResponse, time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) };
+            setChatMessages(prev => [...prev, newAiMsg]);
+        }, 1000);
+    };
+
     return (
         <html lang="ko" suppressHydrationWarning>
             <body suppressHydrationWarning>
@@ -86,7 +126,7 @@ export default function RootLayout({
                             <button className="ai-circle-btn"><Mic color="#8c52ff" /></button>
                             <span className="ai-option-label">음성 번역</span>
                         </div>
-                        <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`}>
+                        <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`} onClick={handleAiChatClick} style={{ cursor: 'pointer' }}>
                             <button className="ai-circle-btn"><MessageSquare color="#8c52ff" /></button>
                             <span className="ai-option-label">AI 채팅</span>
                         </div>
@@ -270,7 +310,7 @@ export default function RootLayout({
                                         </div>
                                     </div>
 
-                                    {/* 하단 고정 버튼 두 개 */}
+                            {/* 하단 고정 버튼 두 개 */}
                                     <div className="audio-bottom-actions">
                                         <button className="audio-action-btn audio-btn-primary" onClick={() => setTranslationState('audio_idle')}>
                                             다시 사용하기
@@ -281,6 +321,134 @@ export default function RootLayout({
                                     </div>
                                 </>
                             )}
+                        </div>
+                    )}
+
+                    {/* --- AI Chat Overlay --- */}
+                    {translationState === 'ai_chat' && (
+                        <div style={{
+                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                            backgroundColor: '#fff', zIndex: 9999,
+                            display: 'flex', flexDirection: 'column', overflow: 'hidden'
+                        }}>
+                            {/* 헤더 */}
+                            <div style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                padding: '16px 20px', paddingTop: 'max(16px, env(safe-area-inset-top))',
+                                backgroundColor: '#fff', borderBottom: '1px solid #f0f0f0'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ 
+                                        width: '8px', height: '8px', borderRadius: '50%', 
+                                        backgroundColor: '#10b981', boxShadow: '0 0 6px rgba(16, 185, 129, 0.4)' 
+                                    }}></span>
+                                    <div>
+                                        <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#111', margin: 0 }}>AI 가이드</h2>
+                                        <p style={{ fontSize: '12px', color: '#888', margin: 0, marginTop: '2px' }}>실시간 여행 도우미</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setTranslationState('idle')}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                                >
+                                    <X size={24} color="#333" />
+                                </button>
+                            </div>
+
+                            {/* 채팅 영역 */}
+                            <div style={{
+                                flex: 1, overflowY: 'auto', padding: '20px',
+                                display: 'flex', flexDirection: 'column', gap: '16px',
+                                backgroundColor: '#fcfcfc'
+                            }}>
+                                {chatMessages.map((msg) => {
+                                    const isUser = msg.sender === 'user';
+                                    return (
+                                        <div key={msg.id} style={{
+                                            display: 'flex', flexDirection: 'column', maxWidth: '82%',
+                                            alignSelf: isUser ? 'flex-end' : 'flex-start',
+                                            alignItems: isUser ? 'flex-end' : 'flex-start'
+                                        }}>
+                                            <div style={{
+                                                padding: '12px 16px',
+                                                fontSize: '15px', color: isUser ? '#fff' : '#222',
+                                                backgroundColor: isUser ? '#8c52ff' : '#f1f3f5',
+                                                border: isUser ? 'none' : '1px solid #e9ecef',
+                                                borderRadius: '20px',
+                                                borderBottomRightRadius: isUser ? '4px' : '20px',
+                                                borderBottomLeftRadius: isUser ? '20px' : '4px',
+                                                lineHeight: '1.5',
+                                                wordBreak: 'keep-all', overflowWrap: 'break-word',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                                            }}>
+                                                {msg.text}
+                                            </div>
+                                            <span style={{ fontSize: '11px', color: '#aaa', marginTop: '6px', padding: '0 4px' }}>
+                                                {msg.time}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* 하단 입력 영역 */}
+                            <div style={{
+                                backgroundColor: '#fff', borderTop: '1px solid #f0f0f0',
+                                display: 'flex', flexDirection: 'column',
+                                paddingBottom: 'max(16px, env(safe-area-inset-bottom))'
+                            }}>
+                                {/* 자주 묻는 질문 칩 */}
+                                <div style={{ padding: '12px 0 8px' }}>
+                                    <span style={{ fontSize: '11px', color: '#888', marginLeft: '20px', marginBottom: '8px', display: 'block' }}>자주 묻는 질문</span>
+                                    <div style={{ 
+                                        display: 'flex', overflowX: 'auto', padding: '0 20px 8px', gap: '10px',
+                                        scrollbarWidth: 'none' /* Firefox */
+                                    }}>
+                                        <style>{`::-webkit-scrollbar { display: none; }`}</style>
+                                        <button 
+                                            onClick={() => handleSendChatMessage('이 근처 화장실 어디야?')}
+                                            style={{ whiteSpace: 'nowrap', backgroundColor: '#fff', border: '1px solid #e2e8f0', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: '#555', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
+                                        >이 근처 화장실 어디야?</button>
+                                        <button 
+                                            onClick={() => handleSendChatMessage('가장 가까운 역은 어디야?')}
+                                            style={{ whiteSpace: 'nowrap', backgroundColor: '#fff', border: '1px solid #e2e8f0', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: '#555', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
+                                        >가장 가까운 역은 어디야?</button>
+                                        <button 
+                                            onClick={() => handleSendChatMessage('로컬 맛집 추천해줘')}
+                                            style={{ whiteSpace: 'nowrap', backgroundColor: '#fff', border: '1px solid #e2e8f0', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: '#555', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
+                                        >로컬 맛집 추천해줘</button>
+                                    </div>
+                                </div>
+
+                                {/* 입력창 */}
+                                <div style={{ padding: '8px 20px 16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                    <input 
+                                        type="text" 
+                                        placeholder="궁금한 점을 물어보세요..." 
+                                        value={chatInput}
+                                        onChange={(e) => setChatInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSendChatMessage(chatInput);
+                                        }}
+                                        style={{ 
+                                            flex: 1, backgroundColor: '#f1f3f5', border: 'none', borderRadius: '24px', 
+                                            padding: '14px 20px', fontSize: '15px', outline: 'none', color: '#333' 
+                                        }}
+                                    />
+                                    <button 
+                                        onClick={() => handleSendChatMessage(chatInput)}
+                                        style={{ 
+                                            width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#8c52ff', 
+                                            color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                            cursor: 'pointer', boxShadow: '0 4px 12px rgba(140, 82, 255, 0.3)', flexShrink: 0
+                                        }}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

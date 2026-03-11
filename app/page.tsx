@@ -50,41 +50,46 @@ export default function HomePage() {
 
                 {/* ✅ 설문 결과 렌더링 영역 */}
                 {surveyResult && (
-                    <div className="mx-4 mt-6 mb-8 bg-blue-50/50 rounded-[20px] p-6 text-center border border-blue-100 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100/50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-                        <div className="absolute bottom-0 left-0 w-20 h-20 bg-indigo-100/40 rounded-full blur-xl -ml-8 -mb-8 pointer-events-none"></div>
+                    <div className="mx-5 mt-8 mb-14 bg-white rounded-[24px] p-7 text-center border border-[#f0f2f5] shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative overflow-hidden flex flex-col items-center">
+                        {/* 더 화려하고 은은한 배경 효과 (Glassmorphism 느낌의 blur) */}
+                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-100/60 rounded-full blur-[40px] pointer-events-none"></div>
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-100/60 rounded-full blur-[40px] pointer-events-none"></div>
 
-                        <span className="inline-block px-3 py-1 mb-3 text-xs font-bold text-blue-700 bg-blue-100 rounded-full">
-                            ✈️ 당신의 여행 DNA
-                        </span>
+                        <div className="relative z-10 w-full">
+                            <span className="inline-block px-4 py-1.5 mb-4 text-[13px] font-bold text-white bg-gradient-to-r from-blue-500 to-[#8c52ff] rounded-full shadow-md">
+                                ✈️ 당신의 여행 DNA
+                            </span>
 
-                        <h2 className="text-[22px] font-bold text-gray-800 mb-2 leading-tight">
-                            {surveyResult.dnaType}
-                        </h2>
+                            <h2 className="text-[26px] font-extrabold text-gray-900 mb-3 leading-tight tracking-tight">
+                                {surveyResult.dnaType}
+                            </h2>
 
-                        <p className="text-[14px] text-gray-600 mb-5 leading-relaxed break-keep">
-                            {surveyResult.description}
-                        </p>
+                            <p className="text-[14.5px] text-gray-600 mb-7 leading-relaxed break-keep px-2">
+                                {surveyResult.description}
+                            </p>
 
-                        <div className="w-full relative h-[180px] mb-4 overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow">
-                            <img
-                                src={surveyResult.imageUrl}
-                                alt={surveyResult.name}
-                                className="object-cover w-full h-full hover:scale-105 transition-transform duration-500"
-                            />
-                            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent">
-                                <h3 className="text-white font-bold text-lg text-left">
-                                    추천 여행지: {surveyResult.name}
-                                </h3>
+                            <div className="w-full relative h-[250px] mb-6 overflow-hidden rounded-[20px] shadow-[0_10px_25px_rgba(0,0,0,0.12)] cursor-pointer group">
+                                <img
+                                    src={surveyResult.imageUrl}
+                                    alt={surveyResult.name}
+                                    className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100"></div>
+                                <div className="absolute bottom-0 left-0 w-full p-5 text-left transform translate-y-0 group-hover:-translate-y-1 transition-transform duration-300">
+                                    <p className="text-white/80 text-[13px] font-medium mb-1 drop-shadow-sm">최적의 목적지</p>
+                                    <h3 className="text-white font-bold text-[22px] drop-shadow-md">
+                                        {surveyResult.name}
+                                    </h3>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {surveyResult.tags?.map((tag: string, idx: number) => (
-                                <span key={idx} className="px-2.5 py-1 text-xs font-medium text-blue-800 bg-blue-100/80 rounded-md">
-                                    #{tag}
-                                </span>
-                            ))}
+                            <div className="flex flex-wrap gap-2.5 justify-center mt-2">
+                                {surveyResult.tags?.map((tag: string, idx: number) => (
+                                    <span key={idx} className="px-3 py-1.5 text-[13px] font-semibold text-[#8c52ff] bg-[#f8f5ff] border border-[#eaddff] rounded-full hover:bg-[#f0e6ff] transition-colors">
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}

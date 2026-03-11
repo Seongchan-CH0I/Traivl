@@ -13,6 +13,34 @@ export default function ProfilePage() {
     { label: "활동", value: 80 },
   ];
 
+  // AI 기능 활용 기록 예시 (추후 실제 로그 API 혹은 DB와 연동하기 쉽도록 배열 구조로 분리)
+  const aiUsageHistory = [
+    {
+      id: 1,
+      type: "menu_analysis", // 기능 종류 식별자 (실제 적용 시 enum 등 사용 권장)
+      title: "메뉴판 분석 기능을 이용하셨습니다.",
+      content: "분석된 내용: 일본어 메뉴를 한국어로 번역 및 분석",
+      date: "2026.03.11",
+      icon: "🍽️"
+    },
+    {
+      id: 2,
+      type: "translation",
+      title: "번역 기능을 사용하였습니다.",
+      content: "번역 내용: '이 근처에 맛있는 라멘집이 있나요?'",
+      date: "2026.03.10",
+      icon: "📝"
+    },
+    {
+      id: 3,
+      type: "voice_translation",
+      title: "음성 통역 기능을 사용하였습니다.",
+      content: "통역 내용: '지하철 역으로 가는 길을 알려주세요.'",
+      date: "2026.03.09",
+      icon: "🎙️"
+    }
+  ];
+
   // 그래프 계산 로직
   const getPoint = (index: number, value: number, maxR: number = 100) => {
     const r = (value / 100) * maxR;
@@ -144,6 +172,50 @@ export default function ProfilePage() {
               );
             })}
           </svg>
+        </div>
+      </div>
+
+      {/* AI 기능 활용 기록 영역 (추후 실제 데이터가 들어올 때 aiUsageHistory 상태만 업데이트하면 되도록 구현) */}
+      <div className="profile-ai-history-container" style={{ marginTop: '32px' }}>
+        <h3 className="profile-graph-title" style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span>🤖</span> AI 기능 활용 기록
+        </h3>
+        <div className="ai-history-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {aiUsageHistory.map((log) => (
+            <div key={log.id} className="ai-history-item" style={{ 
+              display: 'flex', 
+              alignItems: 'flex-start',
+              gap: '14px',
+              padding: '16px',
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)',
+              border: '1px solid #f0f0f0'
+            }}>
+              <div className="ai-history-icon" style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                flexShrink: 0
+              }}>
+                {log.icon}
+              </div>
+              <div className="ai-history-content" style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#111', lineHeight: '1.4' }}>{log.title}</h4>
+                  <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', marginLeft: '10px' }}>{log.date}</span>
+                </div>
+                <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.5', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #8c52ff' }}>
+                  {log.content}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

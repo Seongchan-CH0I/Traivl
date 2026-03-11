@@ -1,15 +1,30 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Home, LayoutGrid, Sparkles, Calendar, User, Plane, Flame, Star, Lightbulb, PartyPopper, X } from 'lucide-react';
 
 const TravelApp = () => {
+  const [activeTab, setActiveTab] = useState('전체');
+
   const guides = [
-    { id: 1, title: "경복궁", desc: "지금 방문하면 한복 대여 할인이 있어요", img: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?q=80&w=800", badge: "여유로움" },
-    { id: 2, title: "명동교자", desc: "진한 칼국수 국물이 정말 일품이에요", img: "https://images.unsplash.com/photo-1534422298391-e4f8c170db06?q=80&w=800", rating: "4.5" },
-    { id: 3, title: "대중교통 환승 팁", desc: "기후동행카드 사용 가능", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed0963c?q=80&w=800" },
-    { id: 4, title: "한강 공원", desc: "반포한강공원 무지개분수", img: "https://images.unsplash.com/photo-1540914124281-3427106e74f9?q=80&w=800", rating: "4.5" }
+    { id: 1, title: "경복궁", desc: "지금 방문하면 한복 대여 할인이 있어요", img: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?q=80&w=800", badge: "여유로움", category: "인기" },
+    { id: 2, title: "명동교자", desc: "진한 칼국수 국물이 정말 일품이에요", img: "https://images.unsplash.com/photo-1534422298391-e4f8c170db06?q=80&w=800", rating: "4.5", category: "리뷰" },
+    { id: 3, title: "대중교통 환승 팁", desc: "기후동행카드 사용 가능", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed0963c?q=80&w=800", category: "팁" },
+    { id: 4, title: "한강 공원", desc: "반포한강공원 무지개분수", img: "https://images.unsplash.com/photo-1540914124281-3427106e74f9?q=80&w=800", rating: "4.5", category: "이벤트" }
+  ];
+
+  const filteredGuides = guides.filter(guide => {
+    if (activeTab === '전체') return true;
+    return guide.category === activeTab;
+  });
+
+  const tabs = [
+    { id: '전체', icon: <span className="gradient-icon" style={{ fontSize: '13px' }}>🌐</span>, label: "전체" },
+    { id: '인기', icon: <Flame size={13} style={{ color: '#ff5722' }} />, label: "인기" },
+    { id: '리뷰', icon: <Star size={13} style={{ color: '#ffc107', fill: '#ffc107' }} />, label: "리뷰" },
+    { id: '팁', icon: <Lightbulb size={13} style={{ color: '#ff9800' }} />, label: "팁" },
+    { id: '이벤트', icon: <PartyPopper size={13} style={{ color: '#2196f3' }} />, label: "이벤트" }
   ];
 
   return (
@@ -28,22 +43,20 @@ const TravelApp = () => {
 
       {/* --- Filter Tabs --- */}
       <div className="feed-filter-scroll">
-        <button className="feed-filter-btn active">전체</button>
-        {[
-          { icon: <Flame size={13} style={{ color: '#ff5722' }} />, label: "인기" },
-          { icon: <Star size={13} style={{ color: '#ffc107', fill: '#ffc107' }} />, label: "리뷰" },
-          { icon: <Lightbulb size={13} style={{ color: '#ff9800' }} />, label: "팁" },
-          { icon: <PartyPopper size={13} style={{ color: '#2196f3' }} />, label: "이벤트" }
-        ].map((tab, idx) => (
-          <button key={idx} className="feed-filter-btn">
-            {tab.icon} {tab.label}
+        {tabs.map((tab) => (
+          <button 
+            key={tab.id} 
+            className={`guide-filter-btn ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.icon} <span style={{ marginLeft: '4px' }}>{tab.label}</span>
           </button>
         ))}
       </div>
 
       {/* --- Main Content (Cards) --- */}
       <main className="content feed-main">
-        {guides.map((item) => (
+        {filteredGuides.map((item) => (
           <div key={item.id} className="feed-card">
             <img src={item.img} alt={item.title} className="feed-img" />
             <div className="feed-overlay" />

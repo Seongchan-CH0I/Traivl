@@ -824,11 +824,12 @@ body {
 .location-badge {
     display: flex;
     align-items: center;
-    background-color: #eef2ff;
-    color: #4f46e5;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: white;
     padding: 4px 12px;
     border-radius: 9999px;
-    border: 1px solid #e0e7ff;
+    border: none;
+    box-shadow: 0 4px 10px rgba(236, 72, 153, 0.2);
 }
 
 .location-text {
@@ -1721,7 +1722,7 @@ body {
 
 /* --- Audio Translation Styles --- */
 .audio-overlay {
-    position: absolute; /* fixed에서 absolute로 변경하여 컨테이너 내부에 종속시킴 */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -1731,8 +1732,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: inherit; /* 모서리 둥글기 상속 */
-    overflow: hidden;
+    border-radius: inherit;
+    overflow: hidden; /* Prevent body scroll, handle inside */
     animation: fadeIn 0.3s ease-out;
 }
 
@@ -1820,24 +1821,25 @@ body {
 /* Audio Result Card */
 .audio-result-wrapper {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 145px); /* Leave exactly enough room for buttons below */
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    padding-bottom: 140px; /* 버튼을 덮지 않도록 여백 확보 */
+    overflow-y: auto; /* This wrapper handles the scroll now */
+    padding-bottom: 20px;
 }
 
 .audio-result-card {
     background-color: white;
     margin: 20px;
-    border-radius: 24px;
+    border-radius: 20px;
     padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
+    /* Remove any height limits, let it expand inside the scrolling wrapper */
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     animation: slideUpFade 0.4s ease-out;
 }
@@ -1913,6 +1915,8 @@ body {
     line-height: 1.5;
 }
 
+/* Remove internal scrollbars so the whole card scrolls elegantly */
+
 .audio-response-list {
     display: flex;
     flex-direction: column;
@@ -1952,9 +1956,11 @@ body {
     bottom: 20px;
     left: 20px;
     right: 20px;
+    background-color: transparent;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    z-index: 10000;
 }
 
 .audio-action-btn {
@@ -2446,4 +2452,3 @@ body {
     cursor: pointer;
 }
 }
-
