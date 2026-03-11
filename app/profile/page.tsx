@@ -1,73 +1,149 @@
 "use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export default function ProfilePage() {
   // 취향 데이터 예시
   const stats = [
     { label: "문화", value: 90 },
-    { label: "음식", value: 60 },
-    { label: "예산", value: 40 },
-    { label: "휴식", value: 30 },
+    { label: "음식", value: 65 },
+    { label: "예산", value: 45 },
+    { label: "휴식", value: 35 },
     { label: "호텔", value: 55 },
-    { label: "활동", value: 70 },
+    { label: "활동", value: 80 },
   ];
 
+  // 그래프 계산 로직
+  const getPoint = (index: number, value: number, maxR: number = 100) => {
+    const r = (value / 100) * maxR;
+    // 위쪽(문화)부터 시계 방향으로 60도씩(PI/3) 회전
+    const angle = (Math.PI / 3) * index - Math.PI / 2;
+    const x = 150 + r * Math.cos(angle);
+    const y = 150 + r * Math.sin(angle);
+    return { x, y };
+  };
+
+  const dataPoints = stats.map((stat, i) => {
+    const { x, y } = getPoint(i, stat.value);
+    return `${x},${y}`;
+  }).join(" ");
+
+  // 배경 육각형 가이드라인을 그리기 위한 단계 
+  const levels = [20, 40, 60, 80, 100];
+
   return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-white">
+    <div className="profile-content">
       {/* 상단 프로필 섹션 */}
-      <div className="mt-8 mb-4">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 to-pink-400 flex items-center justify-center shadow-lg">
-          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-               <span className="text-3xl">👤</span>
+      <div className="profile-avatar-section">
+        <div className="profile-avatar-outer">
+          <div className="profile-avatar-inner">
+            <div className="profile-avatar-image">
+               <span style={{ fontSize: '30px' }}>👤</span>
             </div>
           </div>
         </div>
       </div>
       
-      <h1 className="text-2xl font-bold text-slate-800">나의 여행 DNA</h1>
-      <p className="text-slate-400 text-sm mt-1 mb-8">개인화된 여행 프로필</p>
+      <h1 className="profile-title">나의 여행 DNA</h1>
+      <p className="profile-subtitle">개인화된 여행 프로필</p>
 
       {/* DNA 분석 결과 배너 */}
-      <div className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-rose-500 rounded-3xl p-8 shadow-xl text-center relative overflow-hidden mb-12">
-        <span className="absolute top-4 left-6 text-white text-[10px] flex items-center gap-1 opacity-80">
+      <div className="profile-dna-banner">
+        <span className="profile-dna-badge">
           ⚡ DNA 분석 결과
         </span>
-        <h2 className="text-white text-3xl font-black my-4 tracking-tighter">"전통 탐험가"</h2>
-        <div className="flex justify-center gap-2 mt-4">
-          <span className="bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full border border-white/30">#문화중심</span>
-          <span className="bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full border border-white/30">#빡빡한일정</span>
-          <span className="bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-full border border-white/30">#가성비맛집</span>
+        <h2 className="profile-dna-result">"전통 탐험가"</h2>
+        <div className="profile-dna-tags">
+          <span className="profile-dna-tag">#문화중심</span>
+          <span className="profile-dna-tag">#빡빡한일정</span>
+          <span className="profile-dna-tag">#가성비맛집</span>
         </div>
       </div>
 
       {/* 취향 분석 그래프 영역 */}
-      <div className="w-full max-w-sm">
-        <h3 className="text-lg font-bold text-slate-800 mb-8">취향 분석 그래프</h3>
+      <div className="profile-graph-container">
+        <h3 className="profile-graph-title">취향 분석 그래프</h3>
         
-        {/* 방사형 그래프 (SVG로 간단히 구현) */}
-        <div className="relative w-full aspect-square flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center justify-center opacity-10">
-            {/* 배경 육각형 그리드 */}
-            <div className="w-full h-full border border-slate-400 rounded-full scale-100" />
-            <div className="absolute w-full h-full border border-slate-400 rounded-full scale-75" />
-            <div className="absolute w-full h-full border border-slate-400 rounded-full scale-50" />
-          </div>
-          
-          {/* 레이블 배치 */}
-          <div className="absolute top-0 font-bold text-slate-600 text-sm">문화</div>
-          <div className="absolute top-[25%] right-0 font-bold text-slate-600 text-sm">음식</div>
-          <div className="absolute bottom-[25%] right-0 font-bold text-slate-600 text-sm">예산</div>
-          <div className="absolute bottom-0 font-bold text-slate-600 text-sm">휴식</div>
-          <div className="absolute bottom-[25%] left-0 font-bold text-slate-600 text-sm">호텔</div>
-          <div className="absolute top-[25%] left-0 font-bold text-slate-600 text-sm">활동</div>
+        {/* 방사형 SVG 그래프 */}
+        <div className="profile-radar-wrapper">
+          <svg viewBox="0 0 300 300" className="profile-radar-svg">
+            
+            {/* 가이드라인 다각형 (육각형) */}
+            {levels.map(level => {
+              const points = stats.map((_, i) => {
+                const { x, y } = getPoint(i, level);
+                return `${x},${y}`;
+              }).join(" ");
+              return (
+                <polygon 
+                  key={`level-${level}`} 
+                  points={points} 
+                  fill="none" 
+                  stroke="#e2e8f0" 
+                  strokeWidth="1.5" 
+                />
+              );
+            })}
 
-          {/* 파란색 데이터 영역 (시각적 효과) */}
-          <div className="w-48 h-48 bg-indigo-500/20 border-2 border-indigo-500 rounded-full flex items-center justify-center" 
-               style={{ clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)' }}>
-            <div className="w-full h-full bg-indigo-500/30" />
-          </div>
+            {/* 중심에서 뻗어나가는 축 선 */}
+            {stats.map((_, i) => {
+              const { x, y } = getPoint(i, 100);
+              return (
+                <line 
+                  key={`axis-${i}`} 
+                  x1="150" 
+                  y1="150" 
+                  x2={x} 
+                  y2={y} 
+                  stroke="#e2e8f0" 
+                  strokeWidth="1.5" 
+                />
+              );
+            })}
+
+            {/* 실제 취향 데이터 영역 */}
+            <polygon 
+              points={dataPoints} 
+              fill="rgba(99, 102, 241, 0.35)" 
+              stroke="#6366f1" 
+              strokeWidth="2.5" 
+              style={{ transition: 'all 0.5s ease-out' }}
+            />
+
+            {/* 꼭지점 포인트 (선택적) */}
+            {stats.map((stat, i) => {
+              const { x, y } = getPoint(i, stat.value);
+              return (
+                <circle 
+                  key={`dot-${i}`} 
+                  cx={x} 
+                  cy={y} 
+                  r="3.5" 
+                  fill="#6366f1" 
+                />
+              );
+            })}
+
+            {/* 외부 레이블 텍스트 */}
+            {stats.map((stat, i) => {
+              // 최외곽(100)보다 조금 더 떨어져서 텍스트 표시
+              const { x, y } = getPoint(i, 122);
+              return (
+                <text 
+                  key={`label-${i}`} 
+                  x={x} 
+                  y={y} 
+                  fill="#334155" 
+                  fontSize="13" 
+                  fontWeight="700" 
+                  textAnchor="middle" 
+                  dominantBaseline="middle"
+                >
+                  {stat.label}
+                </text>
+              );
+            })}
+          </svg>
         </div>
       </div>
     </div>
