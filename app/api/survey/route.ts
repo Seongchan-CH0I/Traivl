@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { analyzeSurvey, saveUserDna, getUserDna } from '../../../services/dnaAnalyzeService';
+import { analyzeSurvey, saveUserDna, getUserDna, deleteUserDna } from '../../../services/dnaAnalyzeService';
 
 // GET: 유저가 기존에 검사해둔 결과를 불러오기
 export async function GET(request: Request) {
@@ -17,6 +17,27 @@ export async function GET(request: Request) {
         return NextResponse.json(
             { success: !!savedDna, data: savedDna },
             { status: 200 }
+        );
+    } catch (error) {
+        return NextResponse.json({ success: false, error: "서버 오류" }, { status: 500 });
+    }
+}
+
+// DELETE: 유저의 기존 검사 결과를 초기화하기
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
+
+        if (!userId) {
+            return NextResponse.json({ success: false, error: "UserId is required" }, { status: 400 });
+        }
+
+        const success = await deleteUserDna(userId);
+
+        return NextResponse.json(
+            { success },
+            { status: success ? 200 : 500 }
         );
     } catch (error) {
         return NextResponse.json({ success: false, error: "서버 오류" }, { status: 500 });

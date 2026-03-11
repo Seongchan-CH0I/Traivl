@@ -1,8 +1,31 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function ProfilePage() {
+  const { user } = useAuth();
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetDna = async () => {
+    if (!user?.id) return;
+    if (!window.confirm("정말 나의 여행 DNA 결과를 완전히 초기화하시겠습니까? (되돌릴 수 없습니다.)")) return;
+
+    setIsResetting(true);
+    try {
+      const res = await fetch(`/api/survey?userId=${user.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert("초기화 완료! 앱이 새로고침되어 처음 상태로 돌아갑니다.");
+        window.location.href = "/";
+      } else {
+        alert("초기화에 실패했습니다.");
+      }
+    } catch (e) {
+      alert("네트워크 통신 중 오류가 발생했습니다.");
+    }
+    setIsResetting(false);
+  };
+
   // 취향 데이터 예시
   const stats = [
     { label: "문화", value: 90 },
@@ -66,20 +89,33 @@ export default function ProfilePage() {
         <div className="profile-avatar-outer">
           <div className="profile-avatar-inner">
             <div className="profile-avatar-image">
-               <span style={{ fontSize: '30px' }}>👤</span>
+              <span style={{ fontSize: '30px' }}>👤</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       <h1 className="profile-title">나의 여행 DNA</h1>
       <p className="profile-subtitle">개인화된 여행 프로필</p>
 
       {/* DNA 분석 결과 배너 */}
       <div className="profile-dna-banner">
-        <span className="profile-dna-badge">
-          ⚡ DNA 분석 결과
-        </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span className="profile-dna-badge">
+            ⚡ DNA 분석 결과
+          </span>
+          <button
+            onClick={handleResetDna}
+            disabled={isResetting}
+            style={{
+              fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
+              border: 'none', padding: '6px 12px', borderRadius: '6px',
+              cursor: isResetting ? 'not-allowed' : 'pointer', fontWeight: 'bold'
+            }}
+          >
+            {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
+          </button>
+        </div>
         <h2 className="profile-dna-result">"전통 탐험가"</h2>
         <div className="profile-dna-tags">
           <span className="profile-dna-tag">#문화중심</span>
@@ -91,11 +127,11 @@ export default function ProfilePage() {
       {/* 취향 분석 그래프 영역 */}
       <div className="profile-graph-container">
         <h3 className="profile-graph-title">취향 분석 그래프</h3>
-        
+
         {/* 방사형 SVG 그래프 */}
         <div className="profile-radar-wrapper">
           <svg viewBox="0 0 300 300" className="profile-radar-svg">
-            
+
             {/* 가이드라인 다각형 (육각형) */}
             {levels.map(level => {
               const points = stats.map((_, i) => {
@@ -103,12 +139,12 @@ export default function ProfilePage() {
                 return `${x},${y}`;
               }).join(" ");
               return (
-                <polygon 
-                  key={`level-${level}`} 
-                  points={points} 
-                  fill="none" 
-                  stroke="#e2e8f0" 
-                  strokeWidth="1.5" 
+                <polygon
+                  key={`level-${level}`}
+                  points={points}
+                  fill="none"
+                  stroke="#e2e8f0"
+                  strokeWidth="1.5"
                 />
               );
             })}
@@ -117,24 +153,24 @@ export default function ProfilePage() {
             {stats.map((_, i) => {
               const { x, y } = getPoint(i, 100);
               return (
-                <line 
-                  key={`axis-${i}`} 
-                  x1="150" 
-                  y1="150" 
-                  x2={x} 
-                  y2={y} 
-                  stroke="#e2e8f0" 
-                  strokeWidth="1.5" 
+                <line
+                  key={`axis-${i}`}
+                  x1="150"
+                  y1="150"
+                  x2={x}
+                  y2={y}
+                  stroke="#e2e8f0"
+                  strokeWidth="1.5"
                 />
               );
             })}
 
             {/* 실제 취향 데이터 영역 */}
-            <polygon 
-              points={dataPoints} 
-              fill="rgba(99, 102, 241, 0.35)" 
-              stroke="#6366f1" 
-              strokeWidth="2.5" 
+            <polygon
+              points={dataPoints}
+              fill="rgba(99, 102, 241, 0.35)"
+              stroke="#6366f1"
+              strokeWidth="2.5"
               style={{ transition: 'all 0.5s ease-out' }}
             />
 
@@ -142,12 +178,12 @@ export default function ProfilePage() {
             {stats.map((stat, i) => {
               const { x, y } = getPoint(i, stat.value);
               return (
-                <circle 
-                  key={`dot-${i}`} 
-                  cx={x} 
-                  cy={y} 
-                  r="3.5" 
-                  fill="#6366f1" 
+                <circle
+                  key={`dot-${i}`}
+                  cx={x}
+                  cy={y}
+                  r="3.5"
+                  fill="#6366f1"
                 />
               );
             })}
@@ -157,14 +193,14 @@ export default function ProfilePage() {
               // 최외곽(100)보다 조금 더 떨어져서 텍스트 표시
               const { x, y } = getPoint(i, 122);
               return (
-                <text 
-                  key={`label-${i}`} 
-                  x={x} 
-                  y={y} 
-                  fill="#334155" 
-                  fontSize="13" 
-                  fontWeight="700" 
-                  textAnchor="middle" 
+                <text
+                  key={`label-${i}`}
+                  x={x}
+                  y={y}
+                  fill="#334155"
+                  fontSize="13"
+                  fontWeight="700"
+                  textAnchor="middle"
                   dominantBaseline="middle"
                 >
                   {stat.label}
@@ -182,8 +218,8 @@ export default function ProfilePage() {
         </h3>
         <div className="ai-history-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {aiUsageHistory.map((log) => (
-            <div key={log.id} className="ai-history-item" style={{ 
-              display: 'flex', 
+            <div key={log.id} className="ai-history-item" style={{
+              display: 'flex',
               alignItems: 'flex-start',
               gap: '14px',
               padding: '16px',

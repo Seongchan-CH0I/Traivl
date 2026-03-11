@@ -161,3 +161,20 @@ export async function getUserDna(userId: string) {
         return null;
     }
 }
+
+// 유저의 설문 결과 초기화 (데이터 삭제)
+export async function deleteUserDna(userId: string) {
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                dnaType: null,
+                destinationId: null
+            }
+        });
+        return true;
+    } catch (error) {
+        console.error("DB 초기화 실패:", error);
+        return false;
+    }
+}
