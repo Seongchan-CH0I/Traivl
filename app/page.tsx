@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import Header from '../components/ui/Header';
 import FloatingButton from '../components/ui/FloatingButton';
 import Banner from '../components/home/Banner';
@@ -15,11 +16,27 @@ import JourneyMap from '../components/route/JourneyMap';
 import RecommendPlaces from '../components/home/KyotoRecommendPlaces';
 
 export default function HomePage() {
+    const { user } = useAuth(); // 사용자 정보 가져오기
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
     const [hasCompletedSurvey, setHasCompletedSurvey] = useState(false);
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
     const [surveyResult, setSurveyResult] = useState<any>(null); // ✅ 결과 저장용 State 추가
+
+    // 유저 정보가 확인되면 DB에서 기존 설문 결과 조회해오기
+    useEffect(() => {
+        if (user?.id) {
+            fetch(`/api/survey?userId=${user.id}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success && res.data) {
+                        setSurveyResult(res.data);
+                        setHasCompletedSurvey(true);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch user DNA", err));
+        }
+    }, [user]);
 
     const handleCompleteSurvey = (resultData: any) => { // 데이터를 받아오게 수정!
         if (resultData && !Array.isArray(resultData)) {
@@ -41,6 +58,11 @@ export default function HomePage() {
     if (hasCompletedSurvey) {
         return (
             <main className="home-page pb-safe relative">
+                <SurveyModal
+                    isOpen={isSurveyOpen}
+                    onClose={() => setIsSurveyOpen(false)}
+                    onComplete={handleCompleteSurvey}
+                />
                 <RouteCreationModal
                     isOpen={isRouteModalOpen}
                     onClose={() => setIsRouteModalOpen(false)}
@@ -90,6 +112,14 @@ export default function HomePage() {
                                     </span>
                                 ))}
                             </div>
+
+                            {/* ✅ 다시 검사하기 버튼 추가 */}
+                            <button
+                                onClick={() => setIsSurveyOpen(true)}
+                                className="mt-8 px-6 py-2.5 text-[14px] font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors shadow-sm w-full"
+                            >
+                                🔄 여행 성향 다시 검사하기
+                            </button>
                         </div>
                     </div>
                 )}

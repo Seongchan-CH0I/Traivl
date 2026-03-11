@@ -1,5 +1,27 @@
 import { NextResponse } from 'next/server';
-import { analyzeSurvey, saveUserDna } from '../../../services/dnaAnalyzeService';
+import { analyzeSurvey, saveUserDna, getUserDna } from '../../../services/dnaAnalyzeService';
+
+// GET: 유저가 기존에 검사해둔 결과를 불러오기
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
+
+        if (!userId) {
+            return NextResponse.json({ success: false }, { status: 400 });
+        }
+
+        const savedDna = await getUserDna(userId);
+
+        // 결과가 있으면 반환, 없으면 null 반환 (아직 검사 안한 상태)
+        return NextResponse.json(
+            { success: !!savedDna, data: savedDna },
+            { status: 200 }
+        );
+    } catch (error) {
+        return NextResponse.json({ success: false, error: "서버 오류" }, { status: 500 });
+    }
+}
 
 export async function POST(request: Request) {
     try {
