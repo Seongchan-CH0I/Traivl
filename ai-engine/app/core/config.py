@@ -1,4 +1,5 @@
-# 환경 변수 모아둔 곳 , 나중에 AWS 배포할때 편함
+# 환경 변수 모아둔 곳 , .env 파일을 통해 API 키와 접속 정보 안전하게 관리하도록 설정
+# 나중에 AWS 배포할때 편함
 import os
 from dotenv import load_dotenv
 
