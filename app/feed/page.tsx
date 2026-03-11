@@ -9,9 +9,9 @@ const TravelApp = () => {
 
   const guides = [
     { id: 1, title: "경복궁", desc: "지금 방문하면 한복 대여 할인이 있어요", img: "https://images.unsplash.com/photo-1548115184-bc6544d06a58?q=80&w=800", badge: "여유로움", category: "인기" },
-    { id: 2, title: "명동교자", desc: "진한 칼국수 국물이 정말 일품이에요", img: "https://images.unsplash.com/photo-1534422298391-e4f8c170db06?q=80&w=800", rating: "4.5", category: "리뷰" },
-    { id: 3, title: "대중교통 환승 팁", desc: "기후동행카드 사용 가능", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed0963c?q=80&w=800", category: "팁" },
-    { id: 4, title: "한강 공원", desc: "반포한강공원 무지개분수", img: "https://images.unsplash.com/photo-1540914124281-3427106e74f9?q=80&w=800", rating: "4.5", category: "이벤트" }
+    { id: 2, title: "명동교자", desc: "진한 칼국수 국물이 정말 일품이에요", img: "http://m.mdkj.co.kr/img/store01.jpg", rating: "4.5", category: "리뷰" },
+    { id: 3, title: "대중교통 환승 팁", desc: "기후동행카드 사용 가능", img: "/images/JP_TOKYO.jpg", category: "팁" },
+    { id: 4, title: "한강 공원", desc: "반포한강공원 무지개분수", img: "/images/KR_SEOUL.jpg", rating: "4.5", category: "이벤트" }
   ];
 
   const filteredGuides = guides.filter(guide => {

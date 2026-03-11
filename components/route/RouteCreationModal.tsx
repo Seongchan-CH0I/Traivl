@@ -99,7 +99,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                         <div className="rc-list-y">
                             {cities.map(c => (
                                 <div key={c.name} className={`rc-city-card ${city === c.name ? 'selected' : ''}`} onClick={() => setCity(c.name)}>
-                                    <img src={c.img} alt={c.name} />
+                                    <img src={c.img} alt={c.name} draggable={false} />
                                     <div className="rc-city-overlay">
                                         <h3>{c.name}</h3>
                                         <p>{c.desc}</p>
@@ -156,40 +156,37 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 );
             case 5:
                 return (
-                    <div style={{ paddingBottom: '160px' }}>
-                        <div className="rc-res-header">
-                            <h1 className="rc-res-title">주상님의 취향을<br />듬뿍 담은 {city} 힐링 코스</h1>
-                            <p className="rc-res-subtitle">Your {city} Heritage Route</p>
-                        </div>
+                    <>
+                        <div style={{ paddingBottom: '160px' }}>
+                            <div className="rc-res-header">
+                                <h1 className="rc-res-title">주상님의 취향을<br />듬뿍 담은 {city} 힐링 코스</h1>
+                                <p className="rc-res-subtitle">Your {city} Heritage Route</p>
+                            </div>
 
-                        <div className="rc-timeline">
-                            <div className="rc-time-item">
-                                <div className="rc-time-badge">16:00</div>
-                                <div className="rc-time-card">
-                                    <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" alt="기요미즈데라" />
-                                    <div className="info">
-                                        <h4>기요미즈데라(청수사) 산책</h4>
-                                        <p>📍 히가시야마구</p>
+                            <div className="rc-timeline">
+                                <div className="rc-time-item">
+                                    <div className="rc-time-badge">16:00</div>
+                                    <div className="rc-time-card">
+                                        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" alt="기요미즈데라" draggable={false} />
+                                        <div className="info">
+                                            <h4>기요미즈데라(청수사) 산책</h4>
+                                            <p>📍 히가시야마구</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="rc-time-item">
+                                    <div className="rc-time-badge" style={{ borderColor: '#e0e0e0', color: '#b0b0b0' }}>18:00</div>
+                                    <div className="rc-time-card">
+                                        <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&h=200&fit=crop" alt="료칸 저녁" draggable={false} />
+                                        <div className="info">
+                                            <h4>료칸 가이세키 정식</h4>
+                                            <p>📍 기온 거리 인근</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="rc-time-item">
-                                <div className="rc-time-badge" style={{ borderColor: '#e0e0e0', color: '#b0b0b0' }}>18:00</div>
-                                <div className="rc-time-card">
-                                    <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&h=200&fit=crop" alt="료칸 저녁" />
-                                    <div className="info">
-                                        <h4>료칸 가이세키 정식</h4>
-                                        <p>📍 기온 거리 인근</p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-
-                        <div className="rc-res-bottom text-center">
-                            <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
-                            <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
-                        </div>
-                    </div>
+                    </>
                 );
             default: return null;
         }
@@ -211,6 +208,24 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             <div className="rc-content">
                 {renderStepContent()}
             </div>
+            {step === 5 && (
+                <div 
+                  className="rc-res-bottom text-center" 
+                  style={{ 
+                    zIndex: 10,
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background: 'white',
+                    padding: '16px 20px calc(16px + env(safe-area-inset-bottom))',
+                    borderTop: '1px solid #f0f0f0'
+                  }}
+                >
+                    <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
+                    <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
+                </div>
+            )}
         </div>
     );
 }

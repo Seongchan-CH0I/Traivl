@@ -28,7 +28,7 @@ export default function GuidePage() {
       id: 3,
       title: "교토 버스 탑승 팁",
       desc: "뒷문으로 타서 앞으로 내립니다",
-      img: "https://images.unsplash.com/photo-1624233519844-315185df23fe?q=80&w=800",
+      img: "https://mblogthumb-phinf.pstatic.net/MjAyNDA2MDhfMTI0/MDAxNzE3ODMyMjQ1OTMw.tjvASmSwp-_aJwpyAYFUo9v_yHYzj9IAbjs527m12M8g.1cAI_vzGECyZPc_TFmsS1qXEob7TNnHZRTu7Li8pqcEg.JPEG/050.JPG?type=w800",
       isTip: true,
       category: "팁", // 팁 카테고리 매칭용
       footer: (
@@ -78,8 +78,13 @@ export default function GuidePage() {
       <div className="guide-masonry">
         {filteredGuides.map((item) => (
           <div key={item.id} className="guide-card">
-            <div className="guide-card-img-wrapper">
-              <img src={item.img} alt={item.title} className="guide-card-img" />
+            <div className="guide-card-img-wrapper" style={{ height: '180px', overflow: 'hidden' }}>
+              <img 
+                src={item.img} 
+                alt={item.title} 
+                className="guide-card-img" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
               
               {/* Top Left Badge */}
               {item.alert && (
