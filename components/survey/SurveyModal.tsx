@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface SurveyModalProps {
     isOpen: boolean;
@@ -8,6 +9,7 @@ interface SurveyModalProps {
 }
 
 export default function SurveyModal({ isOpen, onClose, onComplete }: SurveyModalProps) {
+    const { user } = useAuth(); // Mock Auth에서 유저 정보 가져오기
     const [surveyStep, setSurveyStep] = useState(1);
     const [answers, setAnswers] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +28,10 @@ export default function SurveyModal({ isOpen, onClose, onComplete }: SurveyModal
                 const res = await fetch('/api/survey', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ answers: newAnswers }),
+                    body: JSON.stringify({
+                        answers: newAnswers,
+                        userId: user?.id // 누구의 설문 결과인지 서버에 알림
+                    }),
                 });
                 const responseData = await res.json();
 

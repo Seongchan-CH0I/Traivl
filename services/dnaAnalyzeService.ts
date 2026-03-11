@@ -1,3 +1,13 @@
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../lib/generated/prisma';
+
+// 런타임 환경에 맞게 커넥션 풀과 어댑터 생성
+const connectionString = process.env.DATABASE_URL || "postgresql://postgres:password@127.0.0.1:5432/traivldb";
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
 // 8가지의 추천 여행지 풀 (한국 4곳, 일본 4곳)
 export const DESTINATIONS = [
     // 🇰🇷 한국
@@ -103,4 +113,32 @@ export function analyzeSurvey(answers: string[]) {
 
     // 동점일 경우 기본적으로 배열 앞쪽에 있는 곳이 선택됨
     return bestMatch;
+}
+
+// 설문 결과를 DB의 User 테이블에 저장 (Mock Auth 연동 역할)
+export async function saveUserDna(userId: string, dnaType: string, destinationId: string) {
+    try {
+        // userId가 실제로 우리 DB에 없을 수도 있으므로 (완전 가짜 Auth의 경우)
+        // 일단 DB 업데이트를 시도하되, 없으면 새로 만들어주는 upsert 방식을 씁니다.
+        const updatedUser = await prisma.user.upsert({
+            where: { id: userId },
+            update: {
+                dnaType: dnaType,
+                destinationId: destinationId
+            },
+            create: {
+                id: userId,
+                email: "test@traivl.com", // 가짜 유저용 기본값
+                name: "트래블러",
+                dnaType: dnaType,
+                destinationId: destinationId
+            }
+        });
+
+        console.log(`[DB 완료] 유저(${userId}) 성향: ${dnaType}, 추천 여행지: ${destinationId}`);
+        return true;
+    } catch (error) {
+        console.error("DB 저장 실패:", error);
+        return false;
+    }
 }

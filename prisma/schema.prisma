@@ -5,16 +5,18 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-}
-model Place {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-
-  embedding   Unsupported("vector(1536)")?
-
-  createdAt   DateTime @default(now())
+  provider   = "postgresql"
+  extensions = [vector]
 }
 
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String?
+  profileImage  String?
+  dnaType       String?  // 예: "모험가", "본투비 푸드파이터"
+  destinationId String?  // 예: "KR_JEJU"
 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
