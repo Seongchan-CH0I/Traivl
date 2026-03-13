@@ -11,22 +11,24 @@
 
 ---
 
-## 1. 💬 여행 계획 추천 및 가이드 (`/chat/recommend`)
-유저의 여행 취향, 기간, 목적지를 입력받아 최적의 여행지 목록과 추천 코멘트를 생성합니다.
+## 1. 🌍 맞춤형 여행 코스 기획 (`/plan/recommend`)
+유저의 여행 취향, 기간, 대륙, 국가를 입력받아 최적의 여행지 목록과 추천 코멘트를 생성합니다.
 
-**[POST] `/chat/recommend`**
+**[POST] `/plan/recommend`**
 
 *   **요청 (Request) - 백엔드 ➡️ AI**
 ```json
 {
   "user_id": 12345,
-  "destination": "오사카, 일본",
+  "user_name": "주상",
+  "continent": "아시아",
+  "country": "일본",
+  "destination": "교토",
   "duration": {
     "days": 3,
     "nights": 2
   },
-  "travel_style": ["역사", "맛집탐방"],
-  "companion": "부모님"
+  "travel_style": ["역사탐방", "힐링", "자연"]
 }
 ```
 
@@ -35,19 +37,25 @@
 {
   "status": "success",
   "data": {
-    "title": "부모님과 함께하는 3박 4일 오사카 역사 & 미식 여행",
-    "summary": "어르신들도 편하게 다닐 수 있는 동선으로 구성했으며, 현지 식사 매너와 간단한 일본어 회화 팁을 포함했습니다.",
-    "cultural_tips": [
-      "식당에서 종업원을 부를 때 큰 소리로 '스미마센'이라고 하시면 됩니다.",
-      "대중교통 이용 시 휴대전화 통화는 자제하는 것이 매너입니다."
-    ],
-    "recommended_places": [
-      { 
-        "place_id": "p001", 
-        "name": "오사카 성", 
-        "category": "관광지",
-        "local_name": "大阪城",
-        "context": "16세기에 지어진 일본의 3대 명성 중 하나로, 역사적인 의미가 깊은 랜드마크입니다."
+    "course_title": "{user_name}님의 취향을 듬뿍 담은 교토 힐링 코스",
+    "course_subtitle": "Your Kyoto Heritage Route",
+    "itinerary": [
+      {
+        "day": 1,
+        "places": [
+          { 
+            "place_id": "p001", 
+            "suggested_time": "14:00",
+            "title": "니넨자카 / 산넨자카 전통 거리 산책",
+            "location": "히가시야마구"
+          },
+          { 
+            "place_id": "p002", 
+            "suggested_time": "16:00",
+            "title": "기요미즈데라(청수사) 산책",
+            "location": "히가시야마구"
+          }
+        ]
       }
     ]
   }
@@ -169,7 +177,7 @@
 ## 5. 💬 실시간 모바일 스마트 가이드 (Chat & Assistant)
 (1번 항목의 정적인 여행 계획 추천과는 구별되는) 여행 중 실시간으로 발생한 상황이나 궁금증을 채팅으로 물어볼 때, 현지 언어/문화와 맥락에 맞는 답변 및 액션 버튼 가이드를 제공합니다.
 
-### POST `/assistant/ask`
+### POST `/chat/ask`
 
 *   **요청 (Request)**
 ```json
