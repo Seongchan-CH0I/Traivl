@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface RouteCreationModalProps {
     isOpen: boolean;
@@ -10,9 +11,11 @@ interface RouteCreationModalProps {
 }
 
 export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: RouteCreationModalProps) {
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [itineraryResult, setItineraryResult] = useState<any>(null);
 
-    // States
     const [continent, setContinent] = useState('아시아');
     const [country, setCountry] = useState('JP 일본 (Japan)');
     const [city, setCity] = useState('교토');
@@ -21,6 +24,42 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     if (!isOpen) return null;
 
     const handleNext = () => setStep(prev => prev + 1);
+
+    // AI 일정 생성 API 호출 함수
+    const handleGenerateAIPlan = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/plan/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user?.id,
+                    userName: user?.name,
+                    continent: continent,
+                    country: country,
+                    destination: city,
+                    duration: { days: 2, nights: 3 }, // 기본값
+                    travelStyle: themes,
+                    dnaType: "클래식 슬로우뷰어" // 실제 유저 DNA 연동 필요
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                // AI 서버가 주는 데이터 구조에 따라 result.data 혹은 result.data.data 등으로 조절
+                setItineraryResult(result.data.data || result.data);
+                setStep(5);
+            } else {
+                alert("일정 생성에 실패했습니다: " + result.message);
+            }
+        } catch (error) {
+            console.error("AI Plan Fetch Error:", error);
+            alert("서버 연결에 실패했습니다.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handlePrev = () => {
         if (step > 1) setStep(prev => prev - 1);
         else onClose();
@@ -50,12 +89,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 유럽
                             </div>
                         </div>
-                        <div className="rc-bottom">
-                            <div className="rc-bottom-info">
-                                <CheckCircle2 size={16} color="var(--primary-color)" /> 선택된 대륙: <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span>
-                            </div>
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
-                        </div>
                     </>
                 );
             case 2:
@@ -78,9 +111,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                     <span className="rc-country-name">{c.name}</span>
                                 </div>
                             ))}
-                        </div>
-                        <div className="rc-bottom">
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                         </div>
                     </>
                 );
@@ -106,9 +136,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                        <div className="rc-bottom">
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                         </div>
                     </>
                 );
@@ -144,46 +171,48 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 </div>
                             ))}
                         </div>
-                        <div className="rc-bottom" style={{ paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}>
-                            <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
-                            <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
-                                {themes.map(t => <div key={t} className="rc-selected-chip-small">{t}</div>)}
-                                {themes.length === 0 && <span style={{ fontSize: 12, color: '#b0b0b0' }}>테마를 선택해주세요</span>}
-                            </div>
-                            <button className="rc-btn-primary" style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)' }} onClick={handleNext}>🪄 AI 일정 생성하기</button>
-                        </div>
                     </>
                 );
             case 5:
+                const displayData = itineraryResult || {
+                    course_title: `주상님의 취향을 담은\n${city} 힐링 코스`,
+                    course_subtitle: `Your ${city} Heritage Route`,
+                    itinerary: [
+                        {
+                            day: 1,
+                            places: [
+                                { title: "기요미즈데라(청수사) 산책", suggested_time: "16:00", location: "히가시야마구", image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" },
+                                { title: "료칸 가이세키 정식", suggested_time: "18:00", location: "기온 거리 인근", image: "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&h=200&fit=crop" }
+                            ]
+                        }
+                    ]
+                };
+
                 return (
                     <>
-                        <div style={{ paddingBottom: '160px' }}>
+                        <div style={{ paddingBottom: '20px' }}>
                             <div className="rc-res-header">
-                                <h1 className="rc-res-title">주상님의 취향을<br />듬뿍 담은 {city} 힐링 코스</h1>
-                                <p className="rc-res-subtitle">Your {city} Heritage Route</p>
+                                <h1 className="rc-res-title" dangerouslySetInnerHTML={{ __html: displayData.course_title.replace('\n', '<br />') }}></h1>
+                                <p className="rc-res-subtitle">{displayData.course_subtitle}</p>
                             </div>
 
-                            <div className="rc-timeline">
-                                <div className="rc-time-item">
-                                    <div className="rc-time-badge">16:00</div>
-                                    <div className="rc-time-card">
-                                        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" alt="기요미즈데라" draggable={false} />
-                                        <div className="info">
-                                            <h4>기요미즈데라(청수사) 산책</h4>
-                                            <p>📍 히가시야마구</p>
-                                        </div>
+                            <div className="rc-timeline" style={{ position: 'relative' }}>
+                                {displayData.itinerary.map((dayPlan: any, dayIdx: number) => (
+                                    <div key={dayIdx}>
+                                        {dayPlan.places.map((place: any, placeIdx: number) => (
+                                            <div className="rc-time-item" key={placeIdx} style={{ marginBottom: 24 }}>
+                                                <div className="rc-time-badge">{place.suggested_time}</div>
+                                                <div className="rc-time-card">
+                                                    {place.image && <img src={place.image} alt={place.title} draggable={false} />}
+                                                    <div className="info">
+                                                        <h4>{place.title}</h4>
+                                                        <p>📍 {place.location}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                </div>
-                                <div className="rc-time-item">
-                                    <div className="rc-time-badge" style={{ borderColor: '#e0e0e0', color: '#b0b0b0' }}>18:00</div>
-                                    <div className="rc-time-card">
-                                        <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&h=200&fit=crop" alt="료칸 저녁" draggable={false} />
-                                        <div className="info">
-                                            <h4>료칸 가이세키 정식</h4>
-                                            <p>📍 기온 거리 인근</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </>
@@ -208,20 +237,47 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             <div className="rc-content">
                 {renderStepContent()}
             </div>
+
+            {/* 고정 하단 바 섹션 */}
+            {step === 1 && (
+                <div className="rc-bottom">
+                    <div className="rc-bottom-info">
+                        <CheckCircle2 size={16} color="var(--primary-color)" /> 선택된 대륙: <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span>
+                    </div>
+                    <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
+                </div>
+            )}
+            {(step === 2 || step === 3) && (
+                <div className="rc-bottom">
+                    <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
+                </div>
+            )}
+            {step === 4 && (
+                <div className="rc-bottom">
+                    <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
+                    <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
+                        {themes.map(t => <div key={t} className="rc-selected-chip-small">{t}</div>)}
+                        {themes.length === 0 && <span style={{ fontSize: 12, color: '#b0b0b0' }}>테마를 선택해주세요</span>}
+                    </div>
+                    <button
+                        className="rc-btn-primary flex items-center justify-center gap-2"
+                        style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)' }}
+                        onClick={handleGenerateAIPlan}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="animate-spin" size={20} />
+                                <span>일정 생성 중...</span>
+                            </>
+                        ) : (
+                            <span>🪄 AI 일정 생성하기</span>
+                        )}
+                    </button>
+                </div>
+            )}
             {step === 5 && (
-                <div 
-                  className="rc-res-bottom text-center" 
-                  style={{ 
-                    zIndex: 10,
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: 'white',
-                    padding: '16px 20px calc(16px + env(safe-area-inset-bottom))',
-                    borderTop: '1px solid #f0f0f0'
-                  }}
-                >
+                <div className="rc-res-bottom text-center">
                     <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
                     <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
                 </div>
