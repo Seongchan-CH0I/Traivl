@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { ChevronLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import Calendar from './Calendar';
 
 interface RouteCreationModalProps {
     isOpen: boolean;
@@ -19,6 +20,8 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     const [continent, setContinent] = useState('아시아');
     const [country, setCountry] = useState('JP 일본 (Japan)');
     const [city, setCity] = useState('교토');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
     const [themes, setThemes] = useState<string[]>([]);
 
     if (!isOpen) return null;
@@ -38,7 +41,12 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     continent: continent,
                     country: country,
                     destination: city,
-                    duration: { days: 2, nights: 3 }, // 기본값
+                    duration: { 
+                        days: startDate && endDate ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) : 2, 
+                        nights: startDate && endDate ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 : 3 
+                    },
+                    startDate: startDate?.toISOString(),
+                    endDate: endDate?.toISOString(),
                     travelStyle: themes,
                     dnaType: "클래식 슬로우뷰어" // 실제 유저 DNA 연동 필요
                 })
@@ -48,7 +56,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             if (result.success) {
                 // AI 서버가 주는 데이터 구조에 따라 result.data 혹은 result.data.data 등으로 조절
                 setItineraryResult(result.data.data || result.data);
-                setStep(5);
+                setStep(6);
             } else {
                 alert("일정 생성에 실패했습니다: " + result.message);
             }
@@ -140,18 +148,54 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     </>
                 );
             case 4:
+                return (
+                    <>
+                        <Calendar 
+                            onConfirm={(start, end) => {
+                                setStartDate(start);
+                                setEndDate(end);
+                                setStep(5);
+                            }} 
+                            onCancel={() => setStep(3)} 
+                        />
+                    </>
+                );
+            case 5:
                 const themeOptions = [
                     "🎓 졸업여행", "📸 인스타감성", "🍜 맛집투어",
                     "🏯 문화체험", "🍵 힐링", "🧗 액티비티",
                     "🛍️ 쇼핑", "🌃 야경투어", "🏛️ 역사탐방", "🌳 자연"
                 ];
                 const percentage = Math.min(Math.max((themes.length / 4) * 100, 5), 100);
+                const formatDate = (d: Date) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+                
                 return (
                     <>
                         <div className="rc-title-area">
                             <h2 className="rc-title">{city}에서 무엇을 하고 싶나요?</h2>
                             <p className="rc-subtitle">원하는 테마를 모두 선택해주세요</p>
                         </div>
+                        
+                        {/* 선택된 날짜 표시 영역 (사용자 요청 사항) */}
+                        {startDate && endDate && (
+                            <div style={{ padding: '0 20px', marginBottom: 20 }}>
+                                <div style={{ 
+                                    background: '#f8f9fa', 
+                                    padding: '12px 16px', 
+                                    borderRadius: '12px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '10px',
+                                    border: '1px solid #eee'
+                                }}>
+                                    <CalendarIcon size={18} color="var(--primary-color)" />
+                                    <span style={{ fontSize: 14, fontWeight: 700, color: '#333' }}>
+                                        {formatDate(startDate)} ~ {formatDate(endDate)}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="rc-theme-banner">
                             <div className="header">
                                 <span>✨ 테마 및 취향 설정</span>
@@ -173,7 +217,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                         </div>
                     </>
                 );
-            case 5:
+            case 6:
                 const displayData = itineraryResult || {
                     course_title: `주상님의 취향을 담은\n${city} 힐링 코스`,
                     course_subtitle: `Your ${city} Heritage Route`,
@@ -223,18 +267,20 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
 
     return (
         <div className="rc-modal">
-            <div className={`rc-header ${step === 5 ? '' : 'border'}`}>
-                {step === 5 ? (
-                    <button className="rc-back-btn" onClick={() => onClose()}>
-                        <ChevronLeft />
-                    </button>
-                ) : (
-                    <button className="rc-back-btn" onClick={handlePrev}>
-                        <ChevronLeft />
-                    </button>
-                )}
+            <div className={`rc-header ${step === 6 ? '' : 'border'}`}>
+                <button className="rc-back-btn" onClick={step === 6 ? onClose : handlePrev}>
+                    <ChevronLeft />
+                </button>
+                {step === 4 && <div className="rc-header-title">여행 일정을 선택하세요</div>}
             </div>
-            <div className="rc-content">
+            <div 
+                className="rc-content" 
+                style={{ 
+                    display: step === 4 ? 'flex' : 'block', 
+                    flexDirection: 'column',
+                    paddingBottom: step === 4 ? 0 : 20
+                }}
+            >
                 {renderStepContent()}
             </div>
 
@@ -252,7 +298,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                 </div>
             )}
-            {step === 4 && (
+            {step === 5 && (
                 <div className="rc-bottom">
                     <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
                     <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
@@ -276,7 +322,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     </button>
                 </div>
             )}
-            {step === 5 && (
+            {step === 6 && (
                 <div className="rc-res-bottom text-center">
                     <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
                     <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
