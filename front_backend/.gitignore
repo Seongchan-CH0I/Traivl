@@ -1,0 +1,11 @@
+node_modules
+.next
+/lib/generated/prisma
+
+/lib/generated/prisma
+# 환경 변수 파일 제외
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
