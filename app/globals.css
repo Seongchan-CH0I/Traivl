@@ -398,17 +398,19 @@ body {
     z-index: 10;
 }
 
-/* Survey Modal */
 .survey-modal {
-    position: absolute;
+    position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
     background-color: white;
-    z-index: 200;
+    z-index: 2000;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .survey-header {
@@ -466,6 +468,7 @@ body {
 .survey-content {
     padding: 0 20px;
     flex: 1;
+    overflow-y: auto;
 }
 
 .question-title {
@@ -663,13 +666,16 @@ body {
 .rc-modal {
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
     background-color: white;
-    z-index: 1000;
+    z-index: 2000;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .rc-header {
@@ -679,6 +685,7 @@ body {
     padding: 16px 20px;
     border-bottom: 1px solid transparent;
     min-height: 56px;
+    flex-shrink: 0;
 }
 
 .rc-header.border {
@@ -696,7 +703,7 @@ body {
 .rc-content {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 180px;
+    padding-bottom: 20px;
 }
 
 .rc-title-area {
@@ -754,14 +761,11 @@ body {
 
 /* Bottom fixed area */
 .rc-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     padding: 16px 20px;
     background: white;
     border-top: 1px solid #f0f0f0;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    flex-shrink: 0;
 }
 
 .rc-bottom-info {
@@ -2245,10 +2249,6 @@ body {
 }
 
 .rc-res-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     padding: 16px 20px;
     background: white;
     border-top: 1px solid #f0f0f0;
@@ -2256,19 +2256,20 @@ body {
     flex-direction: column;
     gap: 12px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    flex-shrink: 0;
 }
 
 /* Journey Map */
 .journey-container {
-    position: absolute;
+    position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    /* 하단바 영역까지 덮기 위해 0으로 변경 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
     background-color: #eaf1fa;
-    z-index: 200;
-    /* 하단바(z-index: 100) 보다 높게 설정하여 덮어버림 */
+    z-index: 2000;
     display: flex;
     flex-direction: column;
     overflow: hidden;

@@ -50,12 +50,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 유럽
                             </div>
                         </div>
-                        <div className="rc-bottom">
-                            <div className="rc-bottom-info">
-                                <CheckCircle2 size={16} color="var(--primary-color)" /> 선택된 대륙: <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span>
-                            </div>
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
-                        </div>
                     </>
                 );
             case 2:
@@ -78,9 +72,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                     <span className="rc-country-name">{c.name}</span>
                                 </div>
                             ))}
-                        </div>
-                        <div className="rc-bottom">
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                         </div>
                     </>
                 );
@@ -106,9 +97,6 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                        <div className="rc-bottom">
-                            <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                         </div>
                     </>
                 );
@@ -144,20 +132,12 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 </div>
                             ))}
                         </div>
-                        <div className="rc-bottom" style={{ paddingBottom: 'calc(20px + env(safe-area-inset-bottom))' }}>
-                            <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
-                            <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
-                                {themes.map(t => <div key={t} className="rc-selected-chip-small">{t}</div>)}
-                                {themes.length === 0 && <span style={{ fontSize: 12, color: '#b0b0b0' }}>테마를 선택해주세요</span>}
-                            </div>
-                            <button className="rc-btn-primary" style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)' }} onClick={handleNext}>🪄 AI 일정 생성하기</button>
-                        </div>
                     </>
                 );
             case 5:
                 return (
                     <>
-                        <div style={{ paddingBottom: '160px' }}>
+                        <div style={{ paddingBottom: '20px' }}>
                             <div className="rc-res-header">
                                 <h1 className="rc-res-title">주상님의 취향을<br />듬뿍 담은 {city} 힐링 코스</h1>
                                 <p className="rc-res-subtitle">Your {city} Heritage Route</p>
@@ -208,20 +188,33 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             <div className="rc-content">
                 {renderStepContent()}
             </div>
+            
+            {/* 고정 하단 바 섹션 */}
+            {step === 1 && (
+                <div className="rc-bottom">
+                    <div className="rc-bottom-info">
+                        <CheckCircle2 size={16} color="var(--primary-color)" /> 선택된 대륙: <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span>
+                    </div>
+                    <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
+                </div>
+            )}
+            {(step === 2 || step === 3) && (
+                <div className="rc-bottom">
+                    <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
+                </div>
+            )}
+            {step === 4 && (
+                <div className="rc-bottom">
+                    <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
+                    <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
+                        {themes.map(t => <div key={t} className="rc-selected-chip-small">{t}</div>)}
+                        {themes.length === 0 && <span style={{ fontSize: 12, color: '#b0b0b0' }}>테마를 선택해주세요</span>}
+                    </div>
+                    <button className="rc-btn-primary" style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)' }} onClick={handleNext}>🪄 AI 일정 생성하기</button>
+                </div>
+            )}
             {step === 5 && (
-                <div 
-                  className="rc-res-bottom text-center" 
-                  style={{ 
-                    zIndex: 10,
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: 'white',
-                    padding: '16px 20px calc(16px + env(safe-area-inset-bottom))',
-                    borderTop: '1px solid #f0f0f0'
-                  }}
-                >
+                <div className="rc-res-bottom text-center">
                     <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
                     <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
                 </div>
