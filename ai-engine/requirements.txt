@@ -1,7 +1,15 @@
 fastapi
 uvicorn[standard]
-# 필요에 따라 아래 주석을 풀고 사용하세요
-# langchain
-# openai
-# psycopg2-binary
-# redis
+pydantic
+python-dotenv
+python-multipart
+openai
+langchain
+langchain-openai
+easyocr
+google-cloud-vision # 선택 사항, 구글 비전 사용 시
+openai-whisper
+torch # whisper/easyocr 의존성
+torchvision
+torchaudio
+ffmpeg-python
