@@ -1,16 +1,25 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Clock, RotateCcw, ChevronRight } from 'lucide-react';
+import { Clock, RotateCcw, ChevronRight, Plus } from 'lucide-react';
+import CalendarPicker from '../../components/calendar/CalendarPicker';
 
 export default function CalendarPage() {
   const [loading, setLoading] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const handleRefresh = () => {
     setLoading(true);
     setTimeout(() => {
       window.location.reload();
     }, 500);
+  };
+
+  const handleConfirmDates = (start: Date, end: Date) => {
+    console.log("Selected dates:", start, end);
+    setShowPicker(false);
+    // 추후 일정을 다시 생성하거나 필터링하는 로직 추가 가능
+    alert(`${start.toLocaleDateString()} ~ ${end.toLocaleDateString()} 일정이 선택되었습니다.`);
   };
 
   const schedules = [
@@ -72,7 +81,7 @@ export default function CalendarPage() {
                       <Clock size={12} style={{ marginRight: '4px' }} /> {item.duration}
                     </span>
                     <span className="badge-category">
-                      {item.category}
+                       {item.category}
                     </span>
                   </div>
                 </div>
@@ -82,10 +91,23 @@ export default function CalendarPage() {
         </div>
       </div>
 
+      {/* 캘린더 피커 모달 */}
+      {showPicker && (
+        <div className="survey-modal" style={{ padding: '0' }}>
+          <CalendarPicker 
+            onConfirm={handleConfirmDates} 
+            onCancel={() => setShowPicker(false)} 
+          />
+        </div>
+      )}
+
       {/* 플로팅 버튼 */}
-      <button className="calendar-fab">
-        <span>+</span>
+      <button 
+        className="calendar-fab"
+        onClick={() => setShowPicker(true)}
+      >
+        <Plus size={32} strokeWidth={1.5} />
       </button>
     </>
   );
-}
+}
