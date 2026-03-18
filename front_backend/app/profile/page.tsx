@@ -2,9 +2,13 @@
 
 import React, { useMemo, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useAi } from '../../context/AiContext';
+import { Dna, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const { hasActiveJourney } = useAi();
   const [isResetting, setIsResetting] = useState(false);
 
   const handleResetDna = async () => {
@@ -81,6 +85,37 @@ export default function ProfilePage() {
 
   // 배경 육각형 가이드라인을 그리기 위한 단계 
   const levels = [20, 40, 60, 80, 100];
+
+  if (!hasActiveJourney) {
+    return (
+      <div className="profile-empty-container">
+        <header className="profile-empty-header" style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', backgroundColor: 'white' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>내 정보</h1>
+        </header>
+
+        <div className="profile-empty-body">
+          <div className="dna-icon-wrapper">
+            <div className="dna-glow"></div>
+            <Dna size={80} className="dna-icon" />
+          </div>
+          
+          <h2 className="profile-empty-title">
+            나의 여행 DNA를<br />
+            분석하지 않았습니다
+          </h2>
+          
+          <p className="profile-empty-subtitle">
+            주상님의 여행 스타일이 궁금하신가요?<br />
+            30초 설문으로 맞춤형 정보를 받아보세요!
+          </p>
+          
+          <Link href="/?trigger=survey" className="dna-start-btn">
+            DNA 분석 시작하기 +
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-content">
