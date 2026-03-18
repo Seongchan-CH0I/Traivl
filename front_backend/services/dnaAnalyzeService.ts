@@ -1,12 +1,4 @@
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../lib/generated/prisma';
-
-// 런타임 환경에 맞게 커넥션 풀과 어댑터 생성
-const connectionString = process.env.DATABASE_URL || "postgresql://postgres:password@127.0.0.1:5432/traivldb";
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+import { prisma } from '../lib/prisma';
 
 // 8가지의 추천 여행지 풀 (한국 4곳, 일본 4곳)
 export const DESTINATIONS = [
