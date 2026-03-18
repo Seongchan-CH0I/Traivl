@@ -7,7 +7,7 @@ import CalendarPicker from '../calendar/CalendarPicker';
 interface RouteCreationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onStartJourney: () => void;
+    onStartJourney: (city: string) => void;
 }
 
 export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: RouteCreationModalProps) {
@@ -116,13 +116,17 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 );
             case 4:
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        <div className="rc-title-area">
-                            <h2 className="rc-title">일정을 선택하세요</h2>
-                            <p className="rc-subtitle">여행 기간을 설정해주세요</p>
-                        </div>
-                        <div style={{ flex: 1, minHeight: 0 }}>
-                            <CalendarPicker onConfirm={handleDateConfirm} onCancel={handlePrev} />
+                    <div>
+                        <div className="p-0">
+                            <CalendarPicker 
+                                title="일정을 선택하세요"
+                                subtitle="여행 기간을 설정해주세요"
+                                hideFooter={true} 
+                                onDatesChange={(start, end) => {
+                                    setStartDate(start);
+                                    setEndDate(end);
+                                }} 
+                            />
                         </div>
                     </div>
                 );
@@ -256,6 +260,26 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                 </div>
             )}
+            {step === 4 && (
+                <div className="rc-bottom">
+                    <div className="rc-bottom-info" style={{ justifyContent: 'center', marginBottom: '16px', fontSize: '15px' }}>
+                        {startDate && endDate ? (
+                            <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>
+                                {formatDate(startDate)} ~ {formatDate(endDate)}
+                            </span>
+                        ) : (
+                            <span style={{ color: '#b0b0b0' }}>날짜를 선택해주세요</span>
+                        )}
+                    </div>
+                    <button className="rc-btn-primary" 
+                        onClick={() => startDate && endDate && setStep(5)}
+                        disabled={!startDate || !endDate}
+                        style={{ opacity: (startDate && endDate) ? 1 : 0.6 }}
+                    >
+                        다음으로
+                    </button>
+                </div>
+            )}
             {step === 5 && (
                 <div className="rc-bottom">
                     <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
@@ -269,7 +293,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             {step === 6 && (
                 <div className="rc-res-bottom text-center">
                     <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
-                    <button className="rc-btn-primary" onClick={onStartJourney}>여행 시작하기</button>
+                    <button className="rc-btn-primary" onClick={() => onStartJourney(city)}>여행 시작하기</button>
                 </div>
             )}
         </div>

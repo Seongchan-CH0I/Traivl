@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { RefreshCcw } from 'lucide-react';
 import Header from '../components/ui/Header';
 import FloatingButton from '../components/ui/FloatingButton';
 import Banner from '../components/home/Banner';
@@ -14,14 +15,30 @@ import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
 import JourneyMap from '../components/route/JourneyMap';
 import RecommendPlaces from '../components/home/KyotoRecommendPlaces';
+import { useAi } from '../context/AiContext';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function HomePage() {
     const { user } = useAuth(); // 사용자 정보 가져오기
+    const { setHasActiveJourney, setSelectedCity } = useAi();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
     const [hasCompletedSurvey, setHasCompletedSurvey] = useState(false);
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
     const [surveyResult, setSurveyResult] = useState<any>(null); // ✅ 결과 저장용 State 추가
+
+    // URL 파라미터 체크하여 설문 트리거
+    useEffect(() => {
+        const trigger = searchParams.get('trigger');
+        if (trigger === 'survey') {
+            setIsSurveyOpen(true);
+            // 깔끔하게 URL 정리 (optional)
+            // router.replace('/');
+        }
+    }, [searchParams]);
 
     // 유저 정보가 확인되면 DB에서 기존 설문 결과 조회해오기
     useEffect(() => {
@@ -46,9 +63,32 @@ export default function HomePage() {
         setHasCompletedSurvey(true);
     };
 
-    const handleStartJourney = () => {
+    const handleResetSurvey = async () => {
+        if (!user?.id) return;
+        
+        try {
+            const res = await fetch(`/api/survey?userId=${user.id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                setSurveyResult(null);
+                setHasCompletedSurvey(false);
+                setHasActiveJourney(false);
+                setSelectedCity(null);
+                setIsSurveyOpen(false);
+            }
+        } catch (err) {
+            console.error("Failed to reset survey:", err);
+        }
+    };
+
+    const handleStartJourney = (city: string) => {
         setIsRouteModalOpen(false);
         setIsJourneyStarted(true);
+        setHasActiveJourney(true);
+        setSelectedCity(city);
     };
 
     if (isJourneyStarted) {
@@ -69,6 +109,13 @@ export default function HomePage() {
                     onStartJourney={handleStartJourney}
                 />
                 <Header title="어디로 떠나볼까요?" />
+                <button 
+                    onClick={handleResetSurvey} 
+                    className="absolute top-8 right-5 z-20 p-2 text-gray-400 hover:text-[#8c52ff] transition-colors"
+                    title="데이터 초기화 (개발용)"
+                >
+                    <RefreshCcw size={20} />
+                </button>
 
                 {/* ✅ 설문 결과 렌더링 영역 */}
                 {surveyResult && (
@@ -115,7 +162,7 @@ export default function HomePage() {
 
                             {/* ✅ 다시 검사하기 버튼 추가 */}
                             <button
-                                onClick={() => setIsSurveyOpen(true)}
+                                onClick={handleResetSurvey}
                                 className="mt-8 px-6 py-2.5 text-[14px] font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors shadow-sm w-full"
                             >
                                 🔄 여행 성향 다시 검사하기
@@ -140,6 +187,13 @@ export default function HomePage() {
                 onComplete={handleCompleteSurvey}
             />
             <Header title="어디로 떠나볼까요?" />
+            <button 
+                onClick={handleResetSurvey} 
+                className="absolute top-8 right-5 z-20 p-2 text-gray-400 hover:text-[#8c52ff] transition-colors"
+                title="데이터 초기화 (개발용)"
+            >
+                <RefreshCcw size={20} />
+            </button>
             <Banner onStart={() => setIsSurveyOpen(true)} />
             <PopularCities />
             <HotPlaces />

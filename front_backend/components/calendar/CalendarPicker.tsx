@@ -4,11 +4,15 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface CalendarProps {
-    onConfirm: (startDate: Date, endDate: Date) => void;
-    onCancel: () => void;
+    onConfirm?: (startDate: Date, endDate: Date) => void;
+    onCancel?: () => void;
+    onDatesChange?: (startDate: Date | null, endDate: Date | null) => void;
+    hideFooter?: boolean;
+    title?: string;
+    subtitle?: string;
 }
 
-export default function CalendarPicker({ onConfirm, onCancel }: CalendarProps) {
+export default function CalendarPicker({ onConfirm, onCancel, onDatesChange, hideFooter = false, title, subtitle }: CalendarProps) {
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
     const [startDate, setStartDate] = useState<Date | null>(null);
@@ -35,13 +39,17 @@ export default function CalendarPicker({ onConfirm, onCancel }: CalendarProps) {
         if (!startDate || (startDate && endDate)) {
             setStartDate(selectedDate);
             setEndDate(null);
+            onDatesChange?.(selectedDate, null);
         } else if (selectedDate < startDate) {
             setStartDate(selectedDate);
             setEndDate(null);
+            onDatesChange?.(selectedDate, null);
         } else if (selectedDate.getTime() === startDate.getTime()) {
             setStartDate(null);
+            onDatesChange?.(null, null);
         } else {
             setEndDate(selectedDate);
+            onDatesChange?.(startDate, selectedDate);
         }
     };
 
@@ -124,6 +132,12 @@ export default function CalendarPicker({ onConfirm, onCancel }: CalendarProps) {
 
     return (
         <div className="cal-container" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+            {title && (
+                <div className="rc-title-area" style={{ padding: '0 0 20px', textAlign: 'left' }}>
+                    <h2 className="rc-title" style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>{title}</h2>
+                    {subtitle && <p className="rc-subtitle" style={{ fontSize: '14px', color: '#666' }}>{subtitle}</p>}
+                </div>
+            )}
             <div className="cal-header">
                 <button className="cal-nav-btn" onClick={handlePrevMonth}><ChevronLeft size={20} /></button>
                 <div style={{ textAlign: 'center', cursor: 'pointer' }}>
@@ -147,21 +161,25 @@ export default function CalendarPicker({ onConfirm, onCancel }: CalendarProps) {
                 {renderDays()}
             </div>
 
-            <div className="cal-result-area" style={{ flexShrink: 0 }}>
-                <div className="cal-result-text">{formatDateRange() || "날짜를 선택해주세요"}</div>
-            </div>
+            {!hideFooter && (
+                <div className="cal-result-area" style={{ flexShrink: 0 }}>
+                    <div className="cal-result-text">{formatDateRange() || "날짜를 선택해주세요"}</div>
+                </div>
+            )}
 
-            <div className="cal-footer" style={{ marginTop: 'auto', flexShrink: 0 }}>
-                <button className="cal-btn-cancel" onClick={onCancel}>취소</button>
-                <button 
-                  className="cal-btn-confirm" 
-                  onClick={() => startDate && endDate && onConfirm(startDate, endDate)}
-                  disabled={!startDate || !endDate}
-                  style={{ opacity: (startDate && endDate) ? 1 : 0.6 }}
-                >
-                    다음으로
-                </button>
-            </div>
+            {!hideFooter && (
+                <div className="cal-footer" style={{ marginTop: 'auto', flexShrink: 0 }}>
+                    <button className="cal-btn-cancel" onClick={onCancel}>취소</button>
+                    <button 
+                    className="cal-btn-confirm" 
+                    onClick={() => startDate && endDate && onConfirm?.(startDate, endDate)}
+                    disabled={!startDate || !endDate}
+                    style={{ opacity: (startDate && endDate) ? 1 : 0.6 }}
+                    >
+                        다음으로
+                    </button>
+                </div>
+            )}
 
             {/* Month Picker Overlay */}
             {showMonthPicker && (

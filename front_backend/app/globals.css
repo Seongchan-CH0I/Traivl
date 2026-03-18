@@ -837,18 +837,24 @@ body {
 .location-badge {
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    color: white;
-    padding: 4px 12px;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 6px 14px;
     border-radius: 9999px;
     border: none;
-    box-shadow: 0 4px 10px rgba(236, 72, 153, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.location-badge.active {
+    background: linear-gradient(135deg, #8c52ff, #fbc2eb);
+    color: white;
+    box-shadow: 0 4px 12px rgba(140, 82, 255, 0.25);
 }
 
 .location-text {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
-    margin-right: 4px;
+    margin-right: 6px;
 }
 
 .location-icon {
@@ -2720,5 +2726,257 @@ body {
     .cal-picker-header h4 {
         font-size: 18px;
         font-weight: 700;
+    }
+
+    /* Feed Placeholder Styles */
+    .empty-journey-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        min-height: 400px;
+        text-align: center;
+        background: #fff;
+        animation: feedFadeIn 0.8s ease-out;
+    }
+
+    @keyframes feedFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .empty-journey-icon-wrapper {
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .plane-illustration-box {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .purple-path {
+        width: 140px;
+        height: 10px;
+        background: linear-gradient(90deg, transparent, rgba(140, 82, 255, 0.08), transparent);
+        border-radius: 20px;
+        margin-top: -10px;
+        position: relative;
+        filter: blur(4px);
+    }
+
+    .empty-journey-title {
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.3;
+        color: #111;
+        margin-bottom: 12px;
+    }
+
+    .empty-journey-subtitle {
+        font-size: 14px;
+        color: #888;
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
+
+    .select-destination-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+        color: white !important;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 700;
+        box-shadow: 0 10px 20px rgba(161, 140, 209, 0.3);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin: 0 auto;
+    }
+
+    .select-destination-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 25px rgba(161, 140, 209, 0.4);
+    }
+
+    .select-destination-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .empty-schedule-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 40px 20px;
+        flex: 1;
+        min-height: 80vh;
+        text-align: center;
+        background: #fff;
+        position: relative;
+        animation: feedFadeIn 0.8s ease-out;
+    }
+
+    .icon-glow-effect {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140px;
+        height: 140px;
+        background: radial-gradient(circle, rgba(140, 82, 255, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(15px);
+        z-index: 1;
+        animation: calGlowPulse 3s infinite ease-in-out;
+    }
+
+    .empty-journey-icon {
+        position: relative;
+        z-index: 2;
+        animation: calFloat 4s infinite ease-in-out;
+        filter: drop-shadow(0 10px 15px rgba(140, 82, 255, 0.2));
+    }
+
+    @keyframes calFloat {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    @keyframes calGlowPulse {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+    }
+
+    /* My Info (Profile) Empty State Styles */
+    .profile-empty-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #fff;
+    }
+
+    .profile-empty-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 40px 100px;
+        text-align: center;
+        animation: feedFadeIn 1s ease-out;
+    }
+
+    .dna-icon-wrapper {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .dna-glow {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        background: radial-gradient(circle, rgba(140, 82, 255, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: dnaGlowPulse 3s infinite ease-in-out;
+    }
+
+    .dna-icon {
+        color: #ff6b95;
+        z-index: 2;
+        filter: drop-shadow(0 4px 10px rgba(255, 107, 149, 0.3));
+        animation: dnaFloat 4s infinite ease-in-out;
+    }
+
+    .profile-empty-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #333;
+        line-height: 1.4;
+        margin-bottom: 16px;
+    }
+
+    .profile-empty-subtitle {
+        font-size: 14px;
+        color: #94a3b8;
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
+
+    .dna-start-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 40px;
+        font-size: 16px;
+        font-weight: 700;
+        box-shadow: 0 10px 20px rgba(161, 140, 209, 0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dna-start-btn:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 15px 30px rgba(161, 140, 209, 0.5);
+    }
+
+    @keyframes dnaFloat {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(10deg); }
+    }
+
+    @keyframes dnaGlowPulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    /* Plane Takeoff Animation for Feed */
+    .plane-takeoff-icon {
+        font-size: 80px;
+        display: inline-block;
+        filter: drop-shadow(0 10px 20px rgba(140, 82, 255, 0.3));
+        animation: planeTakeoff 4s infinite ease-in-out;
+        z-index: 2;
+        position: relative;
+    }
+
+    @keyframes planeTakeoff {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+        }
+        20% {
+            transform: translate(10px, 5px) rotate(-5deg);
+        }
+        50% {
+            transform: translate(40px, -40px) rotate(-20deg);
+            opacity: 0.8;
+        }
+        80% {
+            transform: translate(60px, -60px) rotate(-25deg);
+            opacity: 0;
+        }
+        81% {
+            transform: translate(-100px, 100px) rotate(0deg);
+            opacity: 0;
+        }
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+        }
     }
 }

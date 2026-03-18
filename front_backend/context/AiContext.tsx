@@ -13,6 +13,10 @@ interface AiContextType {
     setTranslationState: (state: TranslationState) => void;
     toggleAiMenu: () => void;
     closeAll: () => void;
+    hasActiveJourney: boolean;
+    setHasActiveJourney: (active: boolean) => void;
+    selectedCity: string | null;
+    setSelectedCity: (city: string | null) => void;
 }
 
 const AiContext = createContext<AiContextType | undefined>(undefined);
@@ -21,6 +25,8 @@ export function AiProvider({ children }: { children: ReactNode }) {
     const [isAiMenuOpen, setIsAiMenuOpen] = useState(false);
     const [isJourneyMapMode, setIsJourneyMapMode] = useState(false);
     const [translationState, setTranslationState] = useState<TranslationState>('idle');
+    const [hasActiveJourney, setHasActiveJourney] = useState(false);
+    const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
     const toggleAiMenu = () => setIsAiMenuOpen(!isAiMenuOpen);
     const closeAll = () => {
@@ -37,7 +43,11 @@ export function AiProvider({ children }: { children: ReactNode }) {
             translationState,
             setTranslationState,
             toggleAiMenu,
-            closeAll
+            closeAll,
+            hasActiveJourney,
+            setHasActiveJourney,
+            selectedCity,
+            setSelectedCity
         }}>
             {children}
         </AiContext.Provider>
