@@ -131,6 +131,26 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DestinationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  country: 'country',
+  dnaType: 'dnaType',
+  description: 'description',
+  imageUrl: 'imageUrl'
+};
+
+exports.Prisma.PlaceScalarFieldEnum = {
+  id: 'id',
+  destinationId: 'destinationId',
+  name: 'name',
+  category: 'category',
+  imageUrl: 'imageUrl',
+  description: 'description',
+  rating: 'rating',
+  rank: 'rank'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -148,7 +168,9 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Destination: 'Destination',
+  Place: 'Place'
 };
 
 /**

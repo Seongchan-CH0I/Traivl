@@ -1,22 +1,6 @@
 version: '3.8'
 
 services:
-<<<<<<< HEAD
-  db:
-    image: ankane/pgvector:latest
-    container_name: traivl-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: traivldb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-=======
   # 1. Database: pgvector (여행 데이터 저장 및 벡터 검색)
   database:
     image: ankane/pgvector:latest
@@ -85,4 +69,3 @@ networks:
 
 volumes:
   postgres_data:
->>>>>>> 8b8a99ffb58fe9a6e69292b7ff94005b6025947a
