@@ -3,14 +3,16 @@
 import { useState } from 'react';
 import './globals.css';
 import { Home, AlignRight, Star, Calendar, User, Camera, Mic, MessageSquare, X, Check } from 'lucide-react';
-import Link from 'next/link'; 
-import { usePathname } from 'next/navigation'; 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { AiProvider, useAi } from '../context/AiContext';
+import { AuthProvider, useAuth } from '../hooks/useAuth';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
     const { isAiMenuOpen, setIsAiMenuOpen, translationState, setTranslationState, toggleAiMenu, isJourneyMapMode } = useAi();
-    const pathname = usePathname(); 
-    
+    const { user } = useAuth(); // 이제 Context에서 유저 정보를 가져옴
+    const pathname = usePathname();
+
     // --- Translation Mock Data ---
     const mockTranslationData = [
         { id: 1, original: "豚骨ラーメン", translated: "돈코츠 라멘", priceOriginal: "¥890", priceKrw: "₩9,800" },
@@ -76,8 +78,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
     return (
         <div className="app-container">
-            <div 
-                className={`ai-menu-overlay ${isAiMenuOpen ? 'show' : ''}`} 
+            <div
+                className={`ai-menu-overlay ${isAiMenuOpen ? 'show' : ''}`}
                 onClick={() => setIsAiMenuOpen(false)}
             />
 
@@ -110,7 +112,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                         <AlignRight className="nav-icon" />
                         <span>피드</span>
                     </Link>
-                    <button 
+                    <button
                         className={`nav-item main-action ${isAiMenuOpen ? 'active' : ''}`}
                         onClick={toggleAiMenu}
                     >
@@ -308,11 +310,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="ko" suppressHydrationWarning>
             <body suppressHydrationWarning>
-                <AiProvider>
-                    <LayoutContent>
-                        {children}
-                    </LayoutContent>
-                </AiProvider>
+                <AuthProvider>
+                    <AiProvider>
+                        <LayoutContent>
+                            {children}
+                        </LayoutContent>
+                    </AiProvider>
+                </AuthProvider>
             </body>
         </html>
     );
