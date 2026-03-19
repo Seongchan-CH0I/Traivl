@@ -67,4 +67,4 @@ networks:
 
 volumes:
   postgres_data:
-8b8a99ffb58fe9a6e69292b7ff94005b6025947a
+# End of docker-compose.yml
