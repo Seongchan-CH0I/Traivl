@@ -247,9 +247,10 @@ body {
 .scroll-container {
     display: flex;
     overflow-x: auto;
-    gap: 16px;
+    gap: 2% !important;
     padding-bottom: 10px;
     scrollbar-width: none;
+    width: 100%;
 }
 
 .scroll-container.mt-3 {
@@ -300,7 +301,10 @@ body {
 
 /* Rectangular items */
 .scroll-item.rectangular {
-    min-width: 140px;
+    width: 32% !important;
+    min-width: 120px !important;
+    max-width: 32% !important;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     border-radius: 12px;
@@ -310,25 +314,31 @@ body {
 }
 
 .scroll-item.rectangular img {
-    width: 140px;
+    width: 100%;
     height: 100px;
     object-fit: cover;
 }
 
 .scroll-item.rectangular .info {
-    padding: 12px;
+    padding: 8px !important;
     background-color: white;
 }
 
 .scroll-item.rectangular h3 {
-    font-size: 14px;
+    font-size: 13px; /* Slightly smaller font */
     font-weight: 600;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .scroll-item.rectangular p {
-    font-size: 11px;
+    font-size: 10px; /* Slightly smaller font */
     color: var(--text-sub);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* List section */
@@ -373,7 +383,7 @@ body {
 /* Floating Action Button */
 .floating-action-btn-container {
     position: fixed;
-    bottom: 80px;
+    bottom: 100px; /* Moved up to avoid blocking bottom cards */
     left: 0;
     right: 0;
     pointer-events: none;

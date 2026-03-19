@@ -1,32 +1,38 @@
+"use client";
+
 import { useEffect, useState } from 'react';
-import { Flame, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface Place {
     id: number;
     name: string;
     imageUrl: string;
     description: string;
-    destination: {
-        name: string;
-    };
 }
 
-export default function HotPlaces() {
+interface DynamicPlacesProps {
+    destinationId: string;
+    cityName: string;
+}
+
+export default function DynamicPlaces({ destinationId, cityName }: DynamicPlacesProps) {
     const [places, setPlaces] = useState<Place[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // 현재는 전체 장소 중 상위 10개를 가져오는 로직 (카테고리 구분 없이)
-        fetch('/api/places?limit=10')
+        if (!destinationId) return;
+
+        setIsLoading(true);
+        fetch(`/api/places?destinationId=${destinationId}&category=관광지`)
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
                     setPlaces(res.data);
                 }
             })
-            .catch(err => console.error("Failed to fetch hot places", err))
+            .catch(err => console.error("Failed to fetch places", err))
             .finally(() => setIsLoading(false));
-    }, []);
+    }, [destinationId]);
 
     if (isLoading) {
         return (
@@ -36,20 +42,25 @@ export default function HotPlaces() {
         );
     }
 
+    if (!places.length) return null;
+
     return (
         <section className="horizontal-section">
-            <h2 className="section-title">지금 핫한 여행지 Top 10 <Flame className="flame-icon" /></h2>
+            <div className="section-header-row">
+                <h2 className="section-title mb-0">{cityName} 실시간 인기 장소</h2>
+                <div className="filter-chips">
+                    <button className="chip active">관광지</button>
+                </div>
+            </div>
             <div className="scroll-container mt-3">
                 {places.map((place) => (
                     <div key={place.id} className="scroll-item rectangular">
                         <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} />
                         <div className="info">
                             <h3>{place.name}</h3>
-                            <p>{place.destination?.name.split(',')[0]} · 명소</p>
                         </div>
                     </div>
                 ))}
-                {!places.length && <p className="p-5 text-gray-400">데이터가 없습니다.</p>}
             </div>
         </section>
     );

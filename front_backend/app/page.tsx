@@ -8,13 +8,13 @@ import FloatingButton from '../components/ui/FloatingButton';
 import Banner from '../components/home/Banner';
 import PopularCities from '../components/home/PopularCities';
 import HotPlaces from '../components/home/HotPlaces';
-import RecommendCities from '../components/home/RecommendCities';
-import KyotoRecommendPlaces from '../components/home/KyotoRecommendPlaces';
-import KyotoRestaurants from '../components/home/KyotoRestaurants';
+
+import DynamicPlaces from '../components/home/DynamicPlaces';
+import DynamicRestaurants from '../components/home/DynamicRestaurants';
 import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
 import JourneyMap from '../components/route/JourneyMap';
-import RecommendPlaces from '../components/home/KyotoRecommendPlaces';
+
 import { useAi } from '../context/AiContext';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -167,9 +167,15 @@ export default function HomePage() {
                     </div>
                 )}
 
-                <RecommendCities />
-                <RecommendPlaces city="교토" />
-                <KyotoRestaurants />
+
+                <DynamicPlaces 
+                    destinationId={dnaResult?.id || 'JP_KYOTO'} 
+                    cityName={dnaResult?.name?.split(',')[0] || '교토'} 
+                />
+                <DynamicRestaurants 
+                    destinationId={dnaResult?.id || 'JP_KYOTO'} 
+                    cityName={dnaResult?.name?.split(',')[0] || '교토'} 
+                />
                 <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
             </main>
         );

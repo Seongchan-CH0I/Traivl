@@ -8,20 +8,21 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const destinationId = searchParams.get('destinationId');
         const category = searchParams.get('category'); // 선택적 필터
-
-        if (!destinationId) {
-            return NextResponse.json(
-                { success: false, error: 'destinationId는 필수 파라미터입니다.' },
-                { status: 400 }
-            );
-        }
+        const limitStr = searchParams.get('limit');
+        const limit = limitStr ? parseInt(limitStr) : undefined;
 
         const places = await prisma.place.findMany({
             where: {
-                destinationId,
+                ...(destinationId ? { destinationId } : {}),
                 ...(category ? { category } : {}),
             },
+            include: {
+                destination: {
+                    select: { name: true }
+                }
+            },
             orderBy: { rank: 'asc' },
+            ...(limit ? { take: limit } : {}),
         });
 
         return NextResponse.json({ success: true, data: places });
