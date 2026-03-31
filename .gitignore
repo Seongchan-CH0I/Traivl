@@ -1,8 +1,10 @@
-node_modules
-.next
+node_modules/
 .env
+.next/
+dist/
+
+./front_backend/lib/generated
 .DS_Store
-__pycache__/
-*.pyc
-.venv
+.vscode/
+**/__pycache__/
 .env

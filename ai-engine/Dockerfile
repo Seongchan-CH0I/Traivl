@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # 시스템 의존성 설치 (OCR, 오디오 처리용)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
-    libgl1 \
+    libgl1-mesa-glx \
     libglib2.0-0 \
     tesseract-ocr \
     libtesseract-dev \
