@@ -13,3 +13,5 @@ torch # whisper/easyocr 의존성
 torchvision
 torchaudio
 ffmpeg-python
+langchain-community
+sentence-transformers

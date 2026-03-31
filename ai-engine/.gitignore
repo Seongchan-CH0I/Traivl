@@ -1,0 +1,9 @@
+# 환경변수 파일 절대 무시 (키 유출 방지)
+.env
+
+# 로컬 테스트용 벡터 DB 폴더 무시
+chroma_real_db/
+chroma_local_db/
+
+# 파이썬 캐시 파일 무시
+__pycache__/
