@@ -1,10 +1,15 @@
-import { ChevronLeft, Menu, MapPin } from 'lucide-react';
+import { ChevronLeft, Menu, MapPin, Star } from 'lucide-react';
+import { useAi } from '../../context/AiContext';
+import { useEffect } from 'react';
 
-interface JourneyMapProps {
-    onBack: () => void;
-}
+export default function JourneyMap({ onBack }: { onBack: () => void }) {
+    const { toggleAiMenu, isAiMenuOpen, setIsJourneyMapMode } = useAi();
 
-export default function JourneyMap({ onBack }: JourneyMapProps) {
+    useEffect(() => {
+        setIsJourneyMapMode(true);
+        return () => setIsJourneyMapMode(false);
+    }, [setIsJourneyMapMode]);
+
     return (
         <div className="journey-container">
             <div className="jm-top-bar">
@@ -38,8 +43,22 @@ export default function JourneyMap({ onBack }: JourneyMapProps) {
 
                 <div className="jm-btn-row">
                     <button className="jm-btn-main">가자</button>
-                    <button className="jm-btn-sub">다른 길</button>
+                    <div style={{ width: '70px', flexShrink: 0 }}></div> {/* Space for AI button */}
+                    <button className="jm-btn-sub" onClick={onBack}>다른 길</button>
                 </div>
+            </div>
+
+            {/* Centered AI Button at the very bottom */}
+            <div className="jm-ai-center-btn">
+                <button 
+                    className={`jm-ai-star-btn ${isAiMenuOpen ? 'active' : ''}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleAiMenu();
+                    }}
+                >
+                    <Star size={24} color="white" fill="white" />
+                </button>
             </div>
         </div>
     );

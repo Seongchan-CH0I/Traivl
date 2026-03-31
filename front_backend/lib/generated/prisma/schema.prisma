@@ -10,23 +10,23 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
+  id            String  @id @default(uuid())
+  email         String  @unique
   name          String?
   profileImage  String?
-  dnaType       String?  // 예: "힐링 럭셔리러", "본투비 푸드파이터"
-  destinationId String?  // 예: "KR_JEJU"
+  dnaType       String? // 예: "힐링 럭셔리러", "본투비 푸드파이터"
+  destinationId String? // 예: "KR_JEJU"
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // 8개 고정 추천 도시
 model Destination {
-  id          String  @id          // 예: "JP_KYOTO", "KR_JEJU"
-  name        String               // 예: "교토, 일본"
-  country     String               // 예: "일본", "한국"
-  dnaType     String               // 예: "클래식 슬로우뷰어"
+  id          String  @id // 예: "JP_KYOTO", "KR_JEJU"
+  name        String // 예: "교토, 일본"
+  country     String // 예: "일본", "한국"
+  dnaType     String // 예: "클래식 슬로우뷰어"
   description String?
   imageUrl    String?
   places      Place[]
@@ -38,9 +38,9 @@ model Place {
   destinationId String
   destination   Destination @relation(fields: [destinationId], references: [id])
   name          String
-  category      String      // "관광지" | "맛집" | "카페"
+  category      String // "관광지" | "맛집" | "카페"
   imageUrl      String?
   description   String?
   rating        Float?
-  rank          Int         // 순위 (1, 2, 3 ...)
+  rank          Int // 순위 (1, 2, 3 ...)
 }
