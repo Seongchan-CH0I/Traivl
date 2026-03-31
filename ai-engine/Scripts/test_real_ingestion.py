@@ -3,6 +3,7 @@
 import os
 import sys
 import math
+import json
 from dotenv import load_dotenv
 
 # 부모 폴더 모듈 읽기용
@@ -24,21 +25,22 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return R * c
 
 def main():
-    print("🚀 [Step 1] 완벽한 실무형 데이터 수집 (위도/경도, 체류시간 꼬리표 추가)")
+    print("🚀 [Step 1] 구글이 뱉어낸 진짜 데이터(places_raw.json) 로드 중...")
     
-    # 교토 내의 실제 장소들 (동, 서, 남, 북 위치가 다름)
-    raw_places = [
-        # 교토 중심부 (동쪽) - 웅장함, 붐빔
-        {"id": "p1", "name": "청수사", "desc": "가을 단풍이 아름다운 역사적인 웅장한 목조 사찰.", "country": "일본", "destination": "교토", "lat": 34.9948, "lng": 135.7850, "duration_mins": 120},
-        # 교토 끝자락 오하라 (북동쪽 아주 먼 곳) - 힐링, 고요함, 자연
-        {"id": "p2", "name": "호센인", "desc": "숲 한가운데 위치한 아주 조용하고 평화로운 사찰. 액자 정원으로 유명함.", "country": "일본", "destination": "교토", "lat": 35.1189, "lng": 135.8335, "duration_mins": 60},
-        # 교토 북서쪽 - 화려함, 힐링
-        {"id": "p3", "name": "금각사", "desc": "연못 위에 띄워진 눈부신 황금빛 누각과 힐링되는 정원 코스.", "country": "일본", "destination": "교토", "lat": 35.0394, "lng": 135.7292, "duration_mins": 60},
-        # 교토 서부 (서쪽 끝) - 대자연, 힐링
-        {"id": "p4", "name": "아라시야마 대나무숲", "desc": "교토 서쪽 끝을 장식하는 광활하고 끝없는 대나무 숲길. 대자연의 향기.", "country": "일본", "destination": "교토", "lat": 35.0094, "lng": 135.6668, "duration_mins": 90},
-        # 다른 느낌의 장소도 하나 추가 (남쪽)
-        {"id": "p5", "name": "후시미 이나리 대사", "desc": "수천 개의 붉은 토리이 길이 굽이치는 신비로운 하이킹 코스.", "country": "일본", "destination": "교토", "lat": 34.9671, "lng": 135.7727, "duration_mins": 120}
-    ]
+    # 1단계: 내 하드디스크에 저장해 둔 JSON 파일을 열어서 파이썬 변수로 빨아들이기!
+    file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "places_raw.json")
+    
+    with open(file_path, "r", encoding="utf-8") as f:
+        raw_places = json.load(f)
+
+    # 🚨 [새로 추가된 핵심 로직] Python 단에서 중복 장소 싹 제거하기! (Deduplication)
+    # 구글에서 '쇼핑'으로도 뽑히고 '관광명소'로도 겹쳐서 뽑힌 장소들(예: 도쿄 타워)이 
+    # 배치 안에 두 번 들어가면 ChromaDB가 화를 냅니다. 그래서 넣기 전에 고유 ID로 싹 한 번 걸러냅니다!
+    unique_places_dict = {}
+    for place in raw_places:
+        unique_places_dict[place['id']] = place
+    
+    unique_raw_places = list(unique_places_dict.values())
 
     documents = [
         Document(
@@ -52,30 +54,38 @@ def main():
                 "lng": place['lng'],                  # 📍 경도
                 "duration_mins": place['duration_mins'] # ⏱️ 예상 소요 시간
             }
-        ) for place in raw_places
+        ) for place in unique_raw_places
     ]
 
-    print("\n🧬 [Step 2 & 3] 임베딩 및 로컬 벡터 DB(Chroma)에 새로운 구조로 적재")
+    print("\n🧬 [Step 2 & 3] 임베딩 및 로컬 벡터 DB(Chroma)에 적재 (중복 방지 로직 적용)")
     embeddings_model = HuggingFaceEmbeddings(model_name="jhgan/ko-sbert-nli")
+    
+    # 이제 구글이 준 '절대 변하지 않는 고유 ID(place_id)'를 라벨지로 붙여서 넣습니다!
+    # 이렇게 하면 똑같은 장소가 '쇼핑'과 '역사' 테마 두 곳에서 수집되어 2번 들어와도,
+    # 크로마 DB가 덮어씌워 버리기 때문에 절대 중복 데이터가 쌓이지 않습니다!
+    unique_ids = [doc.metadata["place_id"] for doc in documents]
     
     vector_db = Chroma.from_documents(
         documents=documents, 
         embedding=embeddings_model,
-        persist_directory="./chroma_real_db" 
+        persist_directory="./chroma_real_db",
+        ids=unique_ids
     )
 
     # -------------------------------------------------------------------
 
     print("\n🔍 [Step 4] 프론트엔드 JSON 요청 기반 벡터 DB 검색 테스트!")
-    mock_request = {"country": "일본", "destination": "교토", "travel_style": ["대자연", "힐링"]}
+    mock_request = {"country": "일본", "destination": "도쿄", "travel_style": ["쇼핑", "역사 및 문화"]}
     search_query = f"{', '.join(mock_request['travel_style'])} 분위기가 가득한 장소"  
-    
-    # 🌟 "대자연, 힐링"을 검색했으므로 아마 [아라시야마]와 [호센인]이 뽑힐 확률이 높습니다!
+
     results = vector_db.similarity_search(
         query=search_query, 
         k=2, 
-        filter={"$and": [{"country": mock_request["country"]}, {"destination": mock_request["destination"]}]}
+        filter={"destination": mock_request["destination"]}
     )
+    
+    # [디버그용] DB에 문서가 몇개나 저장되었나 확인
+    print(f"  [DB 카운트] 총 {vector_db._collection.count()}개의 데이터가 저장되어 있습니다.")
 
     print("\n🤖 벡터 DB의 최종 검색 결과:")
     for idx, doc in enumerate(results, 1):
@@ -85,7 +95,12 @@ def main():
 
     print("\n📍 [Step 5] 파이썬 백엔드의 마법: 동선(거리) 최적화 로직 맛보기")
     
-    # 방금 찾은 1등과 2등 장소의 메타데이터에서 좌표를 즉시 빼옵니다.
+    # 방금 찾은 장소가 2개가 안 될 경우를 대비한 안전 방어막
+    if len(results) < 2:
+        print(f"  🚨 [에러] 검색된 장소가 2개 미만입니다. 현재 개수: {len(results)}개")
+        print("  💡 (해결책) 벡터 DB에 데이터가 제대로 들어갔는지 또는 필터가 너무 빡빡한지 확인해야 합니다.")
+        return
+        
     place1 = results[0].metadata
     place2 = results[1].metadata
 
