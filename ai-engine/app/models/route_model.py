@@ -13,6 +13,7 @@ class PlaceVisitItem(BaseModel):
     lat: float
     lng: float
     stay_duration_mins: int
+    opening_hours: List[int] = [0, 1440] # [시작인덱스분, 종료인덱스분] 기본값 하루 전체
 
 class RouteOptimizeRequest(BaseModel):
     start_location: Location

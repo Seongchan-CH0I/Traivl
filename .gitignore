@@ -4,3 +4,7 @@ node_modules/
 dist/
 
 ./front_backend/lib/generated
+.DS_Store
+.vscode/
+**/__pycache__/
+.env

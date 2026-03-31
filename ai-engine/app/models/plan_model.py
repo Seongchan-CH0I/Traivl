@@ -8,6 +8,16 @@ class Duration(BaseModel):
     days: int
     nights: int
 
+class PlaceCandidate(BaseModel):
+    place_id: str
+    title: str
+    description: Optional[str] = None
+    tags: List[str] = []
+    category: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    stay_duration_mins: int = 60
+
 class PlanRequest(BaseModel):
     user_id: int
     user_name: str
@@ -16,6 +26,8 @@ class PlanRequest(BaseModel):
     destination: str
     duration: Duration
     travel_style: List[str]
+    dna_type: Optional[str] = None
+    candidates: List[PlaceCandidate] = [] # Node.js 백엔드에서 필터링해서 보내줄 후보군
 
 class PlaceItem(BaseModel):
     place_id: str
