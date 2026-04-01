@@ -58,7 +58,7 @@ body {
 .content {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 70px;
+    padding-bottom: 65px;
 }
 
 .p-0 {
@@ -123,7 +123,7 @@ body {
 /* Page Styles */
 .home-page {
     padding: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 0px;
 }
 
 /* Header */
@@ -247,13 +247,26 @@ body {
 .scroll-container {
     display: flex;
     overflow-x: auto;
-    gap: 16px;
+    gap: 12px !important;
     padding-bottom: 10px;
     scrollbar-width: none;
+    width: 100%;
 }
 
 .scroll-container.mt-3 {
     margin-top: 12px;
+}
+
+.max-h-0 {
+    max-height: 0 !important;
+}
+
+.max-h-\[300px\] {
+    max-height: 300px !important;
+}
+
+.max-h-\[1000px\] {
+    max-height: 1000px !important;
 }
 
 .scroll-container.pt-2 {
@@ -298,38 +311,232 @@ body {
     color: var(--text-main);
 }
 
-/* Rectangular items */
+/* Rectangular items (Post-survey recommendations) */
 .scroll-item.rectangular {
-    min-width: 140px;
     display: flex;
     flex-direction: column;
-    border-radius: 12px;
+    width: calc((100% - 24px) / 3);
+    flex: 0 0 calc((100% - 24px) / 3);
+    background: white;
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .scroll-item.rectangular img {
-    width: 140px;
-    height: 100px;
+    width: 100%;
+    height: 110px;
     object-fit: cover;
 }
 
 .scroll-item.rectangular .info {
     padding: 12px;
-    background-color: white;
 }
 
 .scroll-item.rectangular h3 {
     font-size: 14px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hot Places Vertical List */
+.hot-places-section {
+    margin-bottom: 0px;
+}
+
+.hot-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.hot-list-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.hot-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    border-color: #e0e0e0;
+}
+
+.hot-list-item.top-rank {
+    background: linear-gradient(to right, #ffffff, #fcfaff);
+    border-left: 4px solid var(--primary-color);
+}
+
+.rank-badge {
+    font-size: 20px;
+    font-weight: 800;
+    color: #cbd5e0;
+    min-width: 24px;
+    text-align: center;
+    font-style: italic;
+}
+
+.top-rank .rank-badge {
+    color: var(--primary-color);
+    font-size: 24px;
+}
+
+.image-wrapper {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hot-list-item .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.location-tag {
+    font-size: 11px;
     font-weight: 600;
+    color: var(--primary-color);
+    background: rgba(140, 82, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
     margin-bottom: 4px;
 }
 
-.scroll-item.rectangular p {
-    font-size: 11px;
-    color: var(--text-sub);
+.hot-list-item h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a202c;
 }
+
+.hot-list-item .description {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Hot Grid for 4-12 ranks */
+.hot-grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.hot-grid-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.hot-grid-item {
+    width: calc(33.333% - 8px);
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.hot-grid-item:hover {
+    transform: translateY(-6px);
+    background: #ffffff;
+    border-color: rgba(140, 82, 255, 0.3);
+    box-shadow: 0 12px 25px rgba(140, 82, 255, 0.15);
+}
+
+.grid-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+}
+
+.grid-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.hot-grid-item:hover .grid-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.grid-rank-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+}
+
+.grid-info {
+    padding: 10px 8px 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-location {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-sub);
+    margin-bottom: 2px;
+    opacity: 0.8;
+}
+
+.grid-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a202c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+/* ... 기존 컴포넌트 유지 ... */
 
 /* List section */
 .list-section {
@@ -373,7 +580,7 @@ body {
 /* Floating Action Button */
 .floating-action-btn-container {
     position: fixed;
-    bottom: 80px;
+    bottom: 100px; /* Moved up to avoid blocking bottom cards */
     left: 0;
     right: 0;
     pointer-events: none;
@@ -2980,3 +3187,241 @@ body {
         }
     }
 }
+
+/* Place Detail Modal */
+.place-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: placeModalFadeIn 0.3s ease;
+}
+
+.place-modal-content {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: placeModalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    color: #1a202c;
+}
+
+.close-modal-btn:hover {
+    transform: rotate(90deg);
+    background: white;
+}
+
+.modal-hero {
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.modal-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-rank-tag {
+    position: absolute;
+    bottom: 16px;
+    left: 20px;
+    background: #8c52ff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(140, 82, 255, 0.3);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-location-tag {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8c52ff;
+    margin-bottom: 8px;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 16px;
+}
+
+.modal-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin-bottom: 16px;
+}
+
+.modal-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4a5568;
+    word-break: keep-all;
+}
+
+@keyframes placeModalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes placeModalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* Place Detail Modal Overrides and Refinements */
+.place-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: placeModalFadeIn 0.3s ease;
+}
+
+.place-modal-content {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: placeModalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    color: #1a202c;
+}
+
+.close-modal-btn:hover {
+    transform: rotate(90deg);
+    background: white;
+}
+
+.modal-hero {
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.modal-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-rank-tag {
+    position: absolute;
+    bottom: 16px;
+    left: 20px;
+    background: #8c52ff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(140, 82, 255, 0.3);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-location-tag {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8c52ff;
+    margin-bottom: 8px;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 16px;
+}
+
+.modal-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin-bottom: 16px;
+}
+
+.modal-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4a5568;
+    word-break: keep-all;
+}
+
+@keyframes placeModalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes placeModalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+

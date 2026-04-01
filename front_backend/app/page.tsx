@@ -8,13 +8,13 @@ import FloatingButton from '../components/ui/FloatingButton';
 import Banner from '../components/home/Banner';
 import PopularCities from '../components/home/PopularCities';
 import HotPlaces from '../components/home/HotPlaces';
-import RecommendCities from '../components/home/RecommendCities';
-import KyotoRecommendPlaces from '../components/home/KyotoRecommendPlaces';
-import KyotoRestaurants from '../components/home/KyotoRestaurants';
+
+import DynamicPlaces from '../components/home/DynamicPlaces';
+import DynamicRestaurants from '../components/home/DynamicRestaurants';
 import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
 import JourneyMap from '../components/route/JourneyMap';
-import RecommendPlaces from '../components/home/KyotoRecommendPlaces';
+
 import { useAi } from '../context/AiContext';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -27,6 +27,7 @@ export default function HomePage() {
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
+    const [isHotPlacesExpanded, setIsHotPlacesExpanded] = useState(false);
 
     // ✅ 설문 완료 여부를 전역 상태인 dnaResult 유무로 판단! (중요)
     const hasCompletedSurvey = !!dnaResult;
@@ -53,7 +54,7 @@ export default function HomePage() {
         }
     }, [user, dnaResult, setDnaResult]);
 
-    const handleCompleteSurvey = (resultData: any) => { 
+    const handleCompleteSurvey = (resultData: any) => {
         if (resultData && !Array.isArray(resultData)) {
             setDnaResult(resultData); // 전역 상태 업데이트 -> UI 자동으로 hasCompletedSurvey=true 됨
         }
@@ -62,13 +63,13 @@ export default function HomePage() {
 
     const handleResetSurvey = async () => {
         if (!user?.id) return;
-        
+
         try {
             const res = await fetch(`/api/survey?userId=${user.id}`, {
                 method: 'DELETE'
             });
             const data = await res.json();
-            
+
             if (data.success) {
                 setDnaResult(null); // 전역 값 초기화 -> UI 자동으로 Banner 화면으로 바뀜
                 setHasActiveJourney(false);
@@ -105,8 +106,8 @@ export default function HomePage() {
                     onStartJourney={handleStartJourney}
                 />
                 <Header title="어디로 떠나볼까요?" />
-                <button 
-                    onClick={handleResetSurvey} 
+                <button
+                    onClick={handleResetSurvey}
                     className="absolute top-8 right-5 z-20 p-2 text-gray-400 hover:text-[#8c52ff] transition-colors"
                     title="데이터 초기화 (개발용)"
                 >
@@ -167,9 +168,15 @@ export default function HomePage() {
                     </div>
                 )}
 
-                <RecommendCities />
-                <RecommendPlaces city="교토" />
-                <KyotoRestaurants />
+
+                <DynamicPlaces
+                    destinationId={dnaResult?.id || 'JP_KYOTO'}
+                    cityName={dnaResult?.name?.split(',')[0] || '교토'}
+                />
+                <DynamicRestaurants
+                    destinationId={dnaResult?.id || 'JP_KYOTO'}
+                    cityName={dnaResult?.name?.split(',')[0] || '교토'}
+                />
                 <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
             </main>
         );
@@ -183,16 +190,24 @@ export default function HomePage() {
                 onComplete={handleCompleteSurvey}
             />
             <Header title="어디로 떠나볼까요?" />
-            <button 
-                onClick={handleResetSurvey} 
+            <button
+                onClick={handleResetSurvey}
                 className="absolute top-8 right-5 z-20 p-2 text-gray-400 hover:text-[#8c52ff] transition-colors"
                 title="데이터 초기화 (개발용)"
             >
                 <RefreshCcw size={20} />
             </button>
             <Banner onStart={() => setIsSurveyOpen(true)} />
-            <PopularCities />
-            <HotPlaces />
+            
+            {/* ✅ 인기 도시 섹션 가변 처리 */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[300px] opacity-100 mb-8'}`}>
+                <PopularCities />
+            </div>
+
+            <HotPlaces 
+                isExpanded={isHotPlacesExpanded} 
+                onToggle={() => setIsHotPlacesExpanded(!isHotPlacesExpanded)} 
+            />
         </main>
     );
 }

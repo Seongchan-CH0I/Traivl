@@ -5,8 +5,6 @@ services:
   database:
     image: ankane/pgvector:latest
     container_name: traivl-postgres
-    env_file:
-      - .env
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -15,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # 초기 SQL 스크립트 마운트
+      - ./database:/docker-entrypoint-initdb.d # 초기 SQL 스크립트 폴더 마운트
     networks:
       - travel-network
 
@@ -69,3 +67,4 @@ networks:
 
 volumes:
   postgres_data:
+# End of docker-compose.yml
