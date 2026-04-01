@@ -28,7 +28,8 @@
     "days": 3,
     "nights": 2
   },
-  "travel_style": ["역사탐방", "힐링", "자연"]
+  "travel_style": ["역사탐방", "힐링", "자연"],
+  "dna_type": "Heritage-Seeker"
 }
 ```
 
@@ -183,8 +184,10 @@
 ```json
 {
   "user_id": 12345,
+  "user_name": "주상",
   "current_location": "방콕 왕궁, 태국",
   "message": "여기 왕궁 들어가고 싶은데, 나 반바지 입고 있어. 들어갈 수 있을까?",
+  "dna_type": "Heritage-Seeker",
   "chat_history_id": "session_9988"
 }
 ```
