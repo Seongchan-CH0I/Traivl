@@ -27,6 +27,7 @@ export default function HomePage() {
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
+    const [isHotPlacesExpanded, setIsHotPlacesExpanded] = useState(false);
 
     // ✅ 설문 완료 여부를 전역 상태인 dnaResult 유무로 판단! (중요)
     const hasCompletedSurvey = !!dnaResult;
@@ -197,8 +198,16 @@ export default function HomePage() {
                 <RefreshCcw size={20} />
             </button>
             <Banner onStart={() => setIsSurveyOpen(true)} />
-            <PopularCities />
-            <HotPlaces />
+            
+            {/* ✅ 인기 도시 섹션 가변 처리 */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[300px] opacity-100 mb-8'}`}>
+                <PopularCities />
+            </div>
+
+            <HotPlaces 
+                isExpanded={isHotPlacesExpanded} 
+                onToggle={() => setIsHotPlacesExpanded(!isHotPlacesExpanded)} 
+            />
         </main>
     );
 }

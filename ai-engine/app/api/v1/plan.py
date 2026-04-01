@@ -12,3 +12,4 @@ async def recommend_travel_plan(request: PlanRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

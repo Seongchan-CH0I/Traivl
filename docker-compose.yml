@@ -13,7 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql # 초기 SQL 스크립트 마운트
+      - ./database:/docker-entrypoint-initdb.d # 초기 SQL 스크립트 폴더 마운트
     networks:
       - travel-network
 
