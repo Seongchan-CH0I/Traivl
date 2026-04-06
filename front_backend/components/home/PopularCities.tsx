@@ -1,6 +1,6 @@
 export default function PopularCities() {
     return (
-        <section className="horizontal-section">
+        <section className="horizontal-section" style={{ marginBottom: '18px' }}>
             <h2 className="section-title">실시간 인기 도시</h2>
             <div className="scroll-container">
                 <div className="scroll-item circular">

@@ -43,4 +43,11 @@ model Place {
   description   String?
   rating        Float?
   rank          Int // 순위 (1, 2, 3 ...)
+  address       String? // 상세 주소
+  latitude      Float? // 위도
+  longitude     Float? // 경도
+  openingHours  String? // 영업 시간
+  phoneNumber   String? // 전화번호
+  tags          String[] // 태그 (예: ["#인생샷", "#전통"])
+  averagePrice  Int? // 평균 가격
 }

@@ -148,7 +148,14 @@ exports.Prisma.PlaceScalarFieldEnum = {
   imageUrl: 'imageUrl',
   description: 'description',
   rating: 'rating',
-  rank: 'rank'
+  rank: 'rank',
+  address: 'address',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  openingHours: 'openingHours',
+  phoneNumber: 'phoneNumber',
+  tags: 'tags',
+  averagePrice: 'averagePrice'
 };
 
 exports.Prisma.SortOrder = {

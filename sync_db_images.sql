@@ -43,8 +43,8 @@ UPDATE "Place" SET "imageUrl" = 'https://encrypted-tbn0.gstatic.com/images?q=tbn
 
 -- KR_SEOUL
 UPDATE "Place" SET "imageUrl" = 'https://t3.ftcdn.net/jpg/00/70/61/92/360_F_70619287_SyI16wlrMbXWlP2jnJUAp0c6s6cJHilZ.jpg' WHERE name = '경복궁' AND "destinationId" = 'KR_SEOUL';
--- 북촌 한옥마을 URL not updated in init.sql snippet? Wait, let me check.
--- In init.sql: ('KR_SEOUL', '북촌 한옥마을', ..., 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=400&h=300&fit=crop', 2)
+-- 북촌한옥마을 (기존 123rf 이미지에서 Unsplash로 교체 및 이름 표준화)
+UPDATE "Place" SET "imageUrl" = 'https://images.unsplash.com/photo-1571167530349-436151f67f33?w=800&q=80', "name" = '북촌한옥마을' WHERE (name = '북촌 한옥마을' OR name = '북촌한옥마을') AND "destinationId" = 'KR_SEOUL';
 -- It seems user didn't change this one or it's still unsplash.
 UPDATE "Place" SET "imageUrl" = 'https://access.visitkorea.or.kr/bfvk_img/call?cmd=VIEW&id=e8b56b19-dafc-4e58-bbe1-967b027c820c&' WHERE name = '성수동 카페거리' AND "destinationId" = 'KR_SEOUL';
 UPDATE "Place" SET "imageUrl" = 'https://www.travelnbike.com/news/photo/201709/45545_47509_5844.jpg' WHERE name = '광장시장' AND "destinationId" = 'KR_SEOUL';

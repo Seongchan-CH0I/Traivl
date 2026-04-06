@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-
-interface Restaurant {
-    id: number;
-    name: string;
-    imageUrl: string;
-    description: string;
-}
+import { Place } from '../../types/place';
+import PlaceDetailModal from '../ui/PlaceDetailModal';
 
 interface DynamicRestaurantsProps {
     destinationId: string;
@@ -16,8 +11,9 @@ interface DynamicRestaurantsProps {
 }
 
 export default function DynamicRestaurants({ destinationId, cityName }: DynamicRestaurantsProps) {
-    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+    const [restaurants, setRestaurants] = useState<Place[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
     useEffect(() => {
         if (!destinationId) return;
@@ -55,7 +51,11 @@ export default function DynamicRestaurants({ destinationId, cityName }: DynamicR
 
             <div className="list-container">
                 {restaurants.map((item) => (
-                    <div key={item.id} className="list-item">
+                    <div 
+                        key={item.id} 
+                        className="list-item cursor-pointer active:scale-[0.98] transition-all hover:bg-gray-50"
+                        onClick={() => setSelectedPlace(item)}
+                    >
                         <img src={item.imageUrl || "/images/placeholder.jpg"} alt={item.name} />
                         <div className="item-info">
                             <h3>{item.name}</h3>
@@ -64,6 +64,10 @@ export default function DynamicRestaurants({ destinationId, cityName }: DynamicR
                     </div>
                 ))}
             </div>
+            <PlaceDetailModal 
+                place={selectedPlace} 
+                onClose={() => setSelectedPlace(null)} 
+            />
         </section>
     );
 }

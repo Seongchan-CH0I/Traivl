@@ -159,7 +159,7 @@ body {
     border-radius: 16px;
     padding: 24px 20px;
     color: white;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -192,16 +192,16 @@ body {
 
 /* Horizontal Sections */
 .horizontal-section {
-    margin-bottom: 32px;
+    margin-bottom: 18px;
 }
 
 .section-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 10px;
 }
 
 .mb-0 {
@@ -248,7 +248,7 @@ body {
     display: flex;
     overflow-x: auto;
     gap: 12px !important;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     scrollbar-width: none;
     width: 100%;
 }
@@ -359,8 +359,8 @@ body {
 .hot-list-item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px;
+    gap: 20px;
+    padding: 24px 16px;
     background: white;
     border-radius: 16px;
     border: 1px solid #f0f0f0;
@@ -412,7 +412,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 8px;
 }
 
 .location-tag {
@@ -3423,5 +3423,77 @@ body {
 @keyframes placeModalSlideUp {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* Enriched Modal Styles */
+.modal-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.modal-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fffcf0;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid #ffeeba;
+}
+
+.modal-rating span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #b8860b;
+}
+
+.modal-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+}
+
+.modal-tag-chip {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8c52ff;
+    background: rgba(140, 82, 255, 0.08);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(140, 82, 255, 0.15);
+}
+
+.modal-meta-list {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fcfaff;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #f0f0f0;
+}
+
+.modal-meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.modal-meta-item span {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #666;
+    word-break: keep-all;
+}
+
+.meta-icon {
+    color: #8c52ff;
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 

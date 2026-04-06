@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-
-interface Place {
-    id: number;
-    name: string;
-    imageUrl: string;
-    description: string;
-}
+import { Place } from '../../types/place';
+import PlaceDetailModal from '../ui/PlaceDetailModal';
 
 interface DynamicPlacesProps {
     destinationId: string;
@@ -18,6 +13,7 @@ interface DynamicPlacesProps {
 export default function DynamicPlaces({ destinationId, cityName }: DynamicPlacesProps) {
     const [places, setPlaces] = useState<Place[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
     useEffect(() => {
         if (!destinationId) return;
@@ -54,7 +50,11 @@ export default function DynamicPlaces({ destinationId, cityName }: DynamicPlaces
             </div>
             <div className="scroll-container mt-3">
                 {places.map((place) => (
-                    <div key={place.id} className="scroll-item rectangular">
+                    <div 
+                        key={place.id} 
+                        className="scroll-item rectangular cursor-pointer active:scale-[0.98] transition-transform"
+                        onClick={() => setSelectedPlace(place)}
+                    >
                         <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} />
                         <div className="info">
                             <h3>{place.name}</h3>
@@ -62,6 +62,10 @@ export default function DynamicPlaces({ destinationId, cityName }: DynamicPlaces
                     </div>
                 ))}
             </div>
+            <PlaceDetailModal 
+                place={selectedPlace} 
+                onClose={() => setSelectedPlace(null)} 
+            />
         </section>
     );
 }

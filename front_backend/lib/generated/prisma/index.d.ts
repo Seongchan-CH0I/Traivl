@@ -3211,12 +3211,18 @@ export namespace Prisma {
     id: number | null
     rating: number | null
     rank: number | null
+    latitude: number | null
+    longitude: number | null
+    averagePrice: number | null
   }
 
   export type PlaceSumAggregateOutputType = {
     id: number | null
     rating: number | null
     rank: number | null
+    latitude: number | null
+    longitude: number | null
+    averagePrice: number | null
   }
 
   export type PlaceMinAggregateOutputType = {
@@ -3228,6 +3234,12 @@ export namespace Prisma {
     description: string | null
     rating: number | null
     rank: number | null
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    openingHours: string | null
+    phoneNumber: string | null
+    averagePrice: number | null
   }
 
   export type PlaceMaxAggregateOutputType = {
@@ -3239,6 +3251,12 @@ export namespace Prisma {
     description: string | null
     rating: number | null
     rank: number | null
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    openingHours: string | null
+    phoneNumber: string | null
+    averagePrice: number | null
   }
 
   export type PlaceCountAggregateOutputType = {
@@ -3250,6 +3268,13 @@ export namespace Prisma {
     description: number
     rating: number
     rank: number
+    address: number
+    latitude: number
+    longitude: number
+    openingHours: number
+    phoneNumber: number
+    tags: number
+    averagePrice: number
     _all: number
   }
 
@@ -3258,12 +3283,18 @@ export namespace Prisma {
     id?: true
     rating?: true
     rank?: true
+    latitude?: true
+    longitude?: true
+    averagePrice?: true
   }
 
   export type PlaceSumAggregateInputType = {
     id?: true
     rating?: true
     rank?: true
+    latitude?: true
+    longitude?: true
+    averagePrice?: true
   }
 
   export type PlaceMinAggregateInputType = {
@@ -3275,6 +3306,12 @@ export namespace Prisma {
     description?: true
     rating?: true
     rank?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    openingHours?: true
+    phoneNumber?: true
+    averagePrice?: true
   }
 
   export type PlaceMaxAggregateInputType = {
@@ -3286,6 +3323,12 @@ export namespace Prisma {
     description?: true
     rating?: true
     rank?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    openingHours?: true
+    phoneNumber?: true
+    averagePrice?: true
   }
 
   export type PlaceCountAggregateInputType = {
@@ -3297,6 +3340,13 @@ export namespace Prisma {
     description?: true
     rating?: true
     rank?: true
+    address?: true
+    latitude?: true
+    longitude?: true
+    openingHours?: true
+    phoneNumber?: true
+    tags?: true
+    averagePrice?: true
     _all?: true
   }
 
@@ -3395,6 +3445,13 @@ export namespace Prisma {
     description: string | null
     rating: number | null
     rank: number
+    address: string | null
+    latitude: number | null
+    longitude: number | null
+    openingHours: string | null
+    phoneNumber: string | null
+    tags: string[]
+    averagePrice: number | null
     _count: PlaceCountAggregateOutputType | null
     _avg: PlaceAvgAggregateOutputType | null
     _sum: PlaceSumAggregateOutputType | null
@@ -3425,6 +3482,13 @@ export namespace Prisma {
     description?: boolean
     rating?: boolean
     rank?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    openingHours?: boolean
+    phoneNumber?: boolean
+    tags?: boolean
+    averagePrice?: boolean
     destination?: boolean | DestinationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["place"]>
 
@@ -3437,6 +3501,13 @@ export namespace Prisma {
     description?: boolean
     rating?: boolean
     rank?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    openingHours?: boolean
+    phoneNumber?: boolean
+    tags?: boolean
+    averagePrice?: boolean
     destination?: boolean | DestinationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["place"]>
 
@@ -3449,6 +3520,13 @@ export namespace Prisma {
     description?: boolean
     rating?: boolean
     rank?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    openingHours?: boolean
+    phoneNumber?: boolean
+    tags?: boolean
+    averagePrice?: boolean
     destination?: boolean | DestinationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["place"]>
 
@@ -3461,9 +3539,16 @@ export namespace Prisma {
     description?: boolean
     rating?: boolean
     rank?: boolean
+    address?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    openingHours?: boolean
+    phoneNumber?: boolean
+    tags?: boolean
+    averagePrice?: boolean
   }
 
-  export type PlaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "destinationId" | "name" | "category" | "imageUrl" | "description" | "rating" | "rank", ExtArgs["result"]["place"]>
+  export type PlaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "destinationId" | "name" | "category" | "imageUrl" | "description" | "rating" | "rank" | "address" | "latitude" | "longitude" | "openingHours" | "phoneNumber" | "tags" | "averagePrice", ExtArgs["result"]["place"]>
   export type PlaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     destination?: boolean | DestinationDefaultArgs<ExtArgs>
   }
@@ -3488,6 +3573,13 @@ export namespace Prisma {
       description: string | null
       rating: number | null
       rank: number
+      address: string | null
+      latitude: number | null
+      longitude: number | null
+      openingHours: string | null
+      phoneNumber: string | null
+      tags: string[]
+      averagePrice: number | null
     }, ExtArgs["result"]["place"]>
     composites: {}
   }
@@ -3920,6 +4012,13 @@ export namespace Prisma {
     readonly description: FieldRef<"Place", 'String'>
     readonly rating: FieldRef<"Place", 'Float'>
     readonly rank: FieldRef<"Place", 'Int'>
+    readonly address: FieldRef<"Place", 'String'>
+    readonly latitude: FieldRef<"Place", 'Float'>
+    readonly longitude: FieldRef<"Place", 'Float'>
+    readonly openingHours: FieldRef<"Place", 'String'>
+    readonly phoneNumber: FieldRef<"Place", 'String'>
+    readonly tags: FieldRef<"Place", 'String[]'>
+    readonly averagePrice: FieldRef<"Place", 'Int'>
   }
     
 
@@ -4382,7 +4481,14 @@ export namespace Prisma {
     imageUrl: 'imageUrl',
     description: 'description',
     rating: 'rating',
-    rank: 'rank'
+    rank: 'rank',
+    address: 'address',
+    latitude: 'latitude',
+    longitude: 'longitude',
+    openingHours: 'openingHours',
+    phoneNumber: 'phoneNumber',
+    tags: 'tags',
+    averagePrice: 'averagePrice'
   };
 
   export type PlaceScalarFieldEnum = (typeof PlaceScalarFieldEnum)[keyof typeof PlaceScalarFieldEnum]
@@ -4615,6 +4721,13 @@ export namespace Prisma {
     description?: StringNullableFilter<"Place"> | string | null
     rating?: FloatNullableFilter<"Place"> | number | null
     rank?: IntFilter<"Place"> | number
+    address?: StringNullableFilter<"Place"> | string | null
+    latitude?: FloatNullableFilter<"Place"> | number | null
+    longitude?: FloatNullableFilter<"Place"> | number | null
+    openingHours?: StringNullableFilter<"Place"> | string | null
+    phoneNumber?: StringNullableFilter<"Place"> | string | null
+    tags?: StringNullableListFilter<"Place">
+    averagePrice?: IntNullableFilter<"Place"> | number | null
     destination?: XOR<DestinationScalarRelationFilter, DestinationWhereInput>
   }
 
@@ -4627,6 +4740,13 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
     rank?: SortOrder
+    address?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    openingHours?: SortOrderInput | SortOrder
+    phoneNumber?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    averagePrice?: SortOrderInput | SortOrder
     destination?: DestinationOrderByWithRelationInput
   }
 
@@ -4642,6 +4762,13 @@ export namespace Prisma {
     description?: StringNullableFilter<"Place"> | string | null
     rating?: FloatNullableFilter<"Place"> | number | null
     rank?: IntFilter<"Place"> | number
+    address?: StringNullableFilter<"Place"> | string | null
+    latitude?: FloatNullableFilter<"Place"> | number | null
+    longitude?: FloatNullableFilter<"Place"> | number | null
+    openingHours?: StringNullableFilter<"Place"> | string | null
+    phoneNumber?: StringNullableFilter<"Place"> | string | null
+    tags?: StringNullableListFilter<"Place">
+    averagePrice?: IntNullableFilter<"Place"> | number | null
     destination?: XOR<DestinationScalarRelationFilter, DestinationWhereInput>
   }, "id">
 
@@ -4654,6 +4781,13 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
     rank?: SortOrder
+    address?: SortOrderInput | SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    openingHours?: SortOrderInput | SortOrder
+    phoneNumber?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    averagePrice?: SortOrderInput | SortOrder
     _count?: PlaceCountOrderByAggregateInput
     _avg?: PlaceAvgOrderByAggregateInput
     _max?: PlaceMaxOrderByAggregateInput
@@ -4673,6 +4807,13 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Place"> | string | null
     rating?: FloatNullableWithAggregatesFilter<"Place"> | number | null
     rank?: IntWithAggregatesFilter<"Place"> | number
+    address?: StringNullableWithAggregatesFilter<"Place"> | string | null
+    latitude?: FloatNullableWithAggregatesFilter<"Place"> | number | null
+    longitude?: FloatNullableWithAggregatesFilter<"Place"> | number | null
+    openingHours?: StringNullableWithAggregatesFilter<"Place"> | string | null
+    phoneNumber?: StringNullableWithAggregatesFilter<"Place"> | string | null
+    tags?: StringNullableListFilter<"Place">
+    averagePrice?: IntNullableWithAggregatesFilter<"Place"> | number | null
   }
 
   export type UserCreateInput = {
@@ -4826,6 +4967,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
     destination: DestinationCreateNestedOneWithoutPlacesInput
   }
 
@@ -4838,6 +4986,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
   }
 
   export type PlaceUpdateInput = {
@@ -4847,6 +5002,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
     destination?: DestinationUpdateOneRequiredWithoutPlacesNestedInput
   }
 
@@ -4859,6 +5021,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PlaceCreateManyInput = {
@@ -4870,6 +5039,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
   }
 
   export type PlaceUpdateManyMutationInput = {
@@ -4879,6 +5055,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PlaceUncheckedUpdateManyInput = {
@@ -4890,6 +5073,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5080,6 +5270,25 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DestinationScalarRelationFilter = {
     is?: DestinationWhereInput
     isNot?: DestinationWhereInput
@@ -5094,12 +5303,22 @@ export namespace Prisma {
     description?: SortOrder
     rating?: SortOrder
     rank?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    openingHours?: SortOrder
+    phoneNumber?: SortOrder
+    tags?: SortOrder
+    averagePrice?: SortOrder
   }
 
   export type PlaceAvgOrderByAggregateInput = {
     id?: SortOrder
     rating?: SortOrder
     rank?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    averagePrice?: SortOrder
   }
 
   export type PlaceMaxOrderByAggregateInput = {
@@ -5111,6 +5330,12 @@ export namespace Prisma {
     description?: SortOrder
     rating?: SortOrder
     rank?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    openingHours?: SortOrder
+    phoneNumber?: SortOrder
+    averagePrice?: SortOrder
   }
 
   export type PlaceMinOrderByAggregateInput = {
@@ -5122,12 +5347,21 @@ export namespace Prisma {
     description?: SortOrder
     rating?: SortOrder
     rank?: SortOrder
+    address?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    openingHours?: SortOrder
+    phoneNumber?: SortOrder
+    averagePrice?: SortOrder
   }
 
   export type PlaceSumOrderByAggregateInput = {
     id?: SortOrder
     rating?: SortOrder
     rank?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    averagePrice?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -5160,6 +5394,22 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5216,6 +5466,10 @@ export namespace Prisma {
     deleteMany?: PlaceScalarWhereInput | PlaceScalarWhereInput[]
   }
 
+  export type PlaceCreatetagsInput = {
+    set: string[]
+  }
+
   export type DestinationCreateNestedOneWithoutPlacesInput = {
     create?: XOR<DestinationCreateWithoutPlacesInput, DestinationUncheckedCreateWithoutPlacesInput>
     connectOrCreate?: DestinationCreateOrConnectWithoutPlacesInput
@@ -5232,6 +5486,19 @@ export namespace Prisma {
 
   export type IntFieldUpdateOperationsInput = {
     set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type PlaceUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
@@ -5409,6 +5676,22 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type PlaceCreateWithoutDestinationInput = {
     name: string
     category: string
@@ -5416,6 +5699,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
   }
 
   export type PlaceUncheckedCreateWithoutDestinationInput = {
@@ -5426,6 +5716,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
   }
 
   export type PlaceCreateOrConnectWithoutDestinationInput = {
@@ -5466,6 +5763,13 @@ export namespace Prisma {
     description?: StringNullableFilter<"Place"> | string | null
     rating?: FloatNullableFilter<"Place"> | number | null
     rank?: IntFilter<"Place"> | number
+    address?: StringNullableFilter<"Place"> | string | null
+    latitude?: FloatNullableFilter<"Place"> | number | null
+    longitude?: FloatNullableFilter<"Place"> | number | null
+    openingHours?: StringNullableFilter<"Place"> | string | null
+    phoneNumber?: StringNullableFilter<"Place"> | string | null
+    tags?: StringNullableListFilter<"Place">
+    averagePrice?: IntNullableFilter<"Place"> | number | null
   }
 
   export type DestinationCreateWithoutPlacesInput = {
@@ -5528,6 +5832,13 @@ export namespace Prisma {
     description?: string | null
     rating?: number | null
     rank: number
+    address?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    openingHours?: string | null
+    phoneNumber?: string | null
+    tags?: PlaceCreatetagsInput | string[]
+    averagePrice?: number | null
   }
 
   export type PlaceUpdateWithoutDestinationInput = {
@@ -5537,6 +5848,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PlaceUncheckedUpdateWithoutDestinationInput = {
@@ -5547,6 +5865,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PlaceUncheckedUpdateManyWithoutDestinationInput = {
@@ -5557,6 +5882,13 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     rank?: IntFieldUpdateOperationsInput | number
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    openingHours?: NullableStringFieldUpdateOperationsInput | string | null
+    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: PlaceUpdatetagsInput | string[]
+    averagePrice?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
 

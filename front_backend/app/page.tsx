@@ -11,6 +11,7 @@ import HotPlaces from '../components/home/HotPlaces';
 
 import DynamicPlaces from '../components/home/DynamicPlaces';
 import DynamicRestaurants from '../components/home/DynamicRestaurants';
+import DestinationDetailModal from '../components/ui/DestinationDetailModal';
 import SurveyModal from '../components/survey/SurveyModal';
 import RouteCreationModal from '../components/route/RouteCreationModal';
 import JourneyMap from '../components/route/JourneyMap';
@@ -28,6 +29,7 @@ export default function HomePage() {
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
     const [isHotPlacesExpanded, setIsHotPlacesExpanded] = useState(false);
+    const [selectedDestination, setSelectedDestination] = useState<any>(null);
 
     // ✅ 설문 완료 여부를 전역 상태인 dnaResult 유무로 판단! (중요)
     const hasCompletedSurvey = !!dnaResult;
@@ -95,16 +97,17 @@ export default function HomePage() {
     if (hasCompletedSurvey) {
         return (
             <main className="home-page pb-safe relative">
-                <SurveyModal
-                    isOpen={isSurveyOpen}
-                    onClose={() => setIsSurveyOpen(false)}
-                    onComplete={handleCompleteSurvey}
-                />
                 <RouteCreationModal
                     isOpen={isRouteModalOpen}
                     onClose={() => setIsRouteModalOpen(false)}
                     onStartJourney={handleStartJourney}
                 />
+                {selectedDestination && (
+                    <DestinationDetailModal 
+                        destination={selectedDestination} 
+                        onClose={() => setSelectedDestination(null)} 
+                    />
+                )}
                 <Header title="어디로 떠나볼까요?" />
                 <button
                     onClick={handleResetSurvey}
@@ -134,7 +137,10 @@ export default function HomePage() {
                                 {dnaResult.description}
                             </p>
 
-                            <div className="w-full relative h-[250px] mb-6 overflow-hidden rounded-[20px] shadow-[0_10px_25px_rgba(0,0,0,0.12)] cursor-pointer group">
+                            <div 
+                                className="w-full relative h-[250px] mb-6 overflow-hidden rounded-[20px] shadow-[0_10px_25px_rgba(0,0,0,0.12)] cursor-pointer group"
+                                onClick={() => setSelectedDestination(dnaResult)}
+                            >
                                 <img
                                     src={dnaResult.imageUrl}
                                     alt={dnaResult.name}
@@ -189,6 +195,12 @@ export default function HomePage() {
                 onClose={() => setIsSurveyOpen(false)}
                 onComplete={handleCompleteSurvey}
             />
+            {selectedDestination && (
+                <DestinationDetailModal 
+                    destination={selectedDestination} 
+                    onClose={() => setSelectedDestination(null)} 
+                />
+            )}
             <Header title="어디로 떠나볼까요?" />
             <button
                 onClick={handleResetSurvey}
@@ -199,8 +211,8 @@ export default function HomePage() {
             </button>
             <Banner onStart={() => setIsSurveyOpen(true)} />
             
-            {/* ✅ 인기 도시 섹션 가변 처리 */}
-            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[300px] opacity-100 mb-8'}`}>
+            {/* ✅ 인기 도시 섹션 가변 처리 - 하단 여백 제거 (mb-8 -> mb-0) */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[400px] opacity-100 mb-0'}`}>
                 <PopularCities />
             </div>
 
