@@ -13,7 +13,9 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
 
-load_dotenv()
+# 상위 디렉토리의 .env를 찾아서 로드
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "../.env")
+load_dotenv(dotenv_path=env_path)
 
 # 🧮 두 위도/경도 간의 직선거리를 km 단위로 계산하는 공식 (Haversine)
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -74,7 +76,9 @@ def main():
     from langchain_community.vectorstores.pgvector import PGVector
     
     # docker-compose.yml 기준 연결 정보
-    CONNECTION_STRING = "postgresql+psycopg2://postgres:password@localhost:5432/traivldb"
+    # .env의 DATABASE_URL을 활용하고, 드라이버를 psycopg2로 보정
+    db_url = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5433/traivldb")
+    CONNECTION_STRING = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
     COLLECTION_NAME = "travel_places" # 테이블 이름 같은 역할 (원하는 이름 설정)
     
     # PGVector DB에 테이블/익스텐션 자동 생성 및 데이터 꽂아 넣기

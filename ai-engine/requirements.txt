@@ -21,3 +21,5 @@ sentence-transformers
 psycopg2-binary
 pgvector
 SQLAlchemy
+chromadb
+google-genai==1.70.0

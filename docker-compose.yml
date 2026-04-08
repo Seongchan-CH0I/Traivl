@@ -10,10 +10,10 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: traivldb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d # 초기 SQL 스크립트 폴더 마운트
+      - ./database:/docker-entrypoint-initdb.d # 초기 데이터 로드를 위해 폴더 단위 마운트 (공유 가능)
     networks:
       - travel-network
 

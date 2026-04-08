@@ -3,11 +3,15 @@
 import os
 from dotenv import load_dotenv
 
+# 현재 파일 위치를 기준으로 상위 폴더들에서 .env를 찾음
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '../../.env'))
+# 혹은 기본 탐색도 병행
 load_dotenv()
 
 class Settings:
     PROJECT_NAME: str = "Traivl AI Engine"
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://admin:password123@travel_db/travel_data")
     REDIS_HOST: str = os.getenv("REDIS_HOST", "travel_redis")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", 6379))
