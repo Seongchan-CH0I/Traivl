@@ -15,7 +15,7 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 if not GOOGLE_API_KEY or GOOGLE_API_KEY.startswith("AIzaSy..."):
-    raise ValueError("앗! .env 파일에 실제 발급받은 GOOGLE_MAPS_API_KEY를 적어주세요!")
+    raise ValueError(".env 파일에 실제 발급받은 GOOGLE_MAPS_API_KEY를 적어주세요")
 
 # 수집된 데이터를 저장할 JSON 파일 경로
 DATA_OUTPUT_PATH = os.path.join(BASE_DIR, "data", "places_raw.json")
@@ -49,18 +49,35 @@ def fetch_places(search_query):
     data = response.json()
     return data.get("places", [])
 
+def get_country_for_city(city):
+    japan_cities = ["도쿄", "오사카", "후쿠오카", "교토", "삿포로", "나고야"]
+    korea_cities = ["서울", "부산", "제주", "인천", "경주"]
+    if city in japan_cities:
+        return "일본"
+    elif city in korea_cities:
+        return "대한민국"
+    return "알 수 없음"
+
 def main():
     print("🚀 [수집 봇 가동] 구글 맵스 파이프라인 시작!\n")
     
     # 안전장치: data 폴더가 없으면 에러 나기 전에 파이썬이 스스로 폴더를 만듦
     os.makedirs(os.path.dirname(DATA_OUTPUT_PATH), exist_ok=True)
     
-    target_cities = ["도쿄"] # 우선 테스트를 위해 '도쿄'만 긁어옴
-    target_themes = ["힐링", "자연", "액티비티", "역사 및 문화", "쇼핑", "가족여행", "테마파크", "핫플레이스", "로컬 맛집"] #태그 종류: 졸업여행, 인스타감성, 맛집투어, 문화체험, 힐링, 액티비티, 쇼핑, 야경투어, 역사탐방, 자연
+    # CLI 파라미터로 도시를 받을 수 있도록 수정
+    if len(sys.argv) > 1:
+        target_cities = sys.argv[1:]
+    else:
+        target_cities = ["도쿄"] # 기본값
+        
+    # 프론트엔드에서 넘어오는 10가지 태그 적용
+    target_themes = ["졸업여행", "인스타감성", "맛집투어", "문화체험", "힐링", 
+                    "액티비티", "쇼핑", "야경투어", "역사탐방", "자연"]
     
     all_raw_places = []
     
     for city in target_cities:
+        country = get_country_for_city(city)
         for theme in target_themes:
             query = f"{city} {theme}"
             api_places = fetch_places(query)
@@ -75,10 +92,11 @@ def main():
                     "id": p["id"],
                     "name": p["displayName"].get("text", "이름 없음"),
                     "desc": p["editorialSummary"].get("text", "설명 없음"),
-                    "country": "일본",             
+                    "country": country,             
                     "destination": city,           
                     "lat": float(p["location"]["latitude"]),
                     "lng": float(p["location"]["longitude"]),
+                    "tags": [theme],     # 검색 태그 저장
                     "duration_mins": 90  # 임시 고정값
                 }
                 all_raw_places.append(place_data)

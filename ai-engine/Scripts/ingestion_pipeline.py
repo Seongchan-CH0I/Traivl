@@ -33,18 +33,25 @@ def main():
     with open(file_path, "r", encoding="utf-8") as f:
         raw_places = json.load(f)
 
-    # 🚨 [새로 추가된 핵심 로직] Python 단에서 중복 장소 싹 제거하기! (Deduplication)
-    # 구글에서 '쇼핑'으로도 뽑히고 '관광명소'로도 겹쳐서 뽑힌 장소들(예: 도쿄 타워)이 
-    # 배치 안에 두 번 들어가면 ChromaDB가 화를 냅니다. 그래서 넣기 전에 고유 ID로 싹 한 번 걸러냅니다!
+    # 🚨 [새로 추가된 핵심 로직] Python 단에서 중복 장소 병합 (여러 태그 누적!)
     unique_places_dict = {}
     for place in raw_places:
-        unique_places_dict[place['id']] = place
+        place_id = place['id']
+        if place_id in unique_places_dict:
+            # 이미 존재하는 장소라면 기존 태그 목록에 새 태그를 추가 (중복 방지)
+            existing_tags = unique_places_dict[place_id].get('tags', [])
+            new_tags = place.get('tags', [])
+            unique_places_dict[place_id]['tags'] = list(set(existing_tags + new_tags))
+        else:
+            if 'tags' not in place:
+                place['tags'] = []
+            unique_places_dict[place_id] = place
     
     unique_raw_places = list(unique_places_dict.values())
 
     documents = [
         Document(
-            page_content=f"{place['name']} - {place['desc']}", 
+            page_content=f"{place['name']} - {place['desc']} 카테고리: {', '.join(place.get('tags', []))}", 
             metadata={
                 "place_id": place['id'], 
                 "name": place['name'],
@@ -52,6 +59,7 @@ def main():
                 "destination": place['destination'],
                 "lat": place['lat'],                  # 📍 위도
                 "lng": place['lng'],                  # 📍 경도
+                "tags": place.get('tags', []),
                 "duration_mins": place['duration_mins'] # ⏱️ 예상 소요 시간
             }
         ) for place in unique_raw_places

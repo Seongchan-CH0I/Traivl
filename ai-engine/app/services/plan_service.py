@@ -33,7 +33,7 @@ class PlanService:
         )
     async def get_recommended_plan(self, request: PlanRequest) -> PlanResponse:
         
-        # 1. 프론트엔드의 취향(travel_style)을 검색 쿼리로 변환
+        # 1. 사용자가 선택한 태그를 쿼리로 변환
         search_query = f"{', '.join(request.travel_style)} 분위기가 가득한 장소"  
         
         # 유저의 여행일수에 따라 검색할 K(개수)를 동적으로 계산!
@@ -41,17 +41,14 @@ class PlanService:
         
         # 하루 평균 3군데씩 간다고 치고, 혹시 몰라 여유분(버퍼)으로 2군데 더 뽑음
         dynamic_k = (travel_days * 3) + 2 
-        
-        # 아무리 길어도 25개를 넘지 못하게, 최소 3개는 뽑게 설정
-        dynamic_k = max(3, min(dynamic_k, 25))
 
 
         print(f"🔍 [벡터 DB 검색] 쿼리: {search_query} | 여행일수: {travel_days}일 -> 목표 장소 개수: {dynamic_k}개")
         # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색
         results = self.vector_db.similarity_search(
-            query=search_query, 
-            k=dynamic_k,         # 여행일자에 맞게 계산된 유동 변수
-            filter={"destination": request.destination}
+            query=search_query,                         # 유저가 선택한 여행 스타일
+            k=dynamic_k,                                # 여행일자에 맞게 계산된 유동 변수
+            filter={"destination": request.destination} # 유저가 선택한 도시
         )
         # 구글이 준 '절대 변하지 않는 고유 ID(place_id)' 활용
         candidates = []
