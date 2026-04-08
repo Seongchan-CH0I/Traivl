@@ -56,7 +56,7 @@ def main():
     os.makedirs(os.path.dirname(DATA_OUTPUT_PATH), exist_ok=True)
     
     target_cities = ["도쿄"] # 우선 테스트를 위해 '도쿄'만 긁어옴
-    target_themes = ["힐링", "자연", "액티비티", "역사 및 문화", "쇼핑", "가족여행", "테마파크", "핫플레이스", "로컬 맛집"]
+    target_themes = ["힐링", "자연", "액티비티", "역사 및 문화", "쇼핑", "가족여행", "테마파크", "핫플레이스", "로컬 맛집"] #태그 종류: 졸업여행, 인스타감성, 맛집투어, 문화체험, 힐링, 액티비티, 쇼핑, 야경투어, 역사탐방, 자연
     
     all_raw_places = []
     

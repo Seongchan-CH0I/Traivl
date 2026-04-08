@@ -5,10 +5,9 @@ from typing import List, Dict, Any
 from app.models.plan_model import PlanRequest, PlanResponse, PlanData, DayItinerary, PlaceItem, PlaceCandidate
 from app.core.config import settings
 
-# LangChain Chroma 관련 임포트 
+# LangChain DB 관련 임포트 
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
-
+from langchain_community.vectorstores.pgvector import PGVector
 
 # 🧮 두 위도/경도 간의 직선거리를 km 단위로 계산하는 공식 (Haversine)
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -22,12 +21,17 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 class PlanService:
     def __init__(self):
         # [주석] 추후 OpenAI API 도입 여부가 확정되면 여기서 클라이언트를 초기화합니다.
-        pass
-
+        
+        # PostgreSQL(pgvector) 연동 초기화 설정
+        CONNECTION_STRING = "postgresql+psycopg2://postgres:password@localhost:5432/traivldb"
+        embeddings_model = HuggingFaceEmbeddings(model_name="jhgan/ko-sbert-nli")
+        
+        self.vector_db = PGVector(
+            collection_name="travel_places",
+            connection_string=CONNECTION_STRING,
+            embedding_function=embeddings_model
+        )
     async def get_recommended_plan(self, request: PlanRequest) -> PlanResponse:
-        """
-        사용자 요청에 따라 추천 여행 계획을 생성합니다.
-        """
         
         # 1. 프론트엔드의 취향(travel_style)을 검색 쿼리로 변환
         search_query = f"{', '.join(request.travel_style)} 분위기가 가득한 장소"  
@@ -43,7 +47,7 @@ class PlanService:
 
 
         print(f"🔍 [벡터 DB 검색] 쿼리: {search_query} | 여행일수: {travel_days}일 -> 목표 장소 개수: {dynamic_k}개")
-        # 2.내부 로컬 Chroma DB에서 유사 장소 RAG 검색
+        # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색
         results = self.vector_db.similarity_search(
             query=search_query, 
             k=dynamic_k,         # 여행일자에 맞게 계산된 유동 변수

@@ -16,3 +16,8 @@ ffmpeg-python
 ortools
 langchain-community
 sentence-transformers
+
+# Postgres & PGVector Dependencies
+psycopg2-binary
+pgvector
+SQLAlchemy
