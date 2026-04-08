@@ -1,7 +1,9 @@
 import os
-import math # 거리 계산용
+import math # 거리 계산 및 일정 배분용
 import json
 from typing import List, Dict, Any
+from google import genai
+from google.genai import types
 from app.models.plan_model import PlanRequest, PlanResponse, PlanData, DayItinerary, PlaceItem, PlaceCandidate
 from app.core.config import settings
 
@@ -20,15 +22,26 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
 class PlanService:
     def __init__(self):
-        # [주석] 추후 OpenAI API 도입 여부가 확정되면 여기서 클라이언트를 초기화합니다.
-        
-        # PostgreSQL(pgvector) 연동 초기화 설정
-        CONNECTION_STRING = "postgresql+psycopg2://postgres:password@localhost:5432/traivldb"
+        # Google Gemini API 설정 (최신 v1.0 SDK 적용)
+        if settings.GOOGLE_API_KEY:
+            # 2.0 모델 차단 이슈 해결 및 최적의 가성비(1.5 Flash) 모델 적용
+            self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
+            self.target_model = "gemini-flash-latest"
+            print(f"✅ 최적 가성비 모델(1.5 Flash) 준비 완료 (Target: {self.target_model})")
+        else:
+            self.client = None
+            print("⚠️ GOOGLE_API_KEY가 없어 AI 기능을 사용할 수 없습니다.")
+
+        # PostgreSQL(pgvector) 연동 초기화 설정 (환경 변수 사용)
+        db_url = settings.DATABASE_URL
+        if db_url.startswith("postgresql://"):
+            db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+
         embeddings_model = HuggingFaceEmbeddings(model_name="jhgan/ko-sbert-nli")
         
         self.vector_db = PGVector(
             collection_name="travel_places",
-            connection_string=CONNECTION_STRING,
+            connection_string=db_url,
             embedding_function=embeddings_model
         )
     async def get_recommended_plan(self, request: PlanRequest) -> PlanResponse:
@@ -69,12 +82,13 @@ class PlanService:
                 )
             )
 
-        # 지능형 장소 선정 (1차: 룰 기반 가중치 선정)
-        # TODO: 추후 OpenAI API 연결 시 GPT-4o가 여기서 최종 결정을 내립니다.
-        selected_places = self._select_best_places(candidates, request, count=travel_days * 4)
+        # [2단계] Gemini를 이용한 지능형 장소 선정 및 추천 사유 생성
+        target_count = travel_days * 3 # 하루 3군데 기준
+        selected_data = await self._select_places_with_gemini(candidates, request, count=target_count)
 
-        # 진짜 시간표 생성 (itinerary 시뮬레이션)
-        itinerary = self._simulate_itinerary(selected_places, request.duration)
+        # [3단계] 최종 시간표 생성 (itinerary 시뮬레이션)
+        # Gemini가 선정한 순서대로 시간표를 구성합니다.
+        itinerary = self._simulate_itinerary_v2(selected_data, request.duration)
 
         return PlanResponse(
             status="success",
@@ -85,35 +99,98 @@ class PlanService:
             )
         )
 
-    def _select_best_places(self, candidates: List[PlaceCandidate], request: PlanRequest, count: int) -> List[PlaceCandidate]:
+    async def _select_places_with_gemini(self, candidates: List[PlaceCandidate], request: PlanRequest, count: int) -> List[Dict[str, Any]]:
         """
-        검색된 후보지 중 유저 성향에 맞는 최적의 장소를 선정합니다.
-        (RAG 검색 결과 상위권을 기반으로 개수를 조절하는 방식)
+        Gemini 1.5 Flash를 사용하여 유저 취향에 맞는 장소를 선정하고 추천 사유를 생성합니다.
         """
-        # TODO: 유저 DNA 태그 일치 여부에 따른 정렬 가중치 추가 가능
-        return candidates[:count]
+        if not self.client:
+            # AI 키가 없을 경우 하위 호환을 위해 상위 N개 반환 (기존 로직)
+            return [{"place": c, "reason": "AI 추천 장소"} for i, c in enumerate(candidates[:count])]
 
-    def _simulate_itinerary(self, places: List[PlaceCandidate], duration: Any) -> List[DayItinerary]:
+        # 후보지 정보를 텍스트로 정리
+        candidates_text = "\n".join([
+            f"- ID: {c.place_id}, 이름: {c.title}, 설명: {c.description}"
+            for c in candidates
+        ])
+
+        prompt = f"""
+당신은 베테랑 여행 가이드입니다. 다음 유저의 성향과 여행 정보를 바탕으로, 후보 장소들 중 가장 적합한 {count}개를 선정하고 일정을 짜주세요.
+
+[유저 정보]
+- 이름: {request.user_name}
+- 목적지: {request.destination}
+- 여행 기간: {request.duration.days}일
+- 선호 스타일: {', '.join(request.travel_style)}
+- 유저 DNA: {request.dna_type}
+
+[후보 장소 리스트]
+{candidates_text}
+
+[임무]
+1. 위 유저 성향(DNA, 스타일)에 가장 잘 어울리는 장소를 {count}개 골라주세요.
+2. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 가이드 말투"로 짧고 친절한 한국어 추천 사유를 써주세요.
+3. 반드시 아래 JSON 형식으로만 답변하세요.
+
+JSON 형식:
+{{
+  "selected_places": [
+    {{
+      "place_id": "장소 ID",
+      "reason": "개인화된 추천 사유"
+    }}
+  ]
+}}
+"""
+
+        try:
+            # 자동 감지된 최적의 모델 ID를 사용하여 호출
+            response = self.client.models.generate_content(
+                model=self.target_model,
+                contents=prompt
+            )
+            # 인공지능이 설명 문구를 붙여도 JSON만 쏙 골라내도록 전처리
+            raw_text = response.text.strip()
+            if raw_text.startswith("```"):
+                # ```json ... ``` 형태인 경우 앞뒤 문구 제거
+                raw_text = raw_text.split("```")[1]
+                if raw_text.startswith("json"):
+                    raw_text = raw_text[4:]
+            
+            data = json.loads(raw_text.strip())
+            
+            # 결과 매핑
+            selected_ids = {item['place_id']: item['reason'] for item in data['selected_places']}
+            result = []
+            for c in candidates:
+                if c.place_id in selected_ids:
+                    result.append({"place": c, "reason": selected_ids[c.place_id]})
+            
+            return result[:count]
+        except Exception as e:
+            print(f"❌ Gemini 호출 오류: {e}")
+            return [{"place": c, "reason": "AI 추천 장소"} for i, c in enumerate(candidates[:count])]
+
+    def _simulate_itinerary_v2(self, selected_data: List[Dict[str, Any]], duration: Any) -> List[DayItinerary]:
         """
-        선정된 장소들을 여행 일자별 타임라인으로 배분합니다.
+        Gemini가 선정한 장소들을 날짜별로 배분합니다.
         """
         days = []
-        places_per_day = max(1, math.ceil(len(places) / duration.days))
+        places_per_day = max(1, math.ceil(len(selected_data) / duration.days))
         
         for d in range(1, duration.days + 1):
             start_idx = (d-1) * places_per_day
-            end_idx = min(d * places_per_day, len(places))
-            day_places = places[start_idx:end_idx]
+            end_idx = min(d * places_per_day, len(selected_data))
+            day_batch = selected_data[start_idx:end_idx]
             
-            if not day_places: break
+            if not day_batch: break
             
             day_items = [
                 PlaceItem(
-                    place_id=p.place_id,
-                    suggested_time=f"{10 + i*3}:00", # 임시 시간 배정 (10시부터 3시간 간격)
-                    title=p.title,
-                    location="AI 추천 장소" # 추후 GPT-4o의 설명으로 대체
-                ) for i, p in enumerate(day_places)
+                    place_id=item['place'].place_id,
+                    suggested_time=f"{10 + i * 3}:00", # 임시 시간 배정
+                    title=item['place'].title,
+                    location=item['reason'] # 여기에 AI 추천 사유를 넣음
+                ) for i, item in enumerate(day_batch)
             ]
             days.append(DayItinerary(day=d, places=day_items))
             
