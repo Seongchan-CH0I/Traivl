@@ -48,7 +48,7 @@ class PlanService:
         사용자 요청에 따라 추천 여행 계획을 생성합니다.
         """
         
-        # [STEP 1] 프론트엔드의 취향(travel_style)을 검색 쿼리로 변환
+        # 1. 프론트엔드의 취향(travel_style)을 검색 쿼리로 변환
         search_query = f"{', '.join(request.travel_style)} 분위기가 가득한 장소"  
         
         # 유저의 여행일수에 따라 검색할 K(개수)를 동적으로 계산!
@@ -62,7 +62,7 @@ class PlanService:
 
 
         print(f"🔍 [벡터 DB 검색] 쿼리: {search_query} | 여행일수: {travel_days}일 -> 목표 장소 개수: {dynamic_k}개")
-        # [STEP 2] 내부 로컬 Chroma DB에서 유사 장소 RAG 검색 (test_real_ingestion.py 로직)
+        # 2.내부 로컬 Chroma DB에서 유사 장소 RAG 검색
         results = self.vector_db.similarity_search(
             query=search_query, 
             k=dynamic_k,         # 여행일자에 맞게 계산된 유동 변수

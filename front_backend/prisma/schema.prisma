@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  output          = "../lib/generated/prisma"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -22,15 +21,6 @@ model User {
 }
 
 // 8개 고정 추천 도시
-model Destination {
-  id          String  @id          // 예: "JP_KYOTO", "KR_JEJU"
-  name        String               // 예: "교토, 일본"
-  country     String               // 예: "일본", "한국"
-  dnaType     String               // 예: "클래식 슬로우뷰어"
-  description String?
-  imageUrl    String?
-  places      Place[]
-}
 
 // 도시별 인기 장소
 model Place {
@@ -43,4 +33,11 @@ model Place {
   description   String?
   rating        Float?
   rank          Int         // 순위 (1, 2, 3 ...)
+  address       String?     // 상세 주소
+  latitude      Float?      // 위도
+  longitude     Float?      // 경도
+  openingHours  String?     // 영업 시간
+  phoneNumber   String?     // 전화번호
+  tags          String[]    // 태그 (예: ["#인생샷", "#전통"])
+  averagePrice  Int?        // 평균 가격
 }

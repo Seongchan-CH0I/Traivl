@@ -30,7 +30,7 @@ def fetch_places(search_query):
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": GOOGLE_API_KEY,
-        # 우리가 꼭 필요한 핵심 데이터 필드(마스크)만 정밀하게 타겟팅! (데이터 요금 폭탄 방지)
+        # 필요한 핵심 데이터 필드만 나오게 필터링
         "X-Goog-FieldMask": "places.id,places.displayName,places.editorialSummary,places.location"
     }
     
@@ -55,7 +55,7 @@ def main():
     # 안전장치: data 폴더가 없으면 에러 나기 전에 파이썬이 스스로 폴더를 만듦
     os.makedirs(os.path.dirname(DATA_OUTPUT_PATH), exist_ok=True)
     
-    target_cities = ["도쿄"] # 우선 테스트를 위해 '도쿄'만 긁어옵니다.
+    target_cities = ["도쿄"] # 우선 테스트를 위해 '도쿄'만 긁어옴
     target_themes = ["힐링", "자연", "액티비티", "역사 및 문화", "쇼핑", "가족여행", "테마파크", "핫플레이스", "로컬 맛집"]
     
     all_raw_places = []

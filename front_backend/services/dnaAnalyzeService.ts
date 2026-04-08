@@ -11,6 +11,13 @@ export const DESTINATIONS = [
         tags: ["자연", "휴식", "프리미엄", "로컬"],
         primaryTags: ["RELAX", "LUXURY", "NATURE"],
         imageUrl: "/images/KR_JEJU.jpg",
+        currency: "KRW",
+        language: "한국어",
+        voltage: "220V (Type C/F)",
+        visaRequired: "해당없음",
+        bestSeason: ["봄", "여름", "가을"],
+        averageCost: 3,
+        costRationale: "육지에서 공수해오는 물류비로 인해 기본 물가가 높습니다. 렌터카와 유명 식당, 숙박 비용이 발생, 성수기 변동폭이 큽니다."
     },
     {
         id: "KR_SOKCHO",
@@ -20,6 +27,13 @@ export const DESTINATIONS = [
         tags: ["맛집", "바다", "가성비", "힐링"],
         primaryTags: ["FOOD", "COST_EFFECTIVE", "RELAX"],
         imageUrl: "/images/KR_SOKCHO.jpg",
+        currency: "KRW",
+        language: "한국어",
+        voltage: "220V (Type C/F)",
+        visaRequired: "해당없음",
+        bestSeason: ["여름", "겨울"],
+        averageCost: 2,
+        costRationale: "서울이나 제주등 다른 관광지에 비해, 숙박비와 생활 물가가 저렴한 편입니다. 로컬 시장을 이용하면 매우 경제적인 여행이 가능합니다."
     },
     {
         id: "KR_SEOUL",
@@ -29,6 +43,13 @@ export const DESTINATIONS = [
         tags: ["도시", "문화", "SNS핫플", "트렌디"],
         primaryTags: ["CULTURE", "SNS", "THEME"],
         imageUrl: "/images/KR_SEOUL.jpg",
+        currency: "KRW",
+        language: "한국어",
+        voltage: "220V (Type C/F)",
+        visaRequired: "해당없음",
+        bestSeason: ["봄", "가을"],
+        averageCost: 3,
+        costRationale: "한국 최고의 물가 수준이나, 다양한 가격대의 식당과 저렴한 대중교통 덕분에 선택폭이 넓습니다."
     },
     {
         id: "KR_BUSAN",
@@ -38,6 +59,13 @@ export const DESTINATIONS = [
         tags: ["바다", "액티비티", "로컬", "에너지"],
         primaryTags: ["ACTIVE", "LOCAL", "FULL_COURSE"],
         imageUrl: "/images/KR_BUSAN.jpg",
+        currency: "KRW",
+        language: "한국어",
+        voltage: "220V (Type C/F)",
+        visaRequired: "해당없음",
+        bestSeason: ["여름", "가을"],
+        averageCost: 3,
+        costRationale: "서울과 유사한 대도시 물가지만, 주거비와 일부 해산물 식재료 등이 서울보다 저렴하여 합리적입니다."
     },
 
     // 🇯🇵 일본
@@ -49,6 +77,13 @@ export const DESTINATIONS = [
         tags: ["전통", "문화", "여유", "지식"],
         primaryTags: ["CULTURE", "RELAXED", "HISTORY"],
         imageUrl: "/images/JP_KYOTO.jpg",
+        currency: "JPY",
+        language: "일본어",
+        voltage: "100V (Type A)",
+        visaRequired: "무비자 (90일)",
+        bestSeason: ["봄", "가을"],
+        averageCost: 4,
+        costRationale: "숙박 공급이 적어 호텔 가격이 높고, 전통 가이세키 요리 등 고급 식사 비용이 높은 편입니다."
     },
     {
         id: "JP_OSAKA",
@@ -58,6 +93,13 @@ export const DESTINATIONS = [
         tags: ["맛집", "풀코스", "즉흥", "에너지"],
         primaryTags: ["FOOD", "FULL_COURSE", "IMPROMPTU"],
         imageUrl: "/images/JP_OSAKA.jpg",
+        currency: "JPY",
+        language: "일본어",
+        voltage: "100V (Type A)",
+        visaRequired: "무비자 (90일)",
+        bestSeason: ["봄", "가을"],
+        averageCost: 3,
+        costRationale: "도쿄에 비해 숙박비가 저렴하고 가성비 좋은 로컬 식당이 많습니다. 한국인이 가장 많이 방문하는 일본 도시입니다. "
     },
     {
         id: "JP_TOKYO",
@@ -67,6 +109,13 @@ export const DESTINATIONS = [
         tags: ["도시", "쇼핑", "프리미엄", "전략적"],
         primaryTags: ["SHOPPING", "LUXURY", "STRATEGIC"],
         imageUrl: "/images/JP_TOKYO.jpg",
+        currency: "JPY",
+        language: "일본어",
+        voltage: "100V (Type A)",
+        visaRequired: "무비자 (90일)",
+        bestSeason: ["봄", "가을"],
+        averageCost: 4,
+        costRationale: "일본 최고의 물가 수준으로 숙박비와 중심가, 외식비가 매우 높지만 다양한 프리미엄 체험이 가능합니다."
     },
     {
         id: "JP_OKINAWA",
@@ -76,6 +125,13 @@ export const DESTINATIONS = [
         tags: ["바다", "즉흥", "가성비", "휴식"],
         primaryTags: ["RELAX", "IMPROMPTU", "COST_EFFECTIVE"],
         imageUrl: "/images/JP_OKINAWA.jpg",
+        currency: "JPY",
+        language: "일본어",
+        voltage: "100V (Type A)",
+        visaRequired: "무비자 (90일)",
+        bestSeason: ["봄", "여름", "가을"],
+        averageCost: 2,
+        costRationale: "일본 본토 대비 전반적인 물가가 낮습니다. 렌터카 비용을 감안하더라도 식비와 숙박비가 합리적입니다."
     }
 ];
 
