@@ -57,22 +57,29 @@ def main():
         ) for place in unique_raw_places
     ]
 
-    print("\n🧬 [Step 2 & 3] 임베딩 및 로컬 벡터 DB(Chroma)에 적재 (중복 방지 로직 적용)")
+    print("\n🧬 [Step 2 & 3] 임베딩 및 글로벌 Vector DB(PostgreSQL+pgvector)에 적재 중...")
     embeddings_model = HuggingFaceEmbeddings(model_name="jhgan/ko-sbert-nli")
     
-    # 이제 구글이 준 '절대 변하지 않는 고유 ID(place_id)'를 라벨지로 붙여서 넣습니다!
-    # 이렇게 하면 똑같은 장소가 '쇼핑'과 '역사' 테마 두 곳에서 수집되어 2번 들어와도,
-    # 크로마 DB가 덮어씌워 버리기 때문에 절대 중복 데이터가 쌓이지 않습니다!
     unique_ids = [doc.metadata["place_id"] for doc in documents]
     
-    vector_db = Chroma.from_documents(
-        documents=documents, 
+    # 🌟 Chrome 대신 PGVector 임포트 (파일 상단에 추가하셔도 됩니다)
+    from langchain_community.vectorstores.pgvector import PGVector
+    
+    # docker-compose.yml 기준 연결 정보
+    CONNECTION_STRING = "postgresql+psycopg2://postgres:password@localhost:5432/traivldb"
+    COLLECTION_NAME = "travel_places" # 테이블 이름 같은 역할 (원하는 이름 설정)
+    
+    # PGVector DB에 테이블/익스텐션 자동 생성 및 데이터 꽂아 넣기
+    vector_db = PGVector.from_documents(
         embedding=embeddings_model,
-        persist_directory="./chroma_real_db",
-        ids=unique_ids
+        documents=documents,
+        ids=unique_ids,
+        collection_name=COLLECTION_NAME,
+        connection_string=CONNECTION_STRING,
+        pre_delete_collection=True # 스크립트를 재실행할 때마다 덮어씌울 거면 True
     )
 
-    print("\n🎉 데이터 적재 완료! 이제 ChromaDB가 FastAPI 백엔드(plan_service.py)의 요청을 받을 준비가 되었습니다.")
+    print("\n🎉 PostgreSQL에 데이터 적재 완료! pgvector 마이그레이션 성공!")
 
 if __name__ == "__main__":
     main()
