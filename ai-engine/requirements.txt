@@ -23,3 +23,5 @@ pgvector
 SQLAlchemy
 chromadb
 google-genai==1.70.0
+scikit-learn
+requests
