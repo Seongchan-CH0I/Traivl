@@ -21,6 +21,21 @@ model User {
 }
 
 // 8개 고정 추천 도시
+model Destination {
+  id           String   @id          // 예: "JP_KYOTO", "KR_JEJU"
+  name         String                // 예: "교토, 일본"
+  country      String                // 예: "일본", "한국"
+  dnaType      String                // 예: "클래식 슬로우뷰어"
+  description  String?
+  imageUrl     String?
+  currency     String?
+  language     String?
+  voltage      String?
+  visaRequired String?
+  bestSeason   String[]
+  averageCost  Int?
+  places       Place[]
+}
 
 // 도시별 인기 장소
 model Place {

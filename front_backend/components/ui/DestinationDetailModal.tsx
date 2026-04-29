@@ -51,7 +51,7 @@ const DestinationDetailModal: React.FC<DestinationDetailModalProps> = ({ destina
                     </div>
                 </div>
 
-                <div className="modal-body p-5">
+                <div className="modal-body p-5 pb-10">
                     <div className="!mb-4">
                         <div className="modal-location-tag mb-1">
                             {destination.id.split('_')[0] === 'JP' ? '🇯🇵 일본' : '🇰🇷 한국'}
@@ -126,12 +126,7 @@ const DestinationDetailModal: React.FC<DestinationDetailModalProps> = ({ destina
                                 </div>
                             </div>
                             <p className="text-[13px] text-gray-600 leading-relaxed break-keep">
-                                {destination.costRationale?.split(/([.,])/).map((part, idx) => (
-                                    <React.Fragment key={idx}>
-                                        {part}
-                                        {(part === '.' || part === ',') && <br />}
-                                    </React.Fragment>
-                                ))}
+                                {destination.costRationale}
                             </p>
                         </div>
                     </div>

@@ -42,24 +42,39 @@ export default function DynamicRestaurants({ destinationId, cityName }: DynamicR
 
     return (
         <section className="list-section">
-            <div className="section-header-row">
+            <div className="section-header-row px-5">
                 <h2 className="section-title mb-0">놓치면 후회할 {cityName} 맛집 🍲</h2>
                 <div className="filter-chips">
                     <button className="chip active">맛집</button>    
                 </div>
             </div>
 
-            <div className="list-container">
+            <div className="list-container mt-4 px-5 flex flex-col gap-4">
                 {restaurants.map((item) => (
                     <div 
                         key={item.id} 
-                        className="list-item cursor-pointer active:scale-[0.98] transition-all hover:bg-gray-50"
+                        className="list-item cursor-pointer active:scale-[0.98] transition-all hover:bg-gray-50 border border-gray-100 shadow-sm overflow-hidden"
                         onClick={() => setSelectedPlace(item)}
                     >
-                        <img src={item.imageUrl || "/images/placeholder.jpg"} alt={item.name} />
-                        <div className="item-info">
-                            <h3>{item.name}</h3>
-                            <p>{item.description}</p>
+                        <div className="flex gap-4 w-full p-3">
+                            <img 
+                                src={item.imageUrl || "/images/placeholder.jpg"} 
+                                alt={item.name} 
+                                className="w-[70px] h-[70px] rounded-xl object-cover flex-shrink-0"
+                            />
+                            <div className="item-info flex flex-col justify-center flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-[15px] font-bold text-gray-900">{item.name}</h3>
+                                    {item.rating && (
+                                        <span className="text-[11px] font-semibold text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded">
+                                            ★ {item.rating}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-[12px] text-gray-500 mt-1 line-clamp-2 leading-snug">
+                                    {item.description}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ))}

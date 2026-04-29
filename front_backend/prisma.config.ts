@@ -8,6 +8,6 @@ export default defineConfig({
   },
   datasource: {
     url: process.env.DATABASE_URL ??
-      'postgresql://postgres:password@localhost:5432/traivldb',
+      'postgresql://postgres:password@localhost:5433/traivldb',
   },
 });

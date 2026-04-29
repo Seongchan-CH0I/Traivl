@@ -42,22 +42,24 @@ export default function DynamicPlaces({ destinationId, cityName }: DynamicPlaces
 
     return (
         <section className="horizontal-section">
-            <div className="section-header-row">
+            <div className="section-header-row px-5">
                 <h2 className="section-title mb-0">{cityName} 실시간 인기 장소</h2>
                 <div className="filter-chips">
                     <button className="chip active">관광지</button>
                 </div>
             </div>
-            <div className="scroll-container mt-3">
+            <div className="scroll-container mt-4 pb-2 px-5 gap-3">
                 {places.map((place) => (
                     <div 
                         key={place.id} 
-                        className="scroll-item rectangular cursor-pointer active:scale-[0.98] transition-transform"
+                        className="scroll-item rectangular cursor-pointer active:scale-[0.98] transition-all hover:shadow-md border border-gray-100"
+                        style={{ flex: '0 0 calc((100% - 24px) / 2.2)', minWidth: '150px' }}
                         onClick={() => setSelectedPlace(place)}
                     >
-                        <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} />
-                        <div className="info">
-                            <h3>{place.name}</h3>
+                        <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} className="h-[110px] w-full object-cover" />
+                        <div className="info p-3">
+                            <h3 className="text-[13px] font-bold truncate text-gray-900">{place.name}</h3>
+                            <p className="text-[11px] text-gray-500 mt-1 line-clamp-1 leading-tight">{place.description}</p>
                         </div>
                     </div>
                 ))}

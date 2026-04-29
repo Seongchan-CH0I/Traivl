@@ -21,7 +21,7 @@ export const DESTINATIONS = [
     },
     {
         id: "KR_SOKCHO",
-        name: "속초/강릉, 한국",
+        name: "속초, 한국",
         dnaType: "푸드트립 가성비러",
         description: "바다를 보며 즐기는 맛있는 현지 음식과 합리적인 식도락 여행",
         tags: ["맛집", "바다", "가성비", "힐링"],

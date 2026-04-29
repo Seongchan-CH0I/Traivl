@@ -9,7 +9,7 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 function createPrismaClient() {
     const connectionString =
         process.env.DATABASE_URL ||
-        'postgresql://postgres:password@localhost:5432/traivldb';
+        'postgresql://postgres:password@127.0.0.1:5433/traivldb';
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
     return new PrismaClient({ adapter });
