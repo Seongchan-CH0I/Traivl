@@ -69,7 +69,7 @@ export default function HotPlaces({ isExpanded, onToggle }: HotPlacesProps) {
                         <div
                             key={place.id}
                             className="hot-list-item top-rank cursor-pointer active:scale-[0.98] transition-transform"
-                            onClick={() => setSelectedPlace(place)}
+                            onClick={() => setSelectedPlace({ ...place, rank: index + 1 })}
                         >
                             <div className="rank-badge">{index + 1}</div>
                             <div className="image-wrapper">
@@ -104,7 +104,7 @@ export default function HotPlaces({ isExpanded, onToggle }: HotPlacesProps) {
                                         <div
                                             key={place.id}
                                             className="hot-grid-item cursor-pointer active:scale-[0.98] transition-transform"
-                                            onClick={() => setSelectedPlace(place)}
+                                            onClick={() => setSelectedPlace({ ...place, rank: rank })}
                                         >
                                             <div className="grid-image-wrapper">
                                                 <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} />

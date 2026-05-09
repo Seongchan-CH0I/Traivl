@@ -84,17 +84,12 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         '아시아': [
             { code: 'KR', name: '한국 (Korea)' },
             { code: 'JP', name: '일본 (Japan)' },
-            { code: 'TH', name: '태국 (Thailand)' },
-            { code: 'VN', name: '베트남 (Vietnam)' },
-            { code: 'SG', name: '싱가포르 (Singapore)' },
         ],
         '유럽': [
             { code: 'FR', name: '프랑스 (France)' },
             { code: 'ES', name: '스페인 (Spain)' },
             { code: 'IT', name: '이탈리아 (Italy)' },
             { code: 'DE', name: '독일 (Germany)' },
-            { code: 'GB', name: '영국 (UK)' },
-            { code: 'CH', name: '스위스 (Switzerland)' },
         ],
         '북미': [
             { code: 'US', name: '미국 (USA)' },
