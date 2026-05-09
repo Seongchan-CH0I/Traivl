@@ -922,6 +922,13 @@ body {
     padding-bottom: 20px;
 }
 
+.rc-content-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 40px; /* Adjust for bottom bar balance */
+}
+
 .rc-title-area {
     padding: 10px 20px 20px;
     text-align: left;
@@ -938,41 +945,9 @@ body {
     color: var(--text-sub);
 }
 
-/* Step 1: Continent */
-.rc-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding: 0 20px;
-}
-
-.rc-continent {
-    border-radius: 16px;
-    height: 140px;
-    border: 3px solid transparent;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 18px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.rc-continent.asia {
-    background: linear-gradient(135deg, #0abde3, #1dd1a1);
-}
-
-.rc-continent.europe {
-    background: linear-gradient(135deg, #ff9f43, #ff6b6b);
-}
-
-.rc-continent.selected {
-    border-color: var(--primary-color);
-    transform: scale(0.98);
+/* Step 1: Continent Selection (Map Based) */
+.rc-map-area {
+    padding: 10px 0;
 }
 
 /* Bottom fixed area */

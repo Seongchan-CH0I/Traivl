@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { ChevronLeft, CheckCircle2, Loader2, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Loader2, Calendar as CalendarIcon, Globe } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import CalendarPicker from '../calendar/CalendarPicker';
+import WorldMapSelection from './WorldMapSelection';
 
 interface RouteCreationModalProps {
     isOpen: boolean;
@@ -78,6 +79,72 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
     };
 
+    // Data Mappings
+    const countriesByContinent: Record<string, { code: string, name: string }[]> = {
+        '아시아': [
+            { code: 'KR', name: '한국 (Korea)' },
+            { code: 'JP', name: '일본 (Japan)' },
+            { code: 'TH', name: '태국 (Thailand)' },
+            { code: 'VN', name: '베트남 (Vietnam)' },
+            { code: 'SG', name: '싱가포르 (Singapore)' },
+        ],
+        '유럽': [
+            { code: 'FR', name: '프랑스 (France)' },
+            { code: 'ES', name: '스페인 (Spain)' },
+            { code: 'IT', name: '이탈리아 (Italy)' },
+            { code: 'DE', name: '독일 (Germany)' },
+            { code: 'GB', name: '영국 (UK)' },
+            { code: 'CH', name: '스위스 (Switzerland)' },
+        ],
+        '북미': [
+            { code: 'US', name: '미국 (USA)' },
+            { code: 'CA', name: '캐나다 (Canada)' },
+            { code: 'MX', name: '멕시코 (Mexico)' },
+        ],
+        '남미': [
+            { code: 'BR', name: '브라질 (Brazil)' },
+            { code: 'AR', name: '아르헨티나 (Argentina)' },
+            { code: 'PE', name: '페루 (Peru)' },
+        ],
+        '아프리카': [
+            { code: 'EG', name: '이집트 (Egypt)' },
+            { code: 'MA', name: '모로코 (Morocco)' },
+            { code: 'ZA', name: '남아공 (South Africa)' },
+        ],
+        '오세아니아': [
+            { code: 'AU', name: '호주 (Australia)' },
+            { code: 'NZ', name: '뉴질랜드 (New Zealand)' },
+        ]
+    };
+
+    const citiesByCountry: Record<string, { name: string, desc: string, img: string }[]> = {
+        'KR 한국 (Korea)': [
+            { name: '서울', desc: '전통과 현대가 공존하는 에너지', img: '/images/KR_SEOUL.jpg' },
+            { name: '제주도', desc: '에메랄드 바다와 천혜의 자연', img: '/images/KR_JEJU.jpg' },
+            { name: '부산', desc: '바다와 마천루가 어우러진 항구 도시', img: '/images/KR_BUSAN.jpg' },
+            { name: '속초', desc: '설악산과 동해 바다의 낭만', img: '/images/KR_SOKCHO.jpg' }
+        ],
+        'JP 일본 (Japan)': [
+            { name: '도쿄', desc: '아시아 최대의 메트로폴리스', img: '/images/JP_TOKYO.jpg' },
+            { name: '오사카', desc: '식도락과 활기 넘치는 천국', img: '/images/JP_OSAKA.jpg' },
+            { name: '교토', desc: '천년 고도의 정취와 사찰', img: '/images/JP_KYOTO.jpg' },
+            { name: '후쿠오카', desc: '가깝고 맛있는 힐링 여행지', img: '/images/JP_FUKUOKA.jpg' },
+            { name: '오키나와', desc: '에메랄드빛 바다와 휴양', img: '/images/JP_OKINAWA.jpg' }
+        ],
+        'FR 프랑스 (France)': [
+            { name: '파리', desc: '낭만과 예술, 빛의 도시', img: '/images/FR_PARIS.jpg' }
+        ],
+        'ES 스페인 (Spain)': [
+            { name: '바르셀로나', desc: '가우디의 건축과 지중해의 열정', img: '/images/ES_BARCELONA.jpg' }
+        ],
+        'IT 이탈리아 (Italy)': [
+            { name: '로마', desc: '역사의 흔적을 간직한 영원한 도시', img: '/images/IT_ROME.jpg' }
+        ],
+        'DE 독일 (Germany)': [
+            { name: '베를린', desc: '역사와 힙한 문화의 공존', img: '/images/DE_BERLIN.jpg' }
+        ]
+    };
+
     const renderStepContent = () => {
         switch (step) {
             case 1:
@@ -87,63 +154,75 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                             <div style={{ color: '#b0b0b0', fontSize: 13, marginBottom: 8 }}>떠나고 싶은 대륙을 선택하세요</div>
                             <h2 style={{ color: 'var(--primary-color)', fontSize: 20, fontWeight: 700 }}>Choose Your Destination</h2>
                         </div>
-                        <div className="rc-grid-2">
-                            <div className={`rc-continent asia ${continent === '아시아' ? 'selected' : ''}`} onClick={() => setContinent('아시아')}>
-                                <div style={{ fontSize: 32, marginBottom: 8 }}>🌍</div>
-                                아시아
-                            </div>
-                            <div className={`rc-continent europe ${continent === '유럽' ? 'selected' : ''}`} onClick={() => setContinent('유럽')}>
-                                <div style={{ fontSize: 32, marginBottom: 8 }}>🏰</div>
-                                유럽
-                            </div>
+                        <div className="rc-map-area">
+                            <WorldMapSelection 
+                                selectedContinent={continent} 
+                                onSelect={(cont) => {
+                                    setContinent(cont);
+                                    // 대륙 변경 시 해당 대륙의 첫 번째 국가로 초기화
+                                    const firstCountry = countriesByContinent[cont]?.[0];
+                                    if (firstCountry) {
+                                        setCountry(`${firstCountry.code} ${firstCountry.name}`);
+                                    } else {
+                                        setCountry('');
+                                    }
+                                }} 
+                            />
                         </div>
                     </>
                 );
             case 2:
-                const countries = [
-                    { code: 'JP', name: '일본 (Japan)' },
-                    { code: 'KR', name: '한국 (Korea)' },
-                    { code: 'TH', name: '태국 (Thailand)' },
-                    { code: 'SG', name: '싱가포르 (Singapore)' }
-                ];
+                const currentCountries = countriesByContinent[continent] || [];
                 return (
                     <>
                         <div className="rc-title-area">
-                            <h2 className="rc-title">국가를 선택하세요</h2>
+                            <h2 className="rc-title">{continent}의 어느 나라로 갈까요?</h2>
                             <p className="rc-subtitle">여행할 국가를 골라주세요</p>
                         </div>
                         <div className="rc-list-y">
-                            {countries.map(c => (
-                                <div key={c.code} className={`rc-country-item ${country === `${c.code} ${c.name}` ? 'selected' : ''}`} onClick={() => setCountry(`${c.code} ${c.name}`)}>
-                                    <span className="rc-country-code">{c.code}</span>
-                                    <span className="rc-country-name">{c.name}</span>
-                                </div>
-                            ))}
+                            {currentCountries.length > 0 ? (
+                                currentCountries.map(c => (
+                                    <div key={c.code} className={`rc-country-item ${country === `${c.code} ${c.name}` ? 'selected' : ''}`} onClick={() => {
+                                        setCountry(`${c.code} ${c.name}`);
+                                        // 국가 변경 시 해당 국가의 첫 번째 도시로 초기화 (데이터가 있는 경우)
+                                        const firstCity = citiesByCountry[`${c.code} ${c.name}`]?.[0];
+                                        if (firstCity) setCity(firstCity.name);
+                                    }}>
+                                        <span className="rc-country-code">{c.code}</span>
+                                        <span className="rc-country-name">{c.name}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-10 text-gray-400">준비 중인 지역입니다.</div>
+                            )}
                         </div>
                     </>
                 );
             case 3:
-                const cities = [
-                    { name: '교토', desc: '고즈넉한 전통과 시간의 어울림', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop' },
-                    { name: '도쿄', desc: '화려함과 전통이 공존하는 메트로', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400&h=200&fit=crop' },
-                    { name: '오사카', desc: '맛과 활기가 넘치는 도시', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8fYVBdzmKVugH4sgBMXc7G-qA9O8r4XBaiw&s' }
-                ];
+                const currentCities = citiesByCountry[country] || [];
                 return (
                     <>
                         <div className="rc-title-area">
-                            <h2 className="rc-title">도시를 선택하세요</h2>
+                            <h2 className="rc-title">{country.split(' ')[1]}의 어느 도시로 갈까요?</h2>
                             <p className="rc-subtitle">여행할 도시를 골라주세요</p>
                         </div>
                         <div className="rc-list-y">
-                            {cities.map(c => (
-                                <div key={c.name} className={`rc-city-card ${city === c.name ? 'selected' : ''}`} onClick={() => setCity(c.name)}>
-                                    <img src={c.img} alt={c.name} draggable={false} />
-                                    <div className="rc-city-overlay">
-                                        <h3>{c.name}</h3>
-                                        <p>{c.desc}</p>
+                            {currentCities.length > 0 ? (
+                                currentCities.map(c => (
+                                    <div key={c.name} className={`rc-city-card ${city === c.name ? 'selected' : ''}`} onClick={() => setCity(c.name)}>
+                                        <img src={c.img} alt={c.name} draggable={false} />
+                                        <div className="rc-city-overlay">
+                                            <h3>{c.name}</h3>
+                                            <p>{c.desc}</p>
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-20">
+                                    <div style={{ fontSize: 40, marginBottom: 16 }}>✈️</div>
+                                    <p style={{ color: '#666' }}>아직 추천 도시가 없는 국가입니다.<br/>다른 국가를 선택해 보세요!</p>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </>
                 );
@@ -283,7 +362,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     </button>
                 )}
             </div>
-            <div className={`rc-content ${step === 4 ? 'p-0' : ''}`}>
+            <div className={`rc-content ${step === 4 ? 'p-0' : ''} ${step === 1 ? 'rc-content-centered' : ''}`}>
                 {renderStepContent()}
             </div>
             
@@ -291,13 +370,27 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             {step === 1 && (
                 <div className="rc-bottom">
                     <div className="rc-bottom-info">
-                        <CheckCircle2 size={16} color="var(--primary-color)" /> 선택된 대륙: <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span>
+                        <Globe size={16} color="var(--primary-color)" /> 
+                        <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{continent}</span> 여행을 계획 중입니다.
                     </div>
                     <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                 </div>
             )}
-            {(step === 2 || step === 3) && (
+            {step === 2 && (
                 <div className="rc-bottom">
+                    <div className="rc-bottom-info">
+                        <CheckCircle2 size={16} color="var(--primary-color)" />
+                        <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{country.split(' ')[1]}</span>(으)로 떠날까요?
+                    </div>
+                    <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
+                </div>
+            )}
+            {step === 3 && (
+                <div className="rc-bottom">
+                    <div className="rc-bottom-info">
+                        <CheckCircle2 size={16} color="var(--primary-color)" />
+                        <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{city}</span> 여행을 시작합니다!
+                    </div>
                     <button className="rc-btn-primary" onClick={handleNext}>다음으로</button>
                 </div>
             )}

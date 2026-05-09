@@ -67,19 +67,19 @@ INSERT INTO "User" (id, email, name, "dnaType") VALUES
 -- * 실시간 인기 도시 연동군 (1~8번): 서울, 제주, 부산, 속초, 오사카, 교토, 도쿄, 후쿠오카
 -- * 일반 추천/결과 호출군 (9~13번): 오키나와, 파리, 바르셀로나, 로마, 베를린
 INSERT INTO "Destination" VALUES
-('KR_SEOUL','서울','한국','컬처 트렌드세터','수도','/images/KR_SEOUL.jpg','KRW','한국어','220V','N',ARRAY['봄','가을'],3),
-('KR_JEJU','제주도','한국','힐링 럭셔리러','휴양','/images/KR_JEJU.jpg','KRW','한국어','220V','N',ARRAY['봄','가을'],3),
-('KR_BUSAN','부산','한국','액티비티 어드벤처러','항구','/images/KR_BUSAN.jpg','KRW','한국어','220V','N',ARRAY['여름'],3),
-('KR_SOKCHO','속초','한국','푸드트립 가성비러','식도락','/images/KR_SOKCHO.jpg','KRW','한국어','220V','N',ARRAY['여름'],2),
-('JP_OSAKA','오사카','일본','본투비 푸드파이터','먹방','/images/JP_OSAKA.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
-('JP_KYOTO','교토','일본','클래식 슬로우뷰어','전통','/images/JP_KYOTO.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
-('JP_TOKYO','도쿄','일본','프리미엄 쇼퍼홀릭','도심','/images/JP_TOKYO.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],4),
-('JP_FUKUOKA','후쿠오카','일본','식도락 여행러','라멘','/images/JP_FUKUOKA.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
-('JP_OKINAWA','오키나와','일본','욜로 즉흥러','바다','/images/JP_OKINAWA.jpg','JPY','일본어','100V','N',ARRAY['여름'],2),
-('FR_PARIS','파리','프랑스','로맨틱 예술가','예술','/images/FR_PARIS.jpg','EUR','프랑스어','220V','N',ARRAY['봄','가을'],5),
-('ES_BARCELONA','바르셀로나','스페인','가우디 건축탐험가','건축','/images/ES_BARCELONA.jpg','EUR','스페인어','220V','N',ARRAY['봄','가을'],4),
-('IT_ROME','로마','이탈리아','시간여행자','역사','/images/IT_ROME.jpg','EUR','이탈리아어','220V','N',ARRAY['봄','가을'],4),
-('DE_BERLIN','베를린','독일','힙스터 역사학자','힙','/images/DE_BERLIN.jpg','EUR','독일어','230V','N',ARRAY['여름','가을'],4);
+('KR_SEOUL','서울, 한국','한국','컬처 트렌드세터','전통과 현대가 공존하며 역동적인 에너지가 넘치는 대한민국의 수도','/images/KR_SEOUL.jpg','KRW','한국어','220V','N',ARRAY['봄','가을'],3),
+('KR_JEJU','제주도, 한국','한국','힐링 럭셔리러','에메랄드빛 바다와 천혜의 자연경관이 어우러진 환상의 섬','/images/KR_JEJU.jpg','KRW','한국어','220V','N',ARRAY['봄','가을'],3),
+('KR_BUSAN','부산, 한국','한국','액티비티 어드벤처러','시원한 바다와 화려한 야경, 미식이 즐거운 역동적인 항구 도시','/images/KR_BUSAN.jpg','KRW','한국어','220V','N',ARRAY['여름'],3),
+('KR_SOKCHO','속초, 한국','한국','푸드트립 가성비러','웅장한 설악산과 푸른 동해 바다를 품은 낭만적인 여행지','/images/KR_SOKCHO.jpg','KRW','한국어','220V','N',ARRAY['여름'],2),
+('JP_OSAKA','오사카, 일본','일본','본투비 푸드파이터','맛있는 음식과 활기찬 분위기, 유쾌한 사람들이 반겨주는 식도락의 천국','/images/JP_OSAKA.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
+('JP_KYOTO','교토, 일본','일본','클래식 슬로우뷰어','천년 고도의 사찰과 전통 거리를 천천히 거니는 고즈넉한 여행','/images/JP_KYOTO.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
+('JP_TOKYO','도쿄, 일본','일본','프리미엄 쇼퍼홀릭','트렌디한 쇼핑과 미식, 다채로운 즐거움이 가득한 아시아 최대의 메트로폴리스','/images/JP_TOKYO.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],4),
+('JP_FUKUOKA','후쿠오카, 일본','일본','식도락 여행러','가까운 거리와 맛있는 라멘, 소소한 쇼핑을 즐기기 좋은 힐링 여행지','/images/JP_FUKUOKA.jpg','JPY','일본어','100V','N',ARRAY['봄','가을'],3),
+('JP_OKINAWA','오키나와, 일본','일본','욜로 즉흥러','에메랄드빛 바다와 독특한 류큐 문화를 간직한 동양의 하와이','/images/JP_OKINAWA.jpg','JPY','일본어','100V','N',ARRAY['봄','여름'],2),
+('FR_PARIS','파리, 프랑스','프랑스','로맨틱 예술가','낭만과 예술, 미식의 상징이자 전 세계 여행자들의 로망인 빛의 도시','/images/FR_PARIS.jpg','EUR','프랑스어','220V','N',ARRAY['봄','가을'],5),
+('ES_BARCELONA','바르셀로나, 스페인','스페인','가우디 건축탐험가','가우디의 숨결이 느껴지는 독특한 건축물과 지중해의 햇살이 가득한 정열의 도시','/images/ES_BARCELONA.jpg','EUR','스페인어','220V','N',ARRAY['봄','가을'],4),
+('IT_ROME','로마, 이탈리아','이탈리아','시간여행자','도시 전체가 거대한 박물관처럼 역사의 흔적을 간직한 영원한 도시','/images/IT_ROME.jpg','EUR','이탈리아어','220V','N',ARRAY['봄','가을'],4),
+('DE_BERLIN','베를린, 독일','독일','힙스터 역사학자','베를린 장벽의 역사와 힙한 문화가 공존하는 독일의 창의적인 수도','/images/DE_BERLIN.jpg','EUR','독일어','230V','N',ARRAY['여름','가을'],4);
 
 -- [5] 상세 장소 데이터 (Place) - 도시별 그룹화
 
@@ -130,7 +130,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('KR_SOKCHO', '청초호', '관광지', '도심 호수', 'https://www.telltrip.com/wp-content/uploads/2026/01/sokcho-cheongchoho-lake-sunrise-walking-trail4.webp', 4, '속초시 엑스포로', 38.201, 128.585, '00:00-24:00', '', ARRAY['#산책','#호수'], 0, 4.6),
 ('KR_SOKCHO', '영금정', '관광지', '파도 소리', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/38/1d/14/pavilion-along-the-coast.jpg?w=1200&h=-1&s=1', 5, '속초시 영금정로', 38.212, 128.601, '00:00-24:00', '', ARRAY['#바다','#일출'], 0, 4.7),
 ('KR_SOKCHO', '만석닭강정', '맛집', '속초 대표', 'https://www.mansuk.kr/skin/img/sub/menu-detail-02.jpg', 6, '속초시 중앙로', 38.205, 128.592, '10:00-20:00', '', ARRAY['#닭강정','#필수'], 18000, 4.5),
-('KR_SOKCHO', '봉포머구리', '맛집', '물회 맛집', 'https://i.namu.wiki/i/OGwOJFdsdg84wW3_BkIF64UxYTKAfZArDXKoiCRJqKkn92PRwcTVy2ZkOfQRlidj4Yo_pSI-QshpIX-ifvx_7sN77Xoppik7Zji-ylGv1PsdSUzIpor5STvwOQQEbG1rB4kq0KyGpUDbYdGg7xQLoQ.webp', 7, '속초시 영랑해안길', 38.215, 128.596, '10:00-21:00', '', ARRAY['#물회','#해산물'], 15000, 4.4),
+('KR_SOKCHO', '봉포머구리', '맛집', '물회 맛집', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F9b9IN%2FbtsInwP7Ghw%2FAAAAAAAAAAAAAAAAAAAAAK6Y70lMOCVUvqzeNFBM42MkduaUqWzUU0mZwBxAy1bI%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1780239599%26allow_ip%3D%26allow_referer%3D%26signature%3DRO36xltbcsUeXu6eVUOC6taeEY4%253D', 7, '속초시 영랑해안길', 38.215, 128.596, '10:00-21:00', '', ARRAY['#물회','#해산물'], 15000, 4.4),
 ('KR_SOKCHO', '단천식당', '맛집', '순대 노포', 'https://cdn.imweb.me/upload/S20200306ae10b10180d43/657fe12e64198.jpg', 8, '속초시 아바이마을길', 38.201, 128.594, '08:30-20:30', '', ARRAY['#순대','#노포'], 12000, 4.5),
 ('KR_SOKCHO', '청초수물회', '맛집', '뷰 맛집', 'http://metoo.kr/xe/files/attach/images/2183/257/002/f6001a4c96ae9a4fde25e144aaed2618.jpg', 9, '속초시 엑스포로', 38.196, 128.583, '09:30-21:00', '', ARRAY['#물회','#가족'], 16000, 4.4),
 ('KR_SOKCHO', '함흥냉면옥', '맛집', '원조 냉면', 'https://minio.nculture.org/amsweb-opt/multimedia_assets/196/85392/86313/c/%ED%95%A8%ED%9D%A5%EB%83%89%EB%A9%B4%EC%98%A5-%289%29-medium-size.jpg', 10, '속초시 청초호반로', 38.205, 128.588, '10:30-20:30', '', ARRAY['#냉면','#원조'], 10000, 4.3);
@@ -139,7 +139,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_OSAKA', '도톤보리', '관광지', '글리코상 번화가', 'https://cdn.tripstore.kr/IMAGE/debb49d9e85913fa67148df87db5dd5d.png', 1, 'Osaka, Chuo Ward', 34.668, 135.501, '00:00-24:00', '', ARRAY['#야경','#먹방'], 0, 4.5),
 ('JP_OSAKA', '오사카성', '관광지', '천수각 역사', 'https://att-japan.net/wp-content/uploads/2025/04/pixta_98367090_M_R.webp', 2, '1-1 Osakajo, Chuo', 34.687, 135.526, '09:00-17:00', '', ARRAY['#역사','#공원'], 600, 4.5),
-('JP_OSAKA', '신세카이', '관광지', '레트로 거리', 'https://i.namu.wiki/i/_0Dr0qzKO8poe-PV41sJCo1vQocUbWpMBekSf2d1GyGON2sR6T1gGLqqt2mj7024cxdsgSMMN3ofoLwCB9btES6xvJu_3-K7h_DESha1QDCXfWnBRX4f5oqM9RpneRZQ0FF1jbjDTf1XTBAVYTgkOQ.webp', 3, 'Osaka, Naniwa Ward', 34.652, 135.506, '10:00-22:00', '', ARRAY['#레트로','#쿠시카츠'], 0, 4.4),
+('JP_OSAKA', '신세카이', '관광지', '레트로 거리', 'https://i.namu.wiki/i/DIg7xIb6LsY42iSjD-oymEzRVWNsR4J83Y5pP2qAVQj6kJ5WX_r_hgaImS4KJnMXRzThRLzB7ayjZPZ4Dic82vgQ9a029wQyCASoH0vtP2R9hJ_vR8PMThiWeAv29i5D9CAKcu1PulAX-iqlgZsLNw.webp', 3, 'Osaka, Naniwa Ward', 34.652, 135.506, '10:00-22:00', '', ARRAY['#레트로','#쿠시카츠'], 0, 4.4),
 ('JP_OSAKA', 'USJ', '관광지', '테마파크', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/22/33/49/48/super-nintendo-world.jpg?w=1200&h=-1&s=1', 4, 'Konohana Ward', 34.665, 135.432, '09:00-21:00', '', ARRAY['#마리오','#유니버설'], 8000, 4.8),
 ('JP_OSAKA', '공중정원', '관광지', '전망대', 'https://rimage.gnst.jp/livejapan.com/public/img/spot/lj/00/09/lj0009849/lj0009849_5cac3e579da9f_main.jpg?20260428070721&q=80&rw=616', 5, 'Kita Ward, Osaka', 34.705, 135.490, '09:00-22:30', '', ARRAY['#야경','#데이트'], 1500, 4.6),
 ('JP_OSAKA', '사스시', '맛집', '장인 스시', 'https://blog-static.kkday.com/ko/blog/wp-content/uploads/9.-%EC%8A%A4%EC%8B%9C%ED%88%AC%EC%83%A4%EB%B8%8C%EC%83%A4%EB%B8%8C%EC%88%98%EC%A0%95.jpg', 6, 'Chuo Ward, Osaka', 34.667, 135.502, '11:00-22:00', '', ARRAY['#스시','#가성비'], 3000, 4.7),
@@ -152,7 +152,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_KYOTO', '기요미즈데라', '관광지', '사찰 절벽', 'https://img.activityjapan.com/wi/kiyomizudera-midokoro_thumb.jpg', 1, 'Kyoto, Higashiyama', 34.994, 135.785, '06:00-18:00', '', ARRAY['#절경','#역사'], 400, 4.8),
 ('JP_KYOTO', '이나리대샤', '관광지', '천개의 도리이', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Hushimi_Inari_Roumon.jpg/500px-Hushimi_Inari_Roumon.jpg', 2, 'Fushimi Ward, Kyoto', 34.967, 135.772, '00:00-24:00', '', ARRAY['#사진','#빨간문'], 0, 4.7),
-('JP_KYOTO', '금각사', '관광지', '금박 사찰', 'https://i.namu.wiki/i/FeNGJQCkoqojkBKGcLzHYRrlXJ58PTMr2xy74Nn6hpbJvoxbCEDYynPDe9J0ih6KgdxrsIJq2SMzZWgIbmPQqcodwZ0KKuQIOkyQii7WIi8F-4oqDrV1VJpDLuLJNJkRbiwQeFe1G8XZXMCaGMYDRQ.webp', 3, 'Kita Ward, Kyoto', 35.039, 135.729, '09:00-17:00', '', ARRAY['#금빛','#정원'], 400, 4.6),
+('JP_KYOTO', '금각사', '관광지', '금박 사찰', 'https://assets.hldycdn.com/cdn-cgi/image/format=webp,quality=75,width=600/articles/4eeb57_f41fd8d0b75a4c79823cc1f3c4182f74~mv2.jpg', 3, 'Kita Ward, Kyoto', 35.039, 135.729, '09:00-17:00', '', ARRAY['#금빛','#정원'], 400, 4.6),
 ('JP_KYOTO', '아라시야마', '관광지', '대나무 숲', 'https://img.activityjapan.com/wi/arashiyama-tourist-spot_top01.jpg', 4, 'Ukyo Ward, Kyoto', 35.009, 135.667, '00:00-24:00', '', ARRAY['#산책','#대나무'], 0, 4.7),
 ('JP_KYOTO', '은각사', '관광지', '모래 정원', 'https://cdn.kongnews.net/news/photo/201802/4127_11538_038.jpg', 5, 'Sakyo Ward, Kyoto', 35.026, 135.798, '08:30-17:00', '', ARRAY['#정원','#와비사비'], 500, 4.5),
 ('JP_KYOTO', '히노데우동', '맛집', '카레 우동', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnSwx11Ep97GOXNP5l2BYFKuKUSQUzFaFFcyGcf7CLENCnCPOF4dSuRDFpTHM7vPkkVl85kn1olRu5ALV8vqdbImd_dpn6tptDqD4GPfITmHdslYQcW1mbttX303baPP1OUvT1yAhSl65N/s320/IMG_0459.JPG', 6, 'Kyoto, Sakyo Ward', 35.015, 135.794, '11:00-15:00', '', ARRAY['#우동','#카레'], 1500, 4.7),
@@ -164,8 +164,8 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: TOKYO] - 실시간 인기 도시 사용
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_TOKYO', '시부야스카이', '관광지', '시부야 전망', 'https://www.datocms-assets.com/101439/1702617733-shibuya-sky.webp?fit=crop&h=800&w=1200&fm=avif', 1, 'Tokyo, Shibuya', 35.658, 139.702, '10:00-22:00', '', ARRAY['#야경','#명소'], 2000, 4.8),
-('JP_TOKYO', '센소지', '관광지', '아사쿠사 사찰', 'https://images.unsplash.com/photo-1549675584-91f19337af3d', 2, 'Asakusa, Taito', 35.714, 139.796, '06:00-17:00', '', ARRAY['#전통','#아사쿠사'], 0, 4.6),
-('JP_TOKYO', '도쿄타워', '관광지', '상징적 랜드마크', 'https://images.unsplash.com/photo-1595220600100-349f99e4f526', 3, 'Minato, Tokyo', 35.658, 139.745, '09:00-23:00', '', ARRAY['#랜드마크','#야경'], 1200, 4.5),
+('JP_TOKYO', '센소지', '관광지', '아사쿠사 사찰', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Sensoji_Temple_%2840909716384%29.jpg/500px-Sensoji_Temple_%2840909716384%29.jpg', 2, 'Asakusa, Taito', 35.714, 139.796, '06:00-17:00', '', ARRAY['#전통','#아사쿠사'], 0, 4.6),
+('JP_TOKYO', '도쿄타워', '관광지', '상징적 랜드마크', 'https://att-japan.net/wp-content/uploads/2025/07/shibakoen33010004_m.jpg', 3, 'Minato, Tokyo', 35.658, 139.745, '09:00-23:00', '', ARRAY['#랜드마크','#야경'], 1200, 4.5),
 ('JP_TOKYO', '하라주쿠', '관광지', '패션의 거리', 'https://images.unsplash.com/photo-1542350327-463ff302029a', 4, 'Shibuya, Tokyo', 35.670, 139.702, '10:00-20:00', '', ARRAY['#쇼핑','#청춘'], 0, 4.4),
 ('JP_TOKYO', '신주쿠교엔', '관광지', '도심 속 공원', 'https://images.unsplash.com/photo-1538669715515-5c3b18538792', 5, 'Shinjuku, Tokyo', 35.685, 139.710, '09:00-16:00', '', ARRAY['#힐링','#벚꽃'], 500, 4.7),
 ('JP_TOKYO', '아후리라멘', '맛집', '유자 라멘', 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43', 6, 'Ebisu, Tokyo', 35.644, 139.712, '11:00-05:00', '', ARRAY['#라멘','#유자'], 1200, 4.6),
@@ -206,7 +206,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('FR_PARIS', '루브르 박물관', '관광지', '세계 최대 박물관', 'https://i.namu.wiki/i/gRGIjlnnTBsgC2rSAM4yzDru5hZkrV4tyNrQLkI3diY7crABOgtJ8aQGS7-Ssmn-6qGpRnMFZ6PsOlDCAIxIBN06oKozbGr4S-9aUkww9ZaZ3dFhLRAuNGFq_nCGXwSZmYfRrJvxdP6l04EBOlzN6A.webp', 2, 'Paris, France', 48.860, 2.337, '09:00-18:00', '', ARRAY['#예술','#모나리자'], 17000, 4.8),
 ('FR_PARIS', '몽마르트르 언덕', '관광지', '예술가 언덕', 'https://d3b39vpyptsv01.cloudfront.net/photo/1/2/7005e19b43ee335eefeddcc1eea0d051.jpg', 3, 'Paris, France', 48.886, 2.343, '00:00-24:00', '', ARRAY['#화가','#야경'], 0, 4.6),
 ('FR_PARIS', '개선문', '관광지', '승리의 상징', 'https://i.namu.wiki/i/QYj_wlyjzF9CyGC1sdPnr4QgsONeCQB-mpx_kk0n_0cmw_gsN6ojM5WO9sLSwyc4Lg3oD69f60qAOOoR-uFflcwPlsh-bQFinYVJ4GMjypBUzDno5TPM1e1Xc5CwDcZbNYV9Hi7-7g2jnWl_S6SCpg.webp', 4, 'Paris, France', 48.873, 2.295, '10:00-23:00', '', ARRAY['#역사','#전망'], 13000, 4.7),
-('FR_PARIS', '베르사유 궁전', '관광지', '화려한 궁전', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Versailles_Palace.jpg/960px-Versailles_Palace.jpg', 48.804, 2.120, '09:00-18:30', '', ARRAY['#거울의방','#궁전'], 18000, 4.8),
+('FR_PARIS', '베르사유 궁전', '관광지', '화려한 궁전', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Versailles_Palace.jpg/960px-Versailles_Palace.jpg', 5, 'Versailles, France', 48.804, 2.120, '09:00-18:30', '', ARRAY['#거울의방','#궁전'], 18000, 4.8),
 ('FR_PARIS', '카페드플로르', '맛집', '역사적 카페', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/a8/b0/9c/le-cafe-de-flore-172.jpg?w=1200&h=700&s=1', 6, 'Paris, France', 48.854, 2.333, '07:30-01:30', '', ARRAY['#커피','#전통'], 15000, 4.5),
 ('FR_PARIS', '브레쥬', '맛집', '바게트 맛집', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/12/28/0c/c4/photo0jpg.jpg?w=1600&h=900&s=1', 7, 'Paris, France', 48.865, 2.348, '07:00-20:00', '', ARRAY['#바게트','#빵'], 5000, 4.6),
 ('FR_PARIS', '안젤리나', '맛집', '몽블랑 명가', 'https://d3b39vpyptsv01.cloudfront.net/photo/1/2/17141f388356da32acefbd95c385a82d.jpg', 8, 'Paris, France', 48.865, 2.329, '07:30-19:00', '', ARRAY['#디저트','#달콤'], 20000, 4.6),
@@ -216,8 +216,8 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: BARCELONA] - 검색 및 추천 결과 호출 전용
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('ES_BARCELONA', '사그라다파밀리아', '관광지', '가우디 성당', 'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216', 1, 'Barcelona, Spain', 41.403, 2.174, '09:00-20:00', '', ARRAY['#가우디','#건축'], 35000, 4.8),
-('ES_BARCELONA', '구엘공원', '관광지', '동화 속 공원', 'https://images.unsplash.com/photo-1583531172005-814191b8b6c0', 2, 'Barcelona, Spain', 41.414, 2.152, '08:00-19:00', '', ARRAY['#도마뱀','#예술'], 10000, 4.7),
-('ES_BARCELONA', '카사바트요', '관광지', '해골 모양 집', 'https://images.unsplash.com/photo-1583531172005-814191b8b6c0', 3, 'Barcelona, Spain', 41.391, 2.164, '09:00-20:00', '', ARRAY['#가우디','#야경'], 35000, 4.8),
+('ES_BARCELONA', '구엘공원', '관광지', '동화 속 공원', 'https://cdn.emetro.co.kr/data2/content/image/2019/10/06/0540/20191006000023.jpg', 2, 'Barcelona, Spain', 41.414, 2.152, '08:00-19:00', '', ARRAY['#도마뱀','#예술'], 10000, 4.7),
+('ES_BARCELONA', '카사바트요', '관광지', '해골 모양 집', 'https://media.triple.guide/triple-cms/c_limit,f_auto,h_1024,w_1024/576642c0-9848-4ed0-a276-ea4bc4a540f3', 3, 'Barcelona, Spain', 41.391, 2.164, '09:00-20:00', '', ARRAY['#가우디','#야경'], 35000, 4.8),
 ('ES_BARCELONA', '바르셀로네타', '관광지', '도시 해변', 'https://images.unsplash.com/photo-1583531172005-814191b8b6c0', 4, 'Barcelona, Spain', 41.378, 2.192, '00:00-24:00', '', ARRAY['#해변','#여름'], 0, 4.6),
 ('ES_BARCELONA', '카사밀라', '관광지', '파도 치는 집', 'https://images.unsplash.com/photo-1583531172005-814191b8b6c0', 5, 'Barcelona, Spain', 41.395, 2.162, '09:00-20:00', '', ARRAY['#건축','#명소'], 30000, 4.7),
 ('ES_BARCELONA', '시우다드콘달', '맛집', '타파스 맛집', 'https://images.unsplash.com/photo-1583531172005-814191b8b6c0', 6, 'Barcelona, Spain', 41.388, 2.162, '12:00-24:00', '', ARRAY['#타파스','#인기'], 25000, 4.7),
@@ -229,8 +229,8 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: ROME] - 검색 및 추천 결과 호출 전용
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('IT_ROME', '콜로세움', '관광지', '검투사 경기장', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 1, 'Rome, Italy', 41.890, 12.492, '08:30-19:00', '', ARRAY['#검투사','#역사'], 24000, 4.8),
-('IT_ROME', '트레비분수', '관광지', '동전의 기적', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 2, 'Rome, Italy', 41.900, 12.483, '00:00-24:00', '', ARRAY['#야경','#분수'], 0, 4.7),
-('IT_ROME', '판테온', '관광지', '고대 신전', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 3, 'Rome, Italy', 41.898, 12.476, '09:00-19:00', '', ARRAY['#웅장','#무료'], 5000, 4.8),
+('IT_ROME', '트레비분수', '관광지', '동전의 기적', 'https://cdn.eyesmag.com/content/uploads/posts/2024/12/23/web_main960_trevifountain-ed58ee3b-46e1-40eb-815c-45b7280b1ffb.jpg', 2, 'Rome, Italy', 41.900, 12.483, '00:00-24:00', '', ARRAY['#야경','#분수'], 0, 4.7),
+('IT_ROME', '판테온', '관광지', '고대 신전', 'https://d3b39vpyptsv01.cloudfront.net/photo/1/2/9da72f5ee63a992a56edae3d97c958c9.jpg', 3, 'Rome, Italy', 41.898, 12.476, '09:00-19:00', '', ARRAY['#웅장','#무료'], 5000, 4.8),
 ('IT_ROME', '바티칸', '관광지', '미술의 성지', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 4, 'Vatican City', 41.906, 12.453, '09:00-18:00', '', ARRAY['#교황','#미술'], 17000, 4.9),
 ('IT_ROME', '스페인계단', '관광지', '로마의 휴일', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 5, 'Rome, Italy', 41.905, 12.482, '00:00-24:00', '', ARRAY['#영화','#낭만'], 0, 4.6),
 ('IT_ROME', '지올리띠', '맛집', '원조 젤라또', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5', 6, 'Rome, Italy', 41.901, 12.477, '07:00-01:00', '', ARRAY['#젤라또','#달콤'], 5000, 4.7),
@@ -241,13 +241,41 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 
 -- [CITY: BERLIN] - 검색 및 추천 결과 호출 전용
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
-('DE_BERLIN', '브란덴부르크', '관광지', '통일의 상징', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 1, 'Berlin, Germany', 52.516, 13.377, '00:00-24:00', '', ARRAY['#역사','#상징'], 0, 4.7),
-('DE_BERLIN', '이스트사이드', '관광지', '벽화 장벽', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 2, 'Berlin, Germany', 52.505, 13.439, '00:00-24:00', '', ARRAY['#장벽','#예술'], 0, 4.7),
-('DE_BERLIN', '연방의사당', '관광지', '유리 돔 전망', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 3, 'Berlin, Germany', 52.518, 13.376, '08:00-24:00', '', ARRAY['#돔','#전망'], 0, 4.6),
+('DE_BERLIN', '브란덴부르크', '관광지', '통일의 상징', 'https://i.namu.wiki/i/C7sQx55jDYcNPeNY-TONukGWHXvmcrk7RpGQju4p0pxS9R6A85SQVmZVQgPtdCDeYdYxpV8TV1YAj96eqerUdx8rl7cmXWBY9NYiUuCVxBpC7IfEY7ZDP9p9S8P2FHCIM_RF4JM4apUw3LVHTe-lKA.webp', 1, 'Berlin, Germany', 52.516, 13.377, '00:00-24:00', '', ARRAY['#역사','#상징'], 0, 4.7),
+('DE_BERLIN', '이스트사이드', '관광지', '벽화 장벽', 'https://d3b39vpyptsv01.cloudfront.net/photo/1/2/b192f77c2d994e7009ca95279082e196_l.jpg', 2, 'Berlin, Germany', 52.505, 13.439, '00:00-24:00', '', ARRAY['#장벽','#예술'], 0, 4.7),
+('DE_BERLIN', '연방의사당', '관광지', '유리 돔 전망', 'https://i.namu.wiki/i/HAN9VEUtRbaST9FpzkJhlGSUdI5A6kKqwyN6brsau3PAk8I5lDTl54JvPZvQvwmn2URGn2m3Za-aOk3Cmp9DZiwVm4Ro06-DwbkmKeK9vgLvVGLqazqX4Hoi0JsLEeEGs1tCYv2R2axJS-aCsRe71Q.webp', 3, 'Berlin, Germany', 52.518, 13.376, '08:00-24:00', '', ARRAY['#돔','#전망'], 0, 4.6),
 ('DE_BERLIN', '텔레비전탑', '관광지', '최고층 야경', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 4, 'Berlin, Germany', 52.520, 13.409, '09:00-24:00', '', ARRAY['#야경','#랜드마크'], 20000, 4.5),
 ('DE_BERLIN', '대성당', '관광지', '웅장한 성당', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 5, 'Berlin, Germany', 52.519, 13.401, '09:00-19:00', '', ARRAY['#웅장','#천장'], 9000, 4.7),
 ('DE_BERLIN', '커리36', '맛집', '커리 부어스트', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 6, 'Berlin, Germany', 52.493, 13.388, '09:00-05:00', '', ARRAY['#소시지','#맥주'], 7000, 4.6),
 ('DE_BERLIN', '무스타파', '맛집', '케밥 맛집', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 7, 'Berlin, Germany', 52.493, 13.388, '10:00-03:00', '', ARRAY['#케밥','#웨이팅'], 8000, 4.7),
 ('DE_BERLIN', '호프브로이', '맛집', '학센과 맥주', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 8, 'Berlin, Germany', 52.522, 13.411, '11:00-24:00', '', ARRAY['#학센','#맥주'], 25000, 4.5),
 ('DE_BERLIN', '버거마이스터', '맛집', '인생 버거', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 9, 'Berlin, Germany', 52.501, 13.444, '11:00-03:00', '', ARRAY['#버거','#가성비'], 10000, 4.7),
-('DE_BERLIN', '리터스포트', '맛집', '초콜릿 박물관', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 10, 'Berlin, Germany', 52.514, 13.391, '10:00-20:00', '', ARRAY['#달콤','#커스텀'], 10000, 4.4);
+('DE_BERLIN', '리터스포트', '맛집', '초콜릿 박물관', 'https://images.unsplash.com/photo-1560969184-10fe8719e047', 10, 'Berlin, Germany', 52.514, 13.391, '10:00-20:00', '', ARRAY['#달콤','#커스텀'], 10000, 4.4),
+-- 피드 꿀팁 이미지 전부 변경 완료
+('KR_SEOUL', 'T-money 카드 이용 꿀팁', '관광지', '대중교통 환승 할인 혜택과 편의점 결제 방법, 잔액 환불 요령 안내', 'https://i.namu.wiki/i/0ndNeuNu7sznF6E2Apxg6bbKWjxFy_4uq-3-HmuZcIWbxVdBhenyikPqfVSSTX52k0whIR9EttS3mlHb8v_NAH4RVMtXvbFtGuOLoV6QxiylhpvOYkI48JjQ7O6gYovU3um6JSSsM7gNIip5jCpmpQ.webp', 11, 'Seoul, Korea', 37.566, 126.978, '24시간', '', ARRAY['#교통','#절약'], 0, 4.9),
+('KR_BUSAN', '부산 시티투어버스(BUTI) 가이드', '관광지', '해운대, 광안리 등 주요 해변을 하루 종일 무제한으로 이동하는 방법', 'https://i.namu.wiki/i/OwNXe5zhp3ZVRGLtC1cGW0aNnjiA4BR-eFxMBQK4Rx_DJzT8ciwK_H4ukfOk3BVLGRCuyT2nema3ON_BlpNjOkBnBTre5ulXGwH4pKy-OIEeLRBKzhLyrzl7GlVQow_2oEpYvotxoiPPO-3Arfs-rA.webp', 11, 'Busan, Korea', 35.179, 129.075, '09:00-18:00', '', ARRAY['#교통','#해변'], 15000, 4.8),
+('KR_JEJU', '제주 렌터카 이용 및 주차 팁', '관광지', '전기차 충전소 위치 찾기와 주요 명소 무료 주차장 활용 방법 안내', 'https://mblogthumb-phinf.pstatic.net/MjAyMzA0MjVfMTEz/MDAxNjgyMzg1OTQyNzk1.ilPi8-4RwiRHjDZXAE9ZE8cu56L5Ixjgu3Iw_oM_mdUg.SyB18g7GKdpRSrlh4AIATlRrYw29nel78J2TIRzRNsgg.PNG.jejussok8666/%EC%A0%9C%EC%A3%BC%EC%86%8D%EC%9C%BC%EB%A1%9C_%EB%B8%94%EB%A1%9C%EA%B7%B8_%EC%8D%B8%EB%84%A4%EC%9D%BC.png?type=w800', 11, 'Jeju, Korea', 33.499, 126.531, '24시간', '', ARRAY['#운전','#주차'], 0, 4.7),
+('KR_SOKCHO', '설악산 국립공원 등반 팁', '관광지', '권금성 케이블카 대기 줄 줄이는 법과 셔틀버스 시간표 확인 방법', 'https://www.telltrip.com/wp-content/uploads/2025/10/gangwon-hangyeryeong1.webp', 11, 'Sokcho, Korea', 38.191, 128.526, '09:00-17:00', '', ARRAY['#등산','#풍경'], 10000, 4.9),
+('JP_OSAKA', '오사카 주유패스 200% 활용법', '관광지', '지하철 무제한 이용과 40곳 이상의 주요 명소 무료 입장 팁 안내', 'https://ak-d.tripcdn.com/images/1mj0612000f0swmus61F7_Z_640_10000_R5.jpg_.webp?proc=autoorient&proc=source%2ftrip', 11, 'Osaka, Japan', 34.693, 135.502, '09:00-20:00', '', ARRAY['#패스','#가성비'], 28000, 5.0),
+('JP_KYOTO', '교토 원데이 버스 패스 구매 팁', '관광지', '좁은 골목 사찰들을 가장 효율적으로 방문하기 위한 교통권 구매 방법', 'https://ak-d.tripcdn.com/images/1mi5f224x8ydg2a4j3B50_W_640_0_R5_Q80.jpg?proc=source/trip', 11, 'Kyoto, Japan', 35.011, 135.768, '08:00-19:00', '', ARRAY['#버스','#교통'], 7000, 4.8),
+('JP_TOKYO', '도쿄 지하철 티켓 무제한 이용권', '관광지', '외국인 전용 24/48/72시간 패스로 도쿄 시내 교통비 아끼는 방법', 'https://res.klook.com/image/upload/c_crop,h_516,w_825,x_0,y_0,z_0.9/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/cdeua5hww0ladox5bp7v.webp', 11, 'Tokyo, Japan', 35.689, 139.691, '24시간', '', ARRAY['#지하철','#절약'], 8000, 4.7),
+('JP_FUKUOKA', '후쿠오카 오픈탑 버스 이용 안내', '관광지', '도시의 야경과 주요 거점을 지붕 없는 버스로 즐기는 예약 방법', 'https://fukuokaopentopbus.jp/assets/images/NewFukuokaOpenTopBus.png', 11, 'Fukuoka, Japan', 33.590, 130.401, '10:00-20:00', '', ARRAY['#야경','#버스'], 15000, 4.6),
+('JP_OKINAWA', '오키나와 츄라우미 패스 가이드', '관광지', '본섬 주요 관광지 5곳을 저렴하게 묶어 입장하는 실속 팁 안내', 'https://image.kkday.com/v2/image/get/c_fill%2Ch_1600%2Cq_55%2Ct_webp%2Cw_2480/s1.kkday.com/product_285076/20250508074819_lRoqZ/png', 11, 'Okinawa, Japan', 26.212, 127.680, '09:00-18:00', '', ARRAY['#실속','#여행'], 30000, 4.8),
+('FR_PARIS', '파리 뮤지엄 패스 완전 정복', '관광지', '루브르, 오르세 등 주요 박물관을 줄 서지 않고 이용하는 팁과 구매 방법 안내', 'https://d2mgzmtdeipcjp.cloudfront.net/files/magazine/2025/02/20/17400485311399.jpg?s=540x540&t=outside', 11, 'Paris, France', 48.856, 2.352, '09:00-18:00', '', ARRAY['#박물관','#패스'], 75000, 4.9),
+('ES_BARCELONA', '가우디 투어 예약 성공 팁', '관광지', '사그라다 파밀리아 등 인기 건축물 매진을 피하기 위한 온라인 예매 방법', 'http://d3b39vpyptsv01.cloudfront.net/photo/1/2/84813858e9e19ff6f717b8c891e82c0e.jpg', 11, 'Barcelona, Spain', 41.385, 2.173, '09:00-19:00', '', ARRAY['#예약','#건축'], 0, 4.8),
+('IT_ROME', '로마 패스(Roma Pass) 활용 가이드', '관광지', '콜로세움 우선 입장권과 대중교통 무료 이용 혜택을 누리는 방법', 'https://ak-d.tripcdn.com/images/0356j12000rmdjiliCEEC_C_1080_607.jpg_.webp?_fr=wc', 11, 'Rome, Italy', 41.902, 12.496, '09:00-18:00', '', ARRAY['#역사','#꿀팁'], 50000, 4.7),
+('DE_BERLIN', '베를린 웰컴카드 이용 꿀팁', '관광지', '박물관 섬 할인과 무제한 대중교통 이용으로 여행 경비 절약하는 방법', 'https://media.triple.guide/triple-cms/f_auto/9a74fc96-dc0f-4183-a144-b66548fbd140.png', 11, 'Berlin, Germany', 52.520, 13.404, '24시간', '', ARRAY['#할인','#교통'], 35000, 4.8),
+--피드 이벤트 이미지 변경
+('KR_SEOUL', '경복궁 별빛야행 (야간 개장)', '관광지', '은은한 조명 아래 조선 법궁의 밤 정취를 즐기는 특별한 야간 관람 및 공연 이벤트', 'https://cdn.eyesmag.com/content/uploads/posts/2022/03/21/gyeongbokgung-palace-night-01-1408c7c5-b5f5-4554-b3dc-7f3be6f75acc.jpg', 12, 'Seoul, Korea', 37.579, 126.977, '18:40-21:30', '', ARRAY['#야간','#공연'], 60000, 4.9),
+('KR_BUSAN', '부산 국제 영화제 (BIFF)', '관광지', '매년 가을 영화의 전당에서 열리는 아시아 최대 규모의 영화 축제 및 레드카펫 행사', 'https://cdn.channelpnu.pusan.ac.kr/news/photo/202209/31669_12057_3013.jpg', 12, 'Busan, Korea', 35.171, 129.127, '시즌별 상이', '', ARRAY['#축제','#영화'], 10000, 4.8),
+('KR_JEJU', '제주 동문시장 야시장', '관광지', '활기찬 분위기 속에서 제주 특산물로 만든 이색 먹거리를 즐기는 밤 마켓', 'http://www.openjeju.net/common/cm/file/view.wp?attachId=FILE_000000000002805&fileSn=0&fileGb=P', 12, 'Jeju, Korea', 33.512, 126.528, '18:00-24:00', '', ARRAY['#마켓','#먹거리'], 0, 4.6),
+('KR_SOKCHO', '설악산 단풍 시즌 가이드', '관광지', '오색 빛깔로 물든 설악산의 비경을 만끽할 수 있는 최고의 단풍 관람 시기와 추천 코스', 'https://ak-d.tripcdn.com/images/1mj1312000olhez0i4E27_Z_640_10000_R5.jpg_.webp?proc=autoorient&proc=source%2ftrip', 12, 'Sokcho, Korea', 38.173, 128.468, '24시간', '', ARRAY['#단풍','#시즌'], 0, 4.9),
+('JP_OSAKA', '텐진 마츠리 (여름 축제)', '관광지', '천 년 역사의 일본 3대 축제 중 하나로, 화려한 배 행렬과 불꽃놀이가 장관인 이벤트', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/20/00/a2000014/img/basic/a2000014_main.jpg?20240604081300&q=80', 12, 'Osaka, Japan', 34.697, 135.512, '시즌별 상이', '', ARRAY['#축제','#불꽃'], 0, 4.7),
+('JP_KYOTO', '철학의 길 벚꽃 축제', '관광지', '운하를 따라 만개한 벚꽃 터널 아래를 거닐며 교토의 봄을 만끽하는 시즌 이벤트', 'http://kr.enjoy-jp.net/img/articles/tetsugakunomichi_spring_1.jpg', 12, 'Kyoto, Japan', 35.027, 135.795, '24시간', '', ARRAY['#벚꽃','#시즌'], 0, 4.9),
+('JP_TOKYO', '시부야 스카이 야간 라이트쇼', '관광지', '도쿄 도심의 야경과 화려한 레이저 쇼가 어우러지는 환상적인 밤 공연 이벤트', 'https://mblogthumb-phinf.pstatic.net/MjAyMDAyMTdfMTQy/MDAxNTgxODczOTE0OTM2.J42fTbJQuLqO8HG_jill0QAmTC6xVLV4XNUNo4IqijEg.GuFyBzOAFJmy3qILG9nxq1rzyF7y3hYUGZPkylQckKog.JPEG.luvork/SE-aff7bcd4-f89b-406b-a496-8bc37e519cb7.jpg?type=w800', 12, 'Tokyo, Japan', 35.658, 139.701, '10:00-22:30', '', ARRAY['#야간','#공연'], 22000, 4.8),
+('JP_FUKUOKA', '하카타 기온 야마카사', '관광지', '700년 역사를 자랑하는 후쿠오카의 대표 여름 축제로 박력 넘치는 가마 경주 이벤트', 'https://lh3.googleusercontent.com/gps-cs-s/APNQkAGeCrWRxjoML9WFu2F4MOCRKnmwAG3a30S7iB22akiztopaY62THyqIl8sw7Bdlu176kzJvK8mtPCNIH8mAk3fJe2gVwI5byrMO4bqqxJz8HIwweXujc5xDYZUKtLFUCBt_IuDI=w289-h312-n-k-no', 12, 'Fukuoka, Japan', 33.595, 130.410, '시즌별 상이', '', ARRAY['#축제','#전통'], 0, 4.7),
+('JP_OKINAWA', '오키나와 에메랄드 비치 불꽃쇼', '관광지', '푸른 바다 위로 펼쳐지는 환상적인 불꽃의 향연, 오키나와 여름 밤의 대표 행사', 'https://ohh.okinawa/wpdir/wp-content/uploads/2019/06/be2667671fca18177c633f53dc302f21-e1561360633647.jpg', 12, 'Okinawa, Japan', 26.694, 127.878, '시즌별 상이', '', ARRAY['#불꽃','#해변'], 0, 4.8),
+('FR_PARIS', '에펠탑 화이트 에펠 라이트쇼', '관광지', '매일 밤 정각마다 5분 동안 에펠탑이 다이아몬드처럼 빛나는 눈부신 조명 공연', 'https://image.theminda.com/data/goods/14000/14999/goods/6db49ec05d54f6a3a59a510733d761ea.jpg', 12, 'Paris, France', 48.858, 2.294, '20:00-24:00', '', ARRAY['#야간','#공연'], 0, 5.0),
+('ES_BARCELONA', '몬주익 마법의 분수 쇼', '관광지', '빛과 음악, 물줄기가 조화를 이루는 바르셀로나의 상징적인 무료 분수 공연', 'http://holaspain.co.kr/data/editor/1909/9f0f8febd0931c10397e0b2715dcccbb_1568612818_2473.jpg', 12, 'Barcelona, Spain', 41.371, 2.151, '시즌별 상이', '', ARRAY['#분수','#공연'], 0, 4.7),
+('IT_ROME', '바티칸 박물관 (야간 개장)', '관광지', '복잡한 낮을 피해 달빛 아래 고요하게 명작들을 감상하는 특별한 전시 이벤트', 'https://cdn.tripstore.kr/external-images/ad4af1e02d878d7ab3275b51a46913c4.jpg?q=85&w=1440', 12, 'Rome, Italy', 41.906, 12.453, '19:00-22:30', '', ARRAY['#전시','#야간'], 30000, 4.9),
+('DE_BERLIN', '베를린 빛의 축제 (Lights)', '관광지', '매년 가을 도시 전체의 랜드마크들이 거대한 캔버스가 되는 화려한 조명 예술 전시', 'https://postfiles.pstatic.net/20140405_253/waytostay_1396709349065oppue_JPEG/%BA%A3%B8%A6%B8%B0_%BA%FB%C3%E0%C1%A6%2C%BA%A3%B8%A6%B8%B0_%C3%E0%C1%A6%2C_%C0%AF%B7%B4%C3%E0%C1%A6%2C_%BA%A3%B8%A6%B8%B0%2C_%BA%A3%B8%A6%B8%B0_%BE%C6%C6%C4%C6%AE%2C_%BF%FE%C0%CC%C5%F5%BD%BA%C5%D7%C0%CC%2C_%C0%AF%B7%B4%BE%C6%C6%C4%C6%AE%B7%BB%C5%BB%2C_waytostay2.jpg?type=w2', 12, 'Berlin, Germany', 52.516, 13.377, '시즌별 상이', '', ARRAY['#전시','#축제'], 0, 4.8);
