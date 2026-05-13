@@ -922,6 +922,13 @@ body {
     padding-bottom: 20px;
 }
 
+.rc-content-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 40px; /* Adjust for bottom bar balance */
+}
+
 .rc-title-area {
     padding: 10px 20px 20px;
     text-align: left;
@@ -938,41 +945,9 @@ body {
     color: var(--text-sub);
 }
 
-/* Step 1: Continent */
-.rc-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding: 0 20px;
-}
-
-.rc-continent {
-    border-radius: 16px;
-    height: 140px;
-    border: 3px solid transparent;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 18px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.rc-continent.asia {
-    background: linear-gradient(135deg, #0abde3, #1dd1a1);
-}
-
-.rc-continent.europe {
-    background: linear-gradient(135deg, #ff9f43, #ff6b6b);
-}
-
-.rc-continent.selected {
-    border-color: var(--primary-color);
-    transform: scale(0.98);
+/* Step 1: Continent Selection (Map Based) */
+.rc-map-area {
+    padding: 10px 0;
 }
 
 /* Bottom fixed area */
@@ -3496,4 +3471,98 @@ body {
     flex-shrink: 0;
     margin-top: 2px;
 }
+
+/* City Accordion Styles */
+.city-accordion-content {
+    margin-top: 16px;
+    background: #fcfaff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #f0e6ff;
+    animation: accordionSlideDown 0.3s ease-out;
+}
+
+@keyframes accordionSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 800px;
+    }
+}
+
+.city-header {
+    margin-bottom: 16px;
+}
+
+.city-info-text h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.dna-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary-color);
+    background: rgba(140, 82, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.city-desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.5;
+}
+
+.famous-places {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.famous-places h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.places-mini-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.place-mini-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.place-mini-card img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.place-mini-card span {
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    color: #333;
+}
+
 

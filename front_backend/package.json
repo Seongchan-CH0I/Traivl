@@ -6,6 +6,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "db:sync": "node scripts/sync-db.js",
+    "db:watch": "node scripts/watch-db.js",
     "prepare": "husky",
     "commitlint": "commitlint --edit"
   },

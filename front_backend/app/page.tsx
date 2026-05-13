@@ -211,8 +211,8 @@ export default function HomePage() {
             </button>
             <Banner onStart={() => setIsSurveyOpen(true)} />
             
-            {/* ✅ 인기 도시 섹션 가변 처리 - 하단 여백 제거 (mb-8 -> mb-0) */}
-            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[400px] opacity-100 mb-0'}`}>
+            {/* ✅ 인기 도시 섹션 가변 처리 - 아코디언 확장을 위해 max-height 증가 */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isHotPlacesExpanded ? 'max-h-0 opacity-0 mb-0 pointer-events-none' : 'max-h-[1000px] opacity-100 mb-0'}`}>
                 <PopularCities />
             </div>
 

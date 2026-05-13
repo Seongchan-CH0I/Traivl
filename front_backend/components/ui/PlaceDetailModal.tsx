@@ -29,7 +29,6 @@ export default function PlaceDetailModal({ place, onClose }: PlaceDetailModalPro
 
                 <div className="modal-hero">
                     <img src={place.imageUrl || "/images/placeholder.jpg"} alt={place.name} />
-                    {place.rank && <div className="modal-rank-tag">Rank {place.rank}</div>}
                 </div>
 
                 <div className="modal-body">

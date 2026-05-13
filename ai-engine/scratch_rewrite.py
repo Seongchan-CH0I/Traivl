@@ -1,4 +1,5 @@
-import os
+with open("app/services/plan_service.py", "w") as f:
+    f.write('''import os
 import math # 거리 계산 및 일정 배분용
 import json
 import numpy as np
@@ -111,7 +112,7 @@ class PlanService:
             return [{"place": c, "reason": "AI 추천 장소"} for c in candidates[:count]]
 
         # 후보지 정보를 텍스트로 정리
-        candidates_text = "\n".join([
+        candidates_text = "\\n".join([
             f"- ID: {c.place_id}, 이름: {c.title}, 설명: {c.description}"
             for c in candidates
         ])
@@ -247,3 +248,4 @@ JSON 형식:
         return days
 
 plan_service = PlanService()
+''')

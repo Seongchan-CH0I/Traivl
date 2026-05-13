@@ -1,4 +1,5 @@
 import math
+import requests
 from typing import List, Dict, Any
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
@@ -18,8 +19,7 @@ class RouteService:
         # 2. TSP 해결 (OR-Tools)
         solution_data = self._solve_tsp_with_ortools(data)
         
-        # 3. 일차별로 경로 구성 (현재는 단일 차량/단일 경로 기준 분할)
-        # TODO: 다가구 TSP (VRP) 또는 다중 일수 최적화로 확장 가능
+        # 3. 일차별로 경로 구성
         days_route = self._structure_solution(solution_data, data, request.max_days)
         
         return RouteOptimizeResponse(
@@ -29,24 +29,43 @@ class RouteService:
             )
         )
 
+    def _get_time_matrix(self, locations: List[Any]) -> List[List[int]]:
+        """OSRM API를 호출하여 실제 도로망 기반 이동 시간(분) 행렬 생성"""
+        # OSRM은 lng,lat 순서를 요구함
+        coords = ";".join([f"{loc.lng},{loc.lat}" for loc in locations])
+        url = f"http://router.project-osrm.org/table/v1/driving/{coords}?annotations=duration"
+        
+        try:
+            print("🚗 [Route] OSRM 퍼블릭 API로 실제 이동 시간 계산 중...")
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                durations_sec = data.get('durations', [])
+                # 초를 분 단위로 변환 (최소 1분 보장)
+                matrix = []
+                for row in durations_sec:
+                    matrix.append([math.ceil(val/60) if val is not None else 999 for val in row])
+                return matrix
+        except Exception as e:
+            print(f"⚠️ [Route] OSRM API 호출 실패 ({e}), 직선 거리(Haversine) 기반으로 대체합니다.")
+            
+        # Fallback: Haversine
+        num = len(locations)
+        matrix = [[0] * num for _ in range(num)]
+        for i in range(num):
+            for j in range(num):
+                if i == j: continue
+                dist = self._haversine_distance(locations[i].lat, locations[i].lng, locations[j].lat, locations[j].lng)
+                matrix[i][j] = int(dist / 30 * 60) + 5 # 도심 평균 시속 30km 가정 + 주차/도보 5분
+        return matrix
+
     def _create_data_model(self, request: RouteOptimizeRequest) -> Dict[str, Any]:
         """
         OR-Tools용 데이터 모델 생성
         """
         all_locations = [request.start_location] + request.places_to_visit
-        num_locations = len(all_locations)
         
-        # 거리/시간 행렬 생성 (임시 직선 거리 계산)
-        # TODO: Google Maps Distance Matrix API 연동
-        time_matrix = [[0] * num_locations for _ in range(num_locations)]
-        for i in range(num_locations):
-            for j in range(num_locations):
-                if i == j: continue
-                loc1 = all_locations[i]
-                loc2 = all_locations[j]
-                # 하버사인 거리(km)를 분 단위(평균 40km/h)로 변환
-                dist = self._haversine_distance(loc1.lat, loc1.lng, loc2.lat, loc2.lng)
-                time_matrix[i][j] = int(dist / 40 * 60) + 5 # 최소 5분 소요 가정
+        time_matrix = self._get_time_matrix(all_locations)
 
         return {
             'time_matrix': time_matrix,
@@ -143,7 +162,7 @@ class RouteService:
                 h, m = divmod(int(arrival_min), 60)
                 steps.append(RouteStep(
                     step=i+2,
-                    place_id=all_locations[node_idx].place_id,
+                    place_id=getattr(all_locations[node_idx], 'place_id', "START_POINT"),
                     expected_arrival=f"{h%24:02d}:{m:02d}"
                 ))
                 
