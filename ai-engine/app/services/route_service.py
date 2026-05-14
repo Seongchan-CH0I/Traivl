@@ -1,4 +1,5 @@
 import math
+import os
 import requests
 from typing import List, Dict, Any
 from ortools.constraint_solver import routing_enums_pb2
@@ -33,10 +34,11 @@ class RouteService:
         """OSRM API를 호출하여 실제 도로망 기반 이동 시간(분) 행렬 생성"""
         # OSRM은 lng,lat 순서를 요구함
         coords = ";".join([f"{loc.lng},{loc.lat}" for loc in locations])
-        url = f"http://router.project-osrm.org/table/v1/driving/{coords}?annotations=duration"
+        osrm_base_url = os.getenv("OSRM_BASE_URL", "http://osrm-backend:5000")
+        url = f"{osrm_base_url}/table/v1/driving/{coords}?annotations=duration"
         
         try:
-            print("🚗 [Route] OSRM 퍼블릭 API로 실제 이동 시간 계산 중...")
+            print(f"🚗 [Route] OSRM API({osrm_base_url})로 실제 이동 시간 계산 중...")
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 data = response.json()
