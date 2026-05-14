@@ -9,3 +9,5 @@ dist/
 **/__pycache__/
 .env
 
+# OSRM Data (Large files)
+osrm-data/

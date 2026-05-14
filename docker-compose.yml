@@ -36,8 +36,10 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - osrm-backend
     volumes:
       - ./ai-engine:/app # 실시간 반영(Hot Reload)용 마운트
+      - /Users/iminhyeog/.cache/huggingface:/root/.cache/huggingface # AI 모델 무한 다운로드 방지용 로컬 캐시 공유
     networks:
       - travel-network
 
@@ -58,6 +60,18 @@ services:
       - /app/node_modules # 컨테이너 내부의 모듈 보호
     environment:
       - NODE_ENV=development
+    networks:
+      - travel-network
+
+  # 5. Route Engine: OSRM Backend (Local)
+  osrm-backend:
+    image: osrm/osrm-backend:latest
+    container_name: traivl-osrm
+    command: "osrm-routed --algorithm mld /data/kanto-latest.osrm"
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./osrm-data:/data
     networks:
       - travel-network
 
