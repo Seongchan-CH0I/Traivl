@@ -39,7 +39,7 @@ services:
       - osrm-backend
     volumes:
       - ./ai-engine:/app # 실시간 반영(Hot Reload)용 마운트
-      - /Users/iminhyeog/.cache/huggingface:/root/.cache/huggingface # AI 모델 무한 다운로드 방지용 로컬 캐시 공유
+      - huggingface_data:/root/.cache/huggingface # AI 모델 무한 다운로드 방지용 도커 공용 캐시 볼륨
     networks:
       - travel-network
 
@@ -81,4 +81,5 @@ networks:
 
 volumes:
   postgres_data:
+  huggingface_data:
 # End of docker-compose.yml
