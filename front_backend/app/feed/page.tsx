@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAi } from '../../context/AiContext';
 import { Plane, Flame, Star, Lightbulb, PartyPopper, X, Plus, Loader2 } from 'lucide-react';
+import PlaceDetailModal from '../../components/ui/PlaceDetailModal';
+import { Place } from '../../types/place';
 
 interface GuideItem {
     id: string;
@@ -16,6 +18,7 @@ interface GuideItem {
     city: string;
     destinationId: string;
     rank: number;
+    rawPlace?: Place;
 }
 
 const TravelApp = () => {
@@ -24,6 +27,7 @@ const TravelApp = () => {
     const [showMyDestination, setShowMyDestination] = useState(false);
     const [guides, setGuides] = useState<GuideItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
     // DB 데이터를 카테고리별로 분류하는 로직
     const categorizePlace = (name: string, description: string) => {
@@ -52,7 +56,8 @@ const TravelApp = () => {
                         category: categorizePlace(place.name, place.description),
                         city: place.destination?.name.split(',')[0].trim() || '',
                         destinationId: place.destinationId,
-                        rank: place.rank
+                        rank: place.rank,
+                        rawPlace: place
                     }));
                     setGuides(mappedData);
                 }
@@ -163,7 +168,12 @@ const TravelApp = () => {
                     </div>
                 ) : (
                     displayGuides.map((item) => (
-                        <div key={item.id} className="feed-card">
+                        <div 
+                            key={item.id} 
+                            className="feed-card"
+                            onClick={() => item.rawPlace && setSelectedPlace(item.rawPlace)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <img src={item.img} alt={item.title} className="feed-img" />
                             <div className="feed-overlay" />
                             <div className="feed-badge-top-left">
@@ -189,6 +199,11 @@ const TravelApp = () => {
                     ))
                 )}
             </main>
+
+            <PlaceDetailModal 
+                place={selectedPlace} 
+                onClose={() => setSelectedPlace(null)} 
+            />
         </>
     );
 };

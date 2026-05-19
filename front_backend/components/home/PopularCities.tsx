@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PlaceDetailModal from '../ui/PlaceDetailModal';
+import { Place } from '../../types/place';
 
 interface Destination {
     id: string;
@@ -11,20 +13,12 @@ interface Destination {
     imageUrl: string;
 }
 
-interface Place {
-    id: string;
-    name: string;
-    category: string;
-    description: string;
-    imageUrl: string;
-    rank: number;
-}
-
 export default function PopularCities() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [selectedPlaces, setSelectedPlaces] = useState<Place[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
     useEffect(() => {
         const fetchDestinations = async () => {
@@ -124,7 +118,11 @@ export default function PopularCities() {
                             <h4>대표적인 추천 명소</h4>
                             <div className="places-mini-grid">
                                 {selectedPlaces.map(place => (
-                                    <div key={place.id} className="place-mini-card">
+                                    <div 
+                                        key={place.id} 
+                                        className="place-mini-card"
+                                        onClick={() => setSelectedPlace(place)}
+                                    >
                                         <img src={place.imageUrl} alt={place.name} referrerPolicy="no-referrer" />
                                         <span>{place.name}</span>
                                     </div>
@@ -134,6 +132,11 @@ export default function PopularCities() {
                     )}
                 </div>
             )}
+
+            <PlaceDetailModal 
+                place={selectedPlace} 
+                onClose={() => setSelectedPlace(null)} 
+            />
         </section>
     );
 }
