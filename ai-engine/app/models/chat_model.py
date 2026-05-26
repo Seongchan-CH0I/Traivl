@@ -5,7 +5,7 @@ from typing import List, Optional
 # 5. /chat/ask 관련 모델
 # ==========================================
 class ChatAskRequest(BaseModel):
-    user_id: int
+    user_id: str
     user_name: Optional[str] = "User"
     current_location: str
     message: str

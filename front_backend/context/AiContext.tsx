@@ -19,6 +19,8 @@ interface AiContextType {
     setSelectedCity: (city: string | null) => void;
     dnaResult: any; // 설문 데이터 보관
     setDnaResult: (result: any) => void;
+    itineraryData: any; // AI 일정 데이터 보관
+    setItineraryData: (itinerary: any) => void;
 }
 
 const AiContext = createContext<AiContextType | undefined>(undefined);
@@ -30,6 +32,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
     const [hasActiveJourney, setHasActiveJourney] = useState(false);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [dnaResult, setDnaResult] = useState<any>(null);
+    const [itineraryData, setItineraryData] = useState<any>(null);
 
     const toggleAiMenu = () => setIsAiMenuOpen(!isAiMenuOpen);
     const closeAll = () => {
@@ -52,7 +55,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
             selectedCity,
             setSelectedCity,
             dnaResult,
-            setDnaResult
+            setDnaResult,
+            itineraryData,
+            setItineraryData
         }}>
             {children}
         </AiContext.Provider>

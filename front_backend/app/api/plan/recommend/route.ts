@@ -13,8 +13,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // 2. AI 서버(FastAPI) 호출
-        const AI_ENGINE_URL = "http://localhost:8000";
+        // 2. AI 서버(FastAPI) 호출 (도커 컴포즈 환경 호환 및 로컬 폴백)
+        const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://ai-server:8000";
 
         console.log(`[Backend] AI 요청 중... URL: ${AI_ENGINE_URL}/api/v1/plan/recommend`);
 

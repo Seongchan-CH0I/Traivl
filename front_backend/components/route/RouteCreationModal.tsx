@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronLeft, CheckCircle2, Loader2, Calendar as CalendarIcon, Globe } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useAi } from '../../context/AiContext';
 import CalendarPicker from '../calendar/CalendarPicker';
 import WorldMapSelection from './WorldMapSelection';
 
@@ -25,6 +26,8 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     const [isLoading, setIsLoading] = useState(false);
     const [itineraryResult, setItineraryResult] = useState<any>(null);
     const { user } = useAuth();
+    const { setItineraryData } = useAi();
+    const [activeDay, setActiveDay] = useState(1);
 
     if (!isOpen) return null;
 
@@ -38,6 +41,13 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     const handleGenerateAIPlan = async () => {
         setIsLoading(true);
         try {
+            // 날짜 기간 계산
+            let diffDays = 2;
+            if (startDate && endDate) {
+                const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
+
             const response = await fetch('/api/plan/recommend', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -47,7 +57,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     continent: continent,
                     country: country,
                     destination: city,
-                    duration: { days: 2, nights: 3 }, // 기본값
+                    duration: { days: diffDays, nights: Math.max(1, diffDays - 1) },
                     travelStyle: themes,
                     dnaType: "클래식 슬로우뷰어" // 실제 유저 DNA 연동 필요
                 })
@@ -55,8 +65,10 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
 
             const result = await response.json();
             if (result.success) {
-                // AI 서버가 주는 데이터 구조에 따라 result.data 혹은 result.data.data 등으로 조절
-                setItineraryResult(result.data.data || result.data);
+                const data = result.data.data || result.data;
+                setItineraryResult(data);
+                setItineraryData(data); // 전역 상태에 저장하여 지도와 연동
+                setActiveDay(1); // 1일차 탭으로 초기 설정
                 setStep(6); // Success moves to Result step
             } else {
                 alert("일정 생성에 실패했습니다: " + result.message);
@@ -288,54 +300,109 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 );
             case 6:
                 const displayData = itineraryResult || {
-                    course_title: `주상님의 취향을 담은\n${city} 힐링 코스`,
-                    course_subtitle: `Your ${city} Heritage Route`,
-                    itinerary: [
-                        { day: 1, places: [] } // Mock
-                    ]
+                    course_title: `${user?.name || "트래블러"}님의 취향을 담은 ${city} 여행`,
+                    course_subtitle: "AI가 선정한 장소를 OSRM 경로 최적화로 배치했습니다.",
+                    itinerary: []
                 };
+
+                const currentDayData = displayData.itinerary?.find((d: any) => d.day === activeDay) || displayData.itinerary?.[0] || { places: [] };
 
                 return (
                     <>
-                        <div style={{ paddingBottom: '20px' }}>
-                            <div className="rc-res-header">
-                                <h1 className="rc-res-title">주상님의 취향을<br />듬뿍 담은 {city} 힐링 코스</h1>
-                                <p className="rc-res-subtitle">Your {city} Heritage Route</p>
+                        <div style={{ paddingBottom: '30px' }}>
+                            <div className="rc-res-header" style={{ padding: '24px 20px', background: 'linear-gradient(135deg, #8c52ff, #6214ff)', color: 'white', borderRadius: '0 0 24px 24px', marginBottom: '20px' }}>
+                                <h1 className="rc-res-title" style={{ fontSize: '18px', fontWeight: 800, lineHeight: '1.4', margin: 0 }}>
+                                    {displayData.course_title}
+                                </h1>
+                                <p className="rc-res-subtitle" style={{ fontSize: '12px', opacity: 0.9, marginTop: '8px', margin: 0 }}>
+                                    {displayData.course_subtitle}
+                                </p>
                                 <div style={{ 
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     gap: '6px', 
                                     marginTop: '12px',
-                                    fontSize: '13px',
-                                    color: 'rgba(255,255,255,0.8)',
+                                    fontSize: '12px',
+                                    color: 'rgba(255,255,255,0.9)',
                                     fontWeight: 600
                                 }}>
-                                    <CalendarIcon size={14} />
+                                    <CalendarIcon size={13} />
                                     {formatDate(startDate)} ~ {formatDate(endDate)}
                                 </div>
                             </div>
 
-                            <div className="rc-timeline">
-                                <div className="rc-time-item">
-                                    <div className="rc-time-badge">16:00</div>
-                                    <div className="rc-time-card">
-                                        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" alt="기요미즈데라" draggable={false} />
-                                        <div className="info">
-                                            <h4>기요미즈데라(청수사) 산책</h4>
-                                            <p>📍 히가시야마구</p>
-                                        </div>
-                                    </div>
+                            {/* 일차 선택 탭 */}
+                            {displayData.itinerary && displayData.itinerary.length > 1 && (
+                                <div style={{ display: 'flex', gap: '8px', padding: '0 20px', marginBottom: '16px' }}>
+                                    {displayData.itinerary.map((dayObj: any) => (
+                                        <button
+                                            key={dayObj.day}
+                                            onClick={() => setActiveDay(dayObj.day)}
+                                            style={{
+                                                flex: 1,
+                                                padding: '10px',
+                                                borderRadius: '12px',
+                                                fontSize: '14px',
+                                                fontWeight: 700,
+                                                border: activeDay === dayObj.day ? '2.5px solid #8c52ff' : '1px solid #e0e0e0',
+                                                backgroundColor: activeDay === dayObj.day ? '#f3eeff' : 'white',
+                                                color: activeDay === dayObj.day ? '#8c52ff' : '#666',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {dayObj.day}일차
+                                        </button>
+                                    ))}
                                 </div>
-                                <div className="rc-time-item">
-                                    <div className="rc-time-badge" style={{ borderColor: '#e0e0e0', color: '#b0b0b0' }}>18:00</div>
-                                    <div className="rc-time-card">
-                                        <img src="https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&h=200&fit=crop" alt="료칸 저녁" draggable={false} />
-                                        <div className="info">
-                                            <h4>료칸 가이세키 정식</h4>
-                                            <p>📍 기온 거리 인근</p>
+                            )}
+
+                            {/* 타임라인 */}
+                            <div className="rc-timeline" style={{ padding: '0 20px' }}>
+                                {currentDayData.places && currentDayData.places.length > 0 ? (
+                                    currentDayData.places.map((place: any, idx: number) => (
+                                        <div key={place.place_id || idx} className="rc-time-item" style={{ display: 'flex', gap: '16px', marginBottom: '20px', position: 'relative' }}>
+                                            {/* 타임라인 왼쪽 시간 라벨 */}
+                                            <div className="rc-time-badge" style={{ 
+                                                width: '60px', 
+                                                height: '30px', 
+                                                borderRadius: '15px', 
+                                                border: '1.5px solid #8c52ff', 
+                                                backgroundColor: 'white',
+                                                color: '#8c52ff',
+                                                fontSize: '12px',
+                                                fontWeight: 700,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                flexShrink: 0
+                                            }}>
+                                                {place.suggested_time}
+                                            </div>
+                                            
+                                            {/* 타임라인 카드 */}
+                                            <div className="rc-time-card" style={{ 
+                                                flex: 1, 
+                                                backgroundColor: 'white', 
+                                                borderRadius: '16px', 
+                                                border: '1px solid #eef0f3',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <div style={{ padding: '16px' }}>
+                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '15px', fontWeight: 800, color: '#1a1a1a' }}>
+                                                        {place.title}
+                                                    </h4>
+                                                    <p style={{ margin: 0, fontSize: '12.5px', color: '#555', lineHeight: '1.5', wordBreak: 'keep-all' }}>
+                                                        {place.location}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    ))
+                                ) : (
+                                    <div style={{ textAlign: 'center', padding: '40px 0', color: '#b0b0b0' }}>일정이 존재하지 않습니다.</div>
+                                )}
                             </div>
                         </div>
                     </>

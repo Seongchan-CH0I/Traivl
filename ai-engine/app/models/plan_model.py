@@ -19,7 +19,7 @@ class PlaceCandidate(BaseModel):
     stay_duration_mins: int = 60
 
 class PlanRequest(BaseModel):
-    user_id: int
+    user_id: str
     user_name: str
     continent: str
     country: str
