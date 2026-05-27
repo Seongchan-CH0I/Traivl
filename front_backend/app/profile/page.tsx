@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
 import { Dna, Plus } from 'lucide-react';
@@ -10,6 +10,37 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const { hasActiveJourney } = useAi();
   const [isResetting, setIsResetting] = useState(false);
+  
+  const [profileData, setProfileData] = useState<any>(null);
+  const [aiUsageHistory, setAiUsageHistory] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProfileData() {
+      if (!user?.id) return;
+      try {
+        setIsLoading(true);
+        const [profileRes, historyRes] = await Promise.all([
+          fetch(`/api/profile/${user.id}`),
+          fetch(`/api/profile/${user.id}/history`)
+        ]);
+
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          setProfileData(profile);
+        }
+        if (historyRes.ok) {
+          const history = await historyRes.json();
+          setAiUsageHistory(history);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProfileData();
+  }, [user?.id]);
 
   const handleResetDna = async () => {
     if (!user?.id) return;
@@ -30,42 +61,21 @@ export default function ProfilePage() {
     setIsResetting(false);
   };
 
-  // 취향 데이터 예시
-  const stats = [
-    { label: "문화", value: 90 },
-    { label: "음식", value: 65 },
-    { label: "예산", value: 45 },
-    { label: "휴식", value: 35 },
-    { label: "호텔", value: 55 },
-    { label: "활동", value: 80 },
-  ];
-
-  // AI 기능 활용 기록 예시 (추후 실제 로그 API 혹은 DB와 연동하기 쉽도록 배열 구조로 분리)
-  const aiUsageHistory = [
-    {
-      id: 1,
-      type: "menu_analysis", // 기능 종류 식별자 (실제 적용 시 enum 등 사용 권장)
-      title: "메뉴판 분석 기능을 이용하셨습니다.",
-      content: "분석된 내용: 일본어 메뉴를 한국어로 번역 및 분석",
-      date: "2026.03.11",
-      icon: "🍽️"
-    },
-    {
-      id: 2,
-      type: "translation",
-      title: "번역 기능을 사용하였습니다.",
-      content: "번역 내용: '이 근처에 맛있는 라멘집이 있나요?'",
-      date: "2026.03.10",
-      icon: "📝"
-    },
-    {
-      id: 3,
-      type: "voice_translation",
-      title: "음성 통역 기능을 사용하였습니다.",
-      content: "통역 내용: '지하철 역으로 가는 길을 알려주세요.'",
-      date: "2026.03.09",
-      icon: "🎙️"
-    }
+  // 서버에서 받아온 실제 취향 데이터 (없을 경우 기본값 50)
+  const stats = profileData?.dnaStat ? [
+    { label: "문화", value: profileData.dnaStat.culture },
+    { label: "음식", value: profileData.dnaStat.food },
+    { label: "예산", value: profileData.dnaStat.budget },
+    { label: "휴식", value: profileData.dnaStat.relax },
+    { label: "호텔", value: profileData.dnaStat.hotel },
+    { label: "활동", value: profileData.dnaStat.activity },
+  ] : [
+    { label: "문화", value: 50 },
+    { label: "음식", value: 50 },
+    { label: "예산", value: 50 },
+    { label: "휴식", value: 50 },
+    { label: "호텔", value: 50 },
+    { label: "활동", value: 50 },
   ];
 
   // 그래프 계산 로직
@@ -86,6 +96,10 @@ export default function ProfilePage() {
   // 배경 육각형 가이드라인을 그리기 위한 단계 
   const levels = [20, 40, 60, 80, 100];
 
+  if (isLoading) {
+    return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>프로필 데이터를 불러오는 중입니다...</div>;
+  }
+
   if (!hasActiveJourney) {
     return (
       <div className="profile-empty-container">
@@ -105,7 +119,7 @@ export default function ProfilePage() {
           </h2>
           
           <p className="profile-empty-subtitle">
-            주상님의 여행 스타일이 궁금하신가요?<br />
+            {user?.name || "회원"}님의 여행 스타일이 궁금하신가요?<br />
             30초 설문으로 맞춤형 정보를 받아보세요!
           </p>
           
@@ -151,7 +165,7 @@ export default function ProfilePage() {
             {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
           </button>
         </div>
-        <h2 className="profile-dna-result">"전통 탐험가"</h2>
+        <h2 className="profile-dna-result">"{profileData?.dnaType || "여행 DNA 분석 중..."}"</h2>
         <div className="profile-dna-tags">
           <span className="profile-dna-tag">#문화중심</span>
           <span className="profile-dna-tag">#빡빡한일정</span>
@@ -252,7 +266,12 @@ export default function ProfilePage() {
           <span>🤖</span> AI 기능 활용 기록
         </h3>
         <div className="ai-history-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {aiUsageHistory.map((log) => (
+          {aiUsageHistory.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: '#888', background: '#f8fafc', borderRadius: '12px' }}>
+              아직 AI 기능 활용 기록이 없습니다.
+            </div>
+          ) : (
+            aiUsageHistory.map((log) => (
             <div key={log.id} className="ai-history-item" style={{
               display: 'flex',
               alignItems: 'flex-start',
@@ -279,14 +298,16 @@ export default function ProfilePage() {
               <div className="ai-history-content" style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
                   <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#111', lineHeight: '1.4' }}>{log.title}</h4>
-                  <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', marginLeft: '10px' }}>{log.date}</span>
+                  <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', marginLeft: '10px' }}>
+                    {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : log.date}
+                  </span>
                 </div>
                 <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.5', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #8c52ff' }}>
                   {log.content}
                 </p>
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </div>
