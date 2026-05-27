@@ -1,19 +1,46 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
+import os
+import whisper
 from app.models.voice_model import VoiceInterpreterRequest, VoiceInterpreterResponse, VoiceInterpreterData
 
+from app.services.voice_service import VoiceService
+
 router = APIRouter()
+voice_service = VoiceService()
 
 @router.post("/interpreter", response_model=VoiceInterpreterResponse, summary="실시간 통역기반 에티켓 해설", description="사용자 대화나 텍스트를 분석해 현지 문화와 언어로 된 번역, 의도, 응답 예시(가이드) 등을 제공합니다.")
 async def voice_interpreter(request: VoiceInterpreterRequest):
-    # TODO: STT 결과 처리 및 LLM 프롬프트 추천 연동 (현재는 Mock 데이터)
-    mock_data = VoiceInterpreterResponse(
-        status="success",
-        data=VoiceInterpreterData(
-            translated_text="감사합니다",
-            intent_analysis="상대방이 호의와 고마움을 표시하는 인사말입니다.",
-            cultural_context="남성의 경우 끝에 '캅', 여성의 경우 '카'를 붙여 성별에 따른 정중함을 구분하는 태국만의 문화가 있습니다.",
-            suggested_reply_ko="저도 감사합니다. (마이 뻰 라이 캅/카)",
-            suggested_reply_audio_url="https://ai-server.example.com/audio/voice_gen_123.mp3"
-        )
-    )
-    return mock_data# TODO: 음성 분석 & STT 관련 엔드포인트 구현
+    try:
+        data = await voice_service.interpret_voice(request)
+        return VoiceInterpreterResponse(status="success", data=data)
+    except Exception as e:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=f"실시간 통역 및 음성 해설 도중 서버 오류가 발생했습니다: {str(e)}")
+
+@router.post("/stt-test", summary="STT 독립 테스트용 API", description="프론트 연동 없이 AI 백엔드에서 음성 파일(.wav, .mp3, .m4a)을 바로 업로드하여 텍스트 변환 결과를 확인합니다.")
+async def test_stt_upload(file: UploadFile = File(...)):
+    # 1. 업로드된 파일 임시 저장
+    temp_file_path = f"/tmp/{file.filename}"
+    with open(temp_file_path, "wb") as buffer:
+        buffer.write(await file.read())
+    
+    try:
+        # 2. Whisper 모델 로드 ('tiny'나 'base'는 속도가 빠릅니다)
+        print("Whisper 모델 로딩 중...")
+        model = whisper.load_model("base")
+        
+        # 3. 음성 파일 변환 (STT)
+        print("음성 인식 중...")
+        result = model.transcribe(temp_file_path)
+        
+        return {
+            "success": True,
+            "filename": file.filename,
+            "transcription": result["text"]
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+    finally:
+        # 임시 파일 삭제
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
