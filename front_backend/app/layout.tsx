@@ -7,10 +7,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AiProvider, useAi } from '../context/AiContext';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
+import LandingPage from '../components/ui/LandingPage';
+import LoginScreen from '../components/ui/LoginScreen';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
     const { isAiMenuOpen, setIsAiMenuOpen, translationState, setTranslationState, toggleAiMenu, isJourneyMapMode, selectedCity } = useAi();
     const { user } = useAuth(); // 이제 Context에서 유저 정보를 가져옴
+    const [entryStep, setEntryStep] = useState<'landing' | 'login' | 'app'>('landing');
 
     // --- Vision Lens States & Refs ---
     const [visionImage, setVisionImage] = useState<string | null>(null);
@@ -299,6 +302,25 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             setChatMessages(prev => [...prev, newAiMsg]);
         }, 1000);
     };
+
+    if (entryStep === 'landing') {
+        return (
+            <div className="app-container">
+                <LandingPage onLogin={() => setEntryStep('login')} />
+            </div>
+        );
+    }
+
+    if (entryStep === 'login') {
+        return (
+            <div className="app-container">
+                <LoginScreen 
+                    onBack={() => setEntryStep('landing')} 
+                    onLogin={() => setEntryStep('app')} 
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="app-container">

@@ -5,10 +5,10 @@ import { prisma } from "../../../../../lib/prisma";
 // 해당 유저의 AI 사용 기록 최신순 반환
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const userId = params.userId;
+    const { userId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -33,10 +33,10 @@ export async function GET(
 // AI 기능 사용 완료 시 새로운 기록 추가
 export async function POST(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const userId = params.userId;
+    const { userId } = await params;
 
     // Request body 파싱
     const body = await req.json();

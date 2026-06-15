@@ -3,11 +3,10 @@ import { prisma } from "../../../../lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    // Next.js 15+ 에서는 params를 await해야 할 수도 있으나, 여기서는 보통 작동합니다.
-    const userId = params.userId;
+    const { userId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
