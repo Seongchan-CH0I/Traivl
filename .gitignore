@@ -11,3 +11,4 @@ dist/
 
 # OSRM Data (Large files)
 osrm-data/
+brain/
