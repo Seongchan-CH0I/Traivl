@@ -15,6 +15,25 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     const { user } = useAuth(); // 이제 Context에서 유저 정보를 가져옴
     const [entryStep, setEntryStep] = useState<'landing' | 'login' | 'app'>('landing');
 
+    // 앱 로드 시 기존 세션 유무에 따라 메인 진입 여부 결정
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedUser = localStorage.getItem('traivl_user');
+            if (savedUser) {
+                setEntryStep('app');
+            }
+        }
+    }, []);
+
+    // 로그아웃 시에만 자동으로 랜딩 화면으로 팅김 처리
+    useEffect(() => {
+        if (!user) {
+            if (typeof window !== 'undefined' && !localStorage.getItem('traivl_user')) {
+                setEntryStep('landing');
+            }
+        }
+    }, [user]);
+
     // --- Vision Lens States & Refs ---
     const [visionImage, setVisionImage] = useState<string | null>(null);
     const [visionResult, setVisionResult] = useState<any | null>(null);

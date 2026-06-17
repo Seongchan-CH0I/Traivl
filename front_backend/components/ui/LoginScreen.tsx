@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -9,82 +10,279 @@ interface LoginScreenProps {
 }
 
 export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
+  const { login, signup } = useAuth();
+  
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  
   const [autoLogin, setAutoLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    // Validation
+    if (!id.trim()) {
+      setErrorMessage('아이디를 입력해주세요.');
+      return;
+    }
+    if (!password) {
+      setErrorMessage('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    if (isSignUp) {
+      if (!email.trim()) {
+        setErrorMessage('이메일을 입력해주세요.');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setErrorMessage('올바른 이메일 형식을 입력해주세요.');
+        return;
+      }
+      if (!name.trim()) {
+        setErrorMessage('이름을 입력해주세요.');
+        return;
+      }
+      if (!confirmPassword) {
+        setErrorMessage('비밀번호 확인을 입력해주세요.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMessage('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const result = await signup(id, email, name, password);
+        if (result.success) {
+          setSuccessMessage('회원가입이 완료되었습니다! 잠시 후 메인 화면으로 이동합니다. ✨');
+          setTimeout(() => {
+            onLogin();
+          }, 1500);
+        } else {
+          setErrorMessage(result.message);
+        }
+      } else {
+        const result = await login(id, password);
+        if (result.success) {
+          onLogin();
+        } else {
+          setErrorMessage(result.message);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage('네트워크 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleMode = () => {
+    setIsSignUp(!isSignUp);
+    setErrorMessage(null);
+    setId('');
+    setPassword('');
+    setEmail('');
+    setName('');
+    setShowPassword(false);
+    setConfirmPassword('');
+    setSuccessMessage(null);
+  };
 
   return (
     <div className="login-screen-container">
       {/* 상단 헤더 */}
       <div className="login-header-bar">
-        <h2 className="login-header-title">로그인</h2>
+        <h2 className="login-header-title">{isSignUp ? '회원가입' : '로그인'}</h2>
         <button onClick={onBack} className="login-close-btn">
           <X size={24} />
         </button>
       </div>
 
-      {/* 입력 필드 */}
-      <div className="login-form-fields">
-        <div className="login-input-wrapper">
-          <input
-            type="text"
-            placeholder="아이디 입력"
-            className="login-input login-input-id"
-          />
-        </div>
-        <div className="login-input-wrapper">
-          <input
-            type="password"
-            placeholder="비밀번호 입력"
-            className="login-input login-input-pw"
-          />
-        </div>
-      </div>
+      <form onSubmit={handleSubmit} noValidate style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* 성공 메시지 표시 */}
+        {successMessage && (
+          <div style={{
+            width: '100%',
+            padding: '12px 16px',
+            backgroundColor: '#f0fdf4',
+            border: '1px solid #bbf7d0',
+            borderRadius: '8px',
+            color: '#166534',
+            fontSize: '14px',
+            fontWeight: '600',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>✨</span> {successMessage}
+          </div>
+        )}
 
-      {/* 로그인 버튼 */}
-      <button onClick={onLogin} className="login-submit-btn">
-        로그인
-      </button>
+        {/* 에러 메시지 표시 */}
+        {errorMessage && (
+          <div style={{
+            width: '100%',
+            padding: '12px 16px',
+            backgroundColor: '#fff5f5',
+            border: '1px solid #fed7d7',
+            borderRadius: '8px',
+            color: '#c53030',
+            fontSize: '14px',
+            fontWeight: 500,
+            marginBottom: '16px',
+            textAlign: 'center',
+            wordBreak: 'keep-all'
+          }}>
+            ⚠️ {errorMessage}
+          </div>
+        )}
 
-      {/* 자동 로그인 체크박스 */}
-      <div className="login-autologin-row" onClick={() => setAutoLogin(!autoLogin)}>
-        <div className={`login-checkbox ${autoLogin ? 'checked' : ''}`}>
-          {autoLogin && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="login-checkbox-icon">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+        {/* 입력 필드 */}
+        <div className="login-form-fields">
+          <div className="login-input-wrapper">
+            <input
+              type="text"
+              placeholder="아이디 입력"
+              className="login-input login-input-id"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          {isSignUp && (
+            <>
+              <div className="login-input-wrapper">
+                <input
+                  type="email"
+                  placeholder="이메일 입력"
+                  className="login-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              <div className="login-input-wrapper">
+                <input
+                  type="text"
+                  placeholder="이름 입력"
+                  className="login-input"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="login-input-wrapper" style={{ position: 'relative' }}>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="비밀번호 입력"
+              className="login-input login-input-pw"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              style={{ paddingRight: '50px' }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px'
+              }}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {isSignUp && (
+            <div className="login-input-wrapper" style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="비밀번호 확인"
+                className="login-input login-input-pw"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+                style={{ paddingRight: '50px' }}
+              />
+            </div>
           )}
         </div>
-        <span className="login-autologin-text">자동로그인</span>
-      </div>
 
-      {/* 소셜 로그인 버튼 영역 (카카오 제외) */}
-      <div className="login-social-container">
-        {/* 구글 로그인 */}
-        <button onClick={onLogin} className="social-btn google-btn">
-          <div className="social-logo-box google-logo-box">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
-            </svg>
-          </div>
-          <span className="social-text">구글 계정으로 로그인</span>
+        {/* 로그인/회원가입 버튼 */}
+        <button 
+          type="submit" 
+          className="login-submit-btn" 
+          disabled={loading}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '8px',
+            backgroundColor: isSignUp ? '#8c52ff' : '#ff5252' 
+          }}
+        >
+          {loading && <Loader2 size={18} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />}
+          {isSignUp ? '회원가입' : '로그인'}
         </button>
+      </form>
 
-        {/* 네이버 로그인 */}
-        <button onClick={onLogin} className="social-btn naver-btn">
-          <div className="social-logo-box naver-logo-box">
-            <svg viewBox="0 0 24 24" width="16" height="16">
-              <path d="M16.2 2H22v20h-5.8l-8.4-12v12H2V2h5.8l8.4 12V2z" fill="#FFFFFF" />
-            </svg>
+      {/* 자동 로그인 체크박스 (로그인 모드에서만 표시) */}
+      {!isSignUp && (
+        <div className="login-autologin-row" onClick={() => setAutoLogin(!autoLogin)}>
+          <div className={`login-checkbox ${autoLogin ? 'checked' : ''}`}>
+            {autoLogin && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="login-checkbox-icon">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
           </div>
-          <span className="social-text">네이버 계정으로 로그인</span>
-        </button>
-      </div>
+          <span className="login-autologin-text">자동로그인</span>
+        </div>
+      )}
 
       {/* 하단 링크 */}
-      <div className="login-footer-links">
-        <span onClick={onLogin} className="login-footer-link signup-link">회원가입</span>
+      <div className="login-footer-links" style={{ marginTop: isSignUp ? '40px' : 'auto' }}>
+        {isSignUp ? (
+          <>
+            <span style={{ color: '#888888', marginRight: '4px' }}>이미 회원이신가요?</span>
+            <span onClick={toggleMode} className="login-footer-link signup-link" style={{ color: '#ff5252' }}>로그인</span>
+          </>
+        ) : (
+          <>
+            <span style={{ color: '#888888', marginRight: '4px' }}>아직 회원이 아니신가요?</span>
+            <span onClick={toggleMode} className="login-footer-link signup-link" style={{ color: '#8c52ff' }}>회원가입</span>
+          </>
+        )}
       </div>
     </div>
   );

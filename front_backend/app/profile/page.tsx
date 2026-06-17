@@ -7,7 +7,7 @@ import { Dna, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { hasActiveJourney } = useAi();
   const [isResetting, setIsResetting] = useState(false);
   
@@ -103,8 +103,23 @@ export default function ProfilePage() {
   if (!hasActiveJourney) {
     return (
       <div className="profile-empty-container">
-        <header className="profile-empty-header" style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', backgroundColor: 'white' }}>
+        <header className="profile-empty-header" style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>내 정보</h1>
+          <button
+            onClick={() => {
+              if (window.confirm("로그아웃 하시겠습니까?")) {
+                logout();
+                window.location.href = "/";
+              }
+            }}
+            style={{
+              fontSize: '12px', background: '#f1f5f9', color: '#475569',
+              border: 'none', padding: '6px 12px', borderRadius: '6px',
+              cursor: 'pointer', fontWeight: 'bold'
+            }}
+          >
+            로그아웃 🚪
+          </button>
         </header>
 
         <div className="profile-empty-body">
@@ -153,17 +168,34 @@ export default function ProfilePage() {
           <span className="profile-dna-badge">
             ⚡ DNA 분석 결과
           </span>
-          <button
-            onClick={handleResetDna}
-            disabled={isResetting}
-            style={{
-              fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
-              border: 'none', padding: '6px 12px', borderRadius: '6px',
-              cursor: isResetting ? 'not-allowed' : 'pointer', fontWeight: 'bold'
-            }}
-          >
-            {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={handleResetDna}
+              disabled={isResetting}
+              style={{
+                fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
+                border: 'none', padding: '6px 12px', borderRadius: '6px',
+                cursor: isResetting ? 'not-allowed' : 'pointer', fontWeight: 'bold'
+              }}
+            >
+              {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm("로그아웃 하시겠습니까?")) {
+                  logout();
+                  window.location.href = "/";
+                }
+              }}
+              style={{
+                fontSize: '12px', background: '#f1f5f9', color: '#475569',
+                border: 'none', padding: '6px 12px', borderRadius: '6px',
+                cursor: 'pointer', fontWeight: 'bold'
+              }}
+            >
+              로그아웃 🚪
+            </button>
+          </div>
         </div>
         <h2 className="profile-dna-result">"{profileData?.dnaType || "여행 DNA 분석 중..."}"</h2>
         <div className="profile-dna-tags">

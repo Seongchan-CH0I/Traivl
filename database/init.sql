@@ -14,6 +14,7 @@ CREATE TABLE "User" (
     id TEXT PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     name TEXT,
+    "password" TEXT,
     "profileImage" TEXT,
     "dnaType" TEXT,
     "destinationId" TEXT,
@@ -60,8 +61,8 @@ CREATE TABLE "Place" (
 
 -- [5] 기본 데이터 삽입
 -- 테스트를 위한 기본 유저 생성
-INSERT INTO "User" (id, email, name, "dnaType") VALUES 
-('test_user_01', 'test@example.com', '테스트유저', '컬처 트렌드세터');
+INSERT INTO "User" (id, email, name, "password", "dnaType") VALUES 
+('test_user_01', 'test@example.com', '테스트유저', 'a98c195b23a97d992b49ac6ed3adb44c4c73dccfee853c7370a0494e13d5855491adba2d201f480fa2193077a6c7de0e182a03a515b2ee5654c23475bf9145d9', '컬처 트렌드세터');
 
 -- [6] 도시 데이터 삽입 (Destination)
 -- * 실시간 인기 도시 연동군 (1~8번): 서울, 제주, 부산, 속초, 오사카, 교토, 도쿄, 후쿠오카

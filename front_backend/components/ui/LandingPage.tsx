@@ -26,7 +26,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
         <div className="landing-logo-wrapper">
           <img src="/images/logo.png" alt="Traivl Logo" className="landing-logo-img" />
         </div>
-        
+
         {/* 신규 슬로건 텍스트 */}
         <div className="landing-slogan-text">
           "당신만을 위한 완벽한 여정, Traivl"

@@ -13,6 +13,7 @@ model User {
   email         String   @unique
   name          String?
   profileImage  String?
+  password      String?
   dnaType       String?  // 예: "힐링 럭셔리러", "본투비 푸드파이터"
   destinationId String?  // 예: "KR_JEJU"
 

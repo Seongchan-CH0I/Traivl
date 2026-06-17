@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// 가상 유저(Mock User)의 데이터 구조
+// 유저의 데이터 구조
 export interface User {
     id: string;
     name: string;
@@ -9,19 +9,12 @@ export interface User {
     dnaType?: string;
 }
 
-// 앱 전체에서 로그인한 것으로 간주할 가짜 유저 데이터
-const MOCK_USER: User = {
-    id: 'test_user_01',
-    name: '트래블러',
-    email: 'test@traivl.com',
-    profileImage: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix',
-    dnaType: '모험가',
-};
-
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     isLoading: boolean;
+    login: (id: string, password: string) => Promise<{ success: boolean; message: string }>;
+    signup: (id: string, email: string, name: string, password: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
 }
 
@@ -33,21 +26,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        // 앱이 처음 로드될 때만 딱 1번 실행 (페이지를 이동해도 이 상태는 유지됩니다)
-        const timer = setTimeout(() => {
-            setUser(MOCK_USER);
+        // 앱 진입 시 localStorage에 저장된 로그인 정보 복원
+        try {
+            const savedUser = localStorage.getItem('traivl_user');
+            if (savedUser) {
+                setUser(JSON.parse(savedUser));
+            }
+        } catch (err) {
+            console.error('Failed to load user from localStorage:', err);
+        } finally {
             setIsLoading(false);
-        }, 500);
-
-        return () => clearTimeout(timer);
+        }
     }, []);
 
+    // 로그인 API 호출
+    const login = async (id: string, password: string) => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id, password }),
+            });
+            const data = await res.json();
+            if (data.success && data.user) {
+                setUser(data.user);
+                localStorage.setItem('traivl_user', JSON.stringify(data.user));
+                return { success: true, message: data.message };
+            } else {
+                return { success: false, message: data.message || '로그인에 실패했습니다.' };
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, message: '서버와 통신하는 중 오류가 발생했습니다.' };
+        }
+    };
+
+    // 회원가입 API 호출
+    const signup = async (id: string, email: string, name: string, password: string) => {
+        try {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id, email, name, password }),
+            });
+            const data = await res.json();
+            if (data.success && data.user) {
+                setUser(data.user);
+                localStorage.setItem('traivl_user', JSON.stringify(data.user));
+                return { success: true, message: data.message };
+            } else {
+                return { success: false, message: data.message || '회원가입에 실패했습니다.' };
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            return { success: false, message: '서버와 통신하는 중 오류가 발생했습니다.' };
+        }
+    };
+
+    // 로그아웃 처리
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('traivl_user');
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout }}>
             {children}
         </AuthContext.Provider>
     );
@@ -61,3 +108,4 @@ export const useAuth = () => {
     }
     return context;
 };
+
