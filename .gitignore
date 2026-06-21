@@ -9,6 +9,10 @@ dist/
 **/__pycache__/
 .env
 
+# NPM Cache
+.npm-cache/
+**/.npm-cache/
+
 # OSRM Data (Large files)
 osrm-data/
 brain/

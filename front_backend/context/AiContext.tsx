@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
 type TranslationState = 'idle' | 'camera' | 'result' | 'audio_idle' | 'audio_recording' | 'audio_result' | 'ai_chat';
 
@@ -21,9 +21,16 @@ interface AiContextType {
     setDnaResult: (result: any) => void;
     itineraryData: any; // AI 일정 데이터 보관
     setItineraryData: (itinerary: any) => void;
+    chatSessionId: string; // 챗봇 세션 ID
+    resetChatSession: () => void; // 세션 초기화
 }
 
 const AiContext = createContext<AiContextType | undefined>(undefined);
+
+// 고유 세션 ID 생성 함수
+function generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
 
 export function AiProvider({ children }: { children: ReactNode }) {
     const [isAiMenuOpen, setIsAiMenuOpen] = useState(false);
@@ -33,12 +40,17 @@ export function AiProvider({ children }: { children: ReactNode }) {
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [dnaResult, setDnaResult] = useState<any>(null);
     const [itineraryData, setItineraryData] = useState<any>(null);
+    const [chatSessionId, setChatSessionId] = useState<string>(generateSessionId());
 
     const toggleAiMenu = () => setIsAiMenuOpen(!isAiMenuOpen);
     const closeAll = () => {
         setIsAiMenuOpen(false);
         setTranslationState('idle');
     };
+
+    const resetChatSession = useCallback(() => {
+        setChatSessionId(generateSessionId());
+    }, []);
 
     return (
         <AiContext.Provider value={{
@@ -57,7 +69,9 @@ export function AiProvider({ children }: { children: ReactNode }) {
             dnaResult,
             setDnaResult,
             itineraryData,
-            setItineraryData
+            setItineraryData,
+            chatSessionId,
+            resetChatSession
         }}>
             {children}
         </AiContext.Provider>

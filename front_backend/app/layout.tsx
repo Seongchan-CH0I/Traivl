@@ -10,8 +10,25 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 import LandingPage from '../components/ui/LandingPage';
 import LoginScreen from '../components/ui/LoginScreen';
 
+const renderMessageText = (text: string) => {
+    if (!text) return null;
+    return text.split('\n').map((line, index) => {
+        const parts = line.split('**');
+        return (
+            <div key={index} style={{ minHeight: line === '' ? '1.5em' : 'auto' }}>
+                {parts.map((part, partIndex) => {
+                    if (partIndex % 2 === 1) {
+                        return <strong key={partIndex} style={{ fontWeight: '700' }}>{part}</strong>;
+                    }
+                    return part;
+                })}
+            </div>
+        );
+    });
+};
+
 function LayoutContent({ children }: { children: React.ReactNode }) {
-    const { isAiMenuOpen, setIsAiMenuOpen, translationState, setTranslationState, toggleAiMenu, isJourneyMapMode, selectedCity } = useAi();
+    const { isAiMenuOpen, setIsAiMenuOpen, translationState, setTranslationState, toggleAiMenu, isJourneyMapMode, selectedCity, chatSessionId, dnaResult } = useAi();
     const { user } = useAuth(); // 이제 Context에서 유저 정보를 가져옴
     const [entryStep, setEntryStep] = useState<'landing' | 'login' | 'app'>('landing');
 
@@ -297,30 +314,123 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
     const [chatInput, setChatInput] = useState('');
     const [chatMessages, setChatMessages] = useState([
-        { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: '오전 10:46' }
+        { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }
     ]);
+    const [isStreaming, setIsStreaming] = useState(false);
+    const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+    // 채팅 스크롤 자동 하단 이동
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chatMessages]);
 
     const handleAiChatClick = () => {
         setIsAiMenuOpen(false);
         setTranslationState('ai_chat');
     };
 
-    const handleSendChatMessage = (text: string) => {
-        if (!text.trim()) return;
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-        const newUserMsg = { id: Date.now(), sender: 'user', text, time: timeString };
-        setChatMessages(prev => [...prev, newUserMsg]);
+    const getTimeString = () => new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+    const handleSendChatMessage = async (text: string) => {
+        if (!text.trim() || isStreaming) return;
+
+        // 1. 사용자 메시지 즉시 표시
+        const userMsg = { id: Date.now(), sender: 'user', text, time: getTimeString() };
+        setChatMessages(prev => [...prev, userMsg]);
         setChatInput('');
-        setTimeout(() => {
-            let aiResponse = '죄송합니다. 아직 답변을 드릴 수 없는 질문입니다. 다른 궁금한 점을 물어보세요! 😊';
-            if (text.includes('화장실')) aiResponse = '현재 위치에서 가장 가까운 화장실은 200m 거리의 편의점 내부에 있습니다. 🚻';
-            else if (text.includes('버스') || text.includes('교통')) aiResponse = '근처 정류장에서 15분마다 시내로 향하는 버스를 이용하실 수 있습니다. 🚌';
-            else if (text.includes('맛집') || text.includes('식당')) aiResponse = '주변에 평점이 높은 현지인 맛집 3곳을 추천해드릴 수 있습니다. 목록을 볼까요? 🍣';
-            const newAiMsg = { id: Date.now() + 1, sender: 'ai', text: aiResponse, time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) };
-            setChatMessages(prev => [...prev, newAiMsg]);
-        }, 1000);
-    };
+        setIsStreaming(true);
+        // 2. AI 응답 placeholder 추가
+        const aiMsgId = Date.now() + 1;
+        setChatMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: '' }]);
+
+        let isStreamDone = false;
+        let typingInterval: any = null;
+
+        try {
+            // 3. SSE 스트림 연결
+            const response = await fetch('/api/chat/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: user?.id || 'anonymous',
+                    user_name: user?.name || 'User',
+                    current_location: selectedCity || null,
+                    message: text,
+                    dna_type: dnaResult?.type || null,
+                    chat_history_id: chatSessionId,
+                })
+            });
+
+            if (!response.ok || !response.body) {
+                throw new Error('AI 서버 응답 오류');
+            }
+            // 4. SSE 이벤트 파싱 및 실시간 렌더링
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            let accumulatedText = '';
+            let displayedText = '';
+            // 타이핑 연출용 인터벌 설정 (20ms마다 최대 2글자씩 출력)
+            typingInterval = setInterval(() => {
+                if (displayedText.length < accumulatedText.length) {
+                    const charsToType = Math.min(2, accumulatedText.length - displayedText.length);
+                    displayedText += accumulatedText.substring(displayedText.length, displayedText.length + charsToType);
+                    setChatMessages(prev => prev.map(msg =>
+                        msg.id === aiMsgId
+                            ? { ...msg, text: displayedText, time: getTimeString() }
+                            : msg
+                    ));
+                } else if (isStreamDone) {
+                    clearInterval(typingInterval);
+                    setIsStreaming(false);
+                }
+            }, 20);
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const chunk = JSON.parse(line.slice(6));
+                            if (chunk.type === 'token') {
+                                accumulatedText += chunk.content;
+                            } else if (chunk.type === 'error') {
+                                accumulatedText = chunk.content || '오류가 발생했습니다. 다시 시도해주세요.';
+                                isStreamDone = true;
+                            } else if (chunk.type === 'done') {
+                                isStreamDone = true;
+                            }
+                        } catch (parseErr) {
+                            // 파싱 에러 무시
+                        }
+                    }
+                }
+            }
+
+            isStreamDone = true;
+
+        } catch (err: any) {
+            console.error('Chat SSE error:', err);
+            if (typingInterval) clearInterval(typingInterval);
+            setChatMessages(prev => prev.map(msg =>
+                msg.id === aiMsgId
+                    ? { ...msg, text: '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요. 🔄', time: getTimeString() }
+                    : msg
+            ));
+            setIsStreaming(false);
+        } finally {
+            isStreamDone = true;
+            if (!typingInterval) {
+                setIsStreaming(false);
+            }
+        }    };
 
     if (entryStep === 'landing') {
         return (
@@ -717,13 +827,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#fcfcfc' }}>
                         {chatMessages.map((msg) => {
                             const isUser = msg.sender === 'user';
+                            const isEmptyAi = !isUser && msg.text === '' && isStreaming;
                             return (
                                 <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', maxWidth: '82%', alignSelf: isUser ? 'flex-end' : 'flex-start', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
-                                    <div style={{ padding: '12px 16px', fontSize: '15px', color: isUser ? '#fff' : '#222', backgroundColor: isUser ? '#8c52ff' : '#f1f3f5', border: isUser ? 'none' : '1px solid #e9ecef', borderRadius: '20px', borderBottomRightRadius: isUser ? '4px' : '20px', borderBottomLeftRadius: isUser ? '20px' : '4px', lineHeight: '1.5', wordBreak: 'keep-all', overflowWrap: 'break-word', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>{msg.text}</div>
-                                    <span style={{ fontSize: '11px', color: '#aaa', marginTop: '6px', padding: '0 4px' }}>{msg.time}</span>
+                                    <div style={{ padding: '12px 16px', fontSize: '15px', color: isUser ? '#fff' : '#222', backgroundColor: isUser ? '#8c52ff' : '#f1f3f5', border: isUser ? 'none' : '1px solid #e9ecef', borderRadius: '20px', borderBottomRightRadius: isUser ? '4px' : '20px', borderBottomLeftRadius: isUser ? '20px' : '4px', lineHeight: '1.5', wordBreak: 'keep-all', overflowWrap: 'break-word', boxShadow: '0 2px 6px rgba(0,0,0,0.03)', minHeight: isEmptyAi ? '24px' : 'auto' }}>
+                                        {isEmptyAi ? (
+                                            <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#8c52ff', animation: 'pulse 1.4s ease-in-out infinite', animationDelay: '0s' }}></span>
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#8c52ff', animation: 'pulse 1.4s ease-in-out infinite', animationDelay: '0.2s' }}></span>
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#8c52ff', animation: 'pulse 1.4s ease-in-out infinite', animationDelay: '0.4s' }}></span>
+                                            </span>
+                                        ) : renderMessageText(msg.text)}
+                                    </div>
+                                    {msg.time && <span style={{ fontSize: '11px', color: '#aaa', marginTop: '6px', padding: '0 4px' }}>{msg.time}</span>}
                                 </div>
                             );
                         })}
+                        <div ref={chatEndRef} />
                     </div>
                     <div style={{ backgroundColor: '#fff', borderTop: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
                         <div style={{ padding: '12px 0 8px' }}>
@@ -736,8 +856,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                             </div>
                         </div>
                         <div style={{ padding: '8px 20px 16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                            <input type="text" placeholder="궁금한 점을 물어보세요..." value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(chatInput); }} style={{ flex: 1, backgroundColor: '#f1f3f5', border: 'none', borderRadius: '24px', padding: '14px 20px', fontSize: '15px', outline: 'none', color: '#333' }} />
-                            <button onClick={() => handleSendChatMessage(chatInput)} style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#8c52ff', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(140, 82, 255, 0.3)', flexShrink: 0 }}><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg></button>
+                            <input type="text" placeholder={isStreaming ? "AI가 답변 중..." : "궁금한 점을 물어보세요..."} value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSendChatMessage(chatInput); }} disabled={isStreaming} style={{ flex: 1, backgroundColor: '#f1f3f5', border: 'none', borderRadius: '24px', padding: '14px 20px', fontSize: '15px', outline: 'none', color: '#333', opacity: isStreaming ? 0.6 : 1 }} />
+                            <button onClick={() => handleSendChatMessage(chatInput)} disabled={isStreaming || !chatInput.trim()} style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: isStreaming ? '#ccc' : '#8c52ff', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isStreaming ? 'not-allowed' : 'pointer', boxShadow: isStreaming ? 'none' : '0 4px 12px rgba(140, 82, 255, 0.3)', flexShrink: 0, transition: 'all 0.2s ease' }}><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg></button>
                         </div>
                     </div>
                 </div>
