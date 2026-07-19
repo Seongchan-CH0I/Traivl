@@ -5,11 +5,86 @@ import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
 import { Dna, Plus } from 'lucide-react';
 import Link from 'next/link';
+import CustomAlertModal from '../../components/ui/CustomAlertModal';
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, withdraw } = useAuth();
   const { hasActiveJourney } = useAi();
   const [isResetting, setIsResetting] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: 'alert' | 'confirm';
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+    onCancel?: () => void;
+  }>({
+    isOpen: false,
+    type: 'alert',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const showAlert = (message: string, title?: string, onConfirm?: () => void) => {
+    setModalConfig({
+      isOpen: true,
+      type: 'alert',
+      title,
+      message,
+      onConfirm: () => {
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+        if (onConfirm) onConfirm();
+      }
+    });
+  };
+
+  const showConfirm = (message: string, title?: string, onConfirm?: () => void, onCancel?: () => void) => {
+    setModalConfig({
+      isOpen: true,
+      type: 'confirm',
+      title,
+      message,
+      onConfirm: () => {
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+        if (onConfirm) onConfirm();
+      },
+      onCancel: () => {
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+        if (onCancel) onCancel();
+      }
+    });
+  };
+
+  const handleWithdraw = () => {
+    console.log("handleWithdraw clicked! user:", user);
+    if (!user?.id) {
+      console.log("handleWithdraw: user or user.id is missing!");
+      return;
+    }
+    showConfirm(
+      "정말로 회원 탈퇴를 진행하시겠습니까?",
+      "회원 탈퇴",
+      async () => {
+        setIsWithdrawing(true);
+        try {
+          const res = await withdraw();
+          if (res.success) {
+            showAlert(res.message, "탈퇴 완료", () => {
+              window.location.href = "/";
+            });
+          } else {
+            showAlert(res.message, "탈퇴 실패");
+          }
+        } catch (e) {
+          showAlert("네트워크 통신 중 오류가 발생했습니다.", "오류");
+        } finally {
+          setIsWithdrawing(false);
+        }
+      }
+    );
+  };
   
   const [profileData, setProfileData] = useState<any>(null);
   const [aiUsageHistory, setAiUsageHistory] = useState<any[]>([]);
@@ -42,23 +117,29 @@ export default function ProfilePage() {
     fetchProfileData();
   }, [user?.id]);
 
-  const handleResetDna = async () => {
+  const handleResetDna = () => {
     if (!user?.id) return;
-    if (!window.confirm("정말 나의 여행 DNA 결과를 완전히 초기화하시겠습니까? (되돌릴 수 없습니다.)")) return;
-
-    setIsResetting(true);
-    try {
-      const res = await fetch(`/api/survey?userId=${user.id}`, { method: 'DELETE' });
-      if (res.ok) {
-        alert("초기화 완료! 앱이 새로고침되어 처음 상태로 돌아갑니다.");
-        window.location.href = "/";
-      } else {
-        alert("초기화에 실패했습니다.");
+    showConfirm(
+      "정말 나의 여행 DNA 결과를 완전히 초기화하시겠습니까? (되돌릴 수 없습니다.)",
+      "DNA 결과 초기화",
+      async () => {
+        setIsResetting(true);
+        try {
+          const res = await fetch(`/api/survey?userId=${user.id}`, { method: 'DELETE' });
+          if (res.ok) {
+            showAlert("초기화 완료! 앱이 새로고침되어 처음 상태로 돌아갑니다.", "초기화 성공", () => {
+              window.location.href = "/";
+            });
+          } else {
+            showAlert("초기화에 실패했습니다.", "오류");
+          }
+        } catch (e) {
+          showAlert("네트워크 통신 중 오류가 발생했습니다.", "오류");
+        } finally {
+          setIsResetting(false);
+        }
       }
-    } catch (e) {
-      alert("네트워크 통신 중 오류가 발생했습니다.");
-    }
-    setIsResetting(false);
+    );
   };
 
   // 서버에서 받아온 실제 취향 데이터 (없을 경우 기본값 50)
@@ -105,21 +186,34 @@ export default function ProfilePage() {
       <div className="profile-empty-container">
         <header className="profile-empty-header" style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '20px', fontWeight: 'bold' }}>내 정보</h1>
-          <button
-            onClick={() => {
-              if (window.confirm("로그아웃 하시겠습니까?")) {
-                logout();
-                window.location.href = "/";
-              }
-            }}
-            style={{
-              fontSize: '12px', background: '#f1f5f9', color: '#475569',
-              border: 'none', padding: '6px 12px', borderRadius: '6px',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}
-          >
-            로그아웃 🚪
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={handleWithdraw}
+              disabled={isWithdrawing}
+              style={{
+                fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
+                border: 'none', padding: '6px 12px', borderRadius: '6px',
+                cursor: isWithdrawing ? 'not-allowed' : 'pointer', fontWeight: 'bold'
+              }}
+            >
+              {isWithdrawing ? "탈퇴 중..." : "회원 탈퇴 😢"}
+            </button>
+            <button
+              onClick={() => {
+                showConfirm("로그아웃 하시겠습니까?", "로그아웃", () => {
+                  logout();
+                  window.location.href = "/";
+                });
+              }}
+              style={{
+                fontSize: '12px', background: '#f1f5f9', color: '#475569',
+                border: 'none', padding: '6px 12px', borderRadius: '6px',
+                cursor: 'pointer', fontWeight: 'bold'
+              }}
+            >
+              로그아웃 🚪
+            </button>
+          </div>
         </header>
 
         <div className="profile-empty-body">
@@ -142,6 +236,7 @@ export default function ProfilePage() {
             DNA 분석 시작하기 +
           </Link>
         </div>
+        <CustomAlertModal {...modalConfig} />
       </div>
     );
   }
@@ -181,11 +276,22 @@ export default function ProfilePage() {
               {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
             </button>
             <button
+              onClick={handleWithdraw}
+              disabled={isWithdrawing}
+              style={{
+                fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
+                border: 'none', padding: '6px 12px', borderRadius: '6px',
+                cursor: isWithdrawing ? 'not-allowed' : 'pointer', fontWeight: 'bold'
+              }}
+            >
+              {isWithdrawing ? "탈퇴 중..." : "회원 탈퇴 😢"}
+            </button>
+            <button
               onClick={() => {
-                if (window.confirm("로그아웃 하시겠습니까?")) {
+                showConfirm("로그아웃 하시겠습니까?", "로그아웃", () => {
                   logout();
                   window.location.href = "/";
-                }
+                });
               }}
               style={{
                 fontSize: '12px', background: '#f1f5f9', color: '#475569',
@@ -342,6 +448,7 @@ export default function ProfilePage() {
           )))}
         </div>
       </div>
+      <CustomAlertModal {...modalConfig} />
     </div>
   );
 }

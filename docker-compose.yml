@@ -32,6 +32,9 @@ services:
     container_name: fastapi_server
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@database:5432/traivldb
+      - REDIS_HOST=redis
     ports:
       - "8000:8000"
     depends_on:

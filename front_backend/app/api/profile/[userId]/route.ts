@@ -32,3 +32,33 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  try {
+    const { userId } = await params;
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    // Delete the user from the database. Cascade delete will handle related stats and logs.
+    const deletedUser = await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      message: "회원 탈퇴가 완료되었습니다.", 
+      user: deletedUser 
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return NextResponse.json(
+      { error: "회원 탈퇴에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}

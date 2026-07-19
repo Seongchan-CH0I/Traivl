@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { X, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import CustomAlertModal from './CustomAlertModal';
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -20,45 +21,69 @@ export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
   
   const [autoLogin, setAutoLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: 'alert' | 'confirm';
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+    onCancel?: () => void;
+  }>({
+    isOpen: false,
+    type: 'alert',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const showAlert = (message: string, title?: string, onConfirm?: () => void) => {
+    setModalConfig({
+      isOpen: true,
+      type: 'alert',
+      title,
+      message,
+      onConfirm: () => {
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+        if (onConfirm) onConfirm();
+      }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
 
     // Validation
     if (!id.trim()) {
-      setErrorMessage('아이디를 입력해주세요.');
+      showAlert('아이디를 입력해주세요.', '입력 오류');
       return;
     }
     if (!password) {
-      setErrorMessage('비밀번호를 입력해주세요.');
+      showAlert('비밀번호를 입력해주세요.', '입력 오류');
       return;
     }
 
     if (isSignUp) {
       if (!email.trim()) {
-        setErrorMessage('이메일을 입력해주세요.');
+        showAlert('이메일을 입력해주세요.', '입력 오류');
         return;
       }
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        setErrorMessage('올바른 이메일 형식을 입력해주세요.');
+        showAlert('올바른 이메일 형식을 입력해주세요.', '입력 오류');
         return;
       }
       if (!name.trim()) {
-        setErrorMessage('이름을 입력해주세요.');
+        showAlert('이름을 입력해주세요.', '입력 오류');
         return;
       }
       if (!confirmPassword) {
-        setErrorMessage('비밀번호 확인을 입력해주세요.');
+        showAlert('비밀번호 확인을 입력해주세요.', '입력 오류');
         return;
       }
       if (password !== confirmPassword) {
-        setErrorMessage('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+        showAlert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.', '입력 오류');
         return;
       }
     }
@@ -68,24 +93,23 @@ export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
       if (isSignUp) {
         const result = await signup(id, email, name, password);
         if (result.success) {
-          setSuccessMessage('회원가입이 완료되었습니다! 잠시 후 메인 화면으로 이동합니다. ✨');
-          setTimeout(() => {
+          showAlert('회원가입이 완료되었습니다! 잠시 후 메인 화면으로 이동합니다. ✨', '회원가입 완료', () => {
             onLogin();
-          }, 1500);
+          });
         } else {
-          setErrorMessage(result.message);
+          showAlert(result.message || '회원가입에 실패했습니다.', '회원가입 실패');
         }
       } else {
         const result = await login(id, password);
         if (result.success) {
           onLogin();
         } else {
-          setErrorMessage(result.message);
+          showAlert(result.message || '로그인에 실패했습니다.', '로그인 실패');
         }
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage('네트워크 오류가 발생했습니다.');
+      showAlert('네트워크 오류가 발생했습니다.', '오류');
     } finally {
       setLoading(false);
     }
@@ -93,14 +117,12 @@ export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
-    setErrorMessage(null);
     setId('');
     setPassword('');
     setEmail('');
     setName('');
     setShowPassword(false);
     setConfirmPassword('');
-    setSuccessMessage(null);
   };
 
   return (
@@ -114,44 +136,7 @@ export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
       </div>
 
       <form onSubmit={handleSubmit} noValidate style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* 성공 메시지 표시 */}
-        {successMessage && (
-          <div style={{
-            width: '100%',
-            padding: '12px 16px',
-            backgroundColor: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-            borderRadius: '8px',
-            color: '#166534',
-            fontSize: '14px',
-            fontWeight: '600',
-            marginBottom: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span>✨</span> {successMessage}
-          </div>
-        )}
 
-        {/* 에러 메시지 표시 */}
-        {errorMessage && (
-          <div style={{
-            width: '100%',
-            padding: '12px 16px',
-            backgroundColor: '#fff5f5',
-            border: '1px solid #fed7d7',
-            borderRadius: '8px',
-            color: '#c53030',
-            fontSize: '14px',
-            fontWeight: 500,
-            marginBottom: '16px',
-            textAlign: 'center',
-            wordBreak: 'keep-all'
-          }}>
-            ⚠️ {errorMessage}
-          </div>
-        )}
 
         {/* 입력 필드 */}
         <div className="login-form-fields">
@@ -284,6 +269,7 @@ export default function LoginScreen({ onBack, onLogin }: LoginScreenProps) {
           </>
         )}
       </div>
+      <CustomAlertModal {...modalConfig} />
     </div>
   );
 }

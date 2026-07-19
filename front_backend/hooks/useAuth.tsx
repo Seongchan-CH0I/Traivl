@@ -16,6 +16,7 @@ interface AuthContextType {
     login: (id: string, password: string) => Promise<{ success: boolean; message: string }>;
     signup: (id: string, email: string, name: string, password: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
+    withdraw: () => Promise<{ success: boolean; message: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -93,8 +94,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('traivl_user');
     };
 
+    // 회원 탈퇴 처리
+    const withdraw = async () => {
+        if (!user) return { success: false, message: '로그인이 필요합니다.' };
+        try {
+            const res = await fetch(`/api/profile/${user.id}`, {
+                method: 'DELETE',
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                logout();
+                return { success: true, message: data.message || '회원 탈퇴가 완료되었습니다.' };
+            } else {
+                return { success: false, message: data.error || '회원 탈퇴에 실패했습니다.' };
+            }
+        } catch (error) {
+            console.error('Withdraw error:', error);
+            return { success: false, message: '서버와 통신하는 중 오류가 발생했습니다.' };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout, withdraw }}>
             {children}
         </AuthContext.Provider>
     );
