@@ -9,6 +9,7 @@ import { AiProvider, useAi } from '../context/AiContext';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
 import LandingPage from '../components/ui/LandingPage';
 import LoginScreen from '../components/ui/LoginScreen';
+import AudioWaveform from '../components/ui/AudioWaveform';
 
 const renderMessageText = (text: string) => {
     if (!text) return null;
@@ -65,6 +66,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     const [voiceResult, setVoiceResult] = useState<any | null>(null);
     const [isLoadingVoice, setIsLoadingVoice] = useState<boolean>(false);
     const [voiceError, setVoiceError] = useState<string | null>(null);
+    const [micStream, setMicStream] = useState<MediaStream | null>(null);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -241,12 +243,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 
                 // 마이크 리소스 즉시 해제
                 stream.getTracks().forEach(track => track.stop());
+                setMicStream(null);
                 
                 // API 전송
                 sendVoiceRequest(recordedBlob);
             };
             
             mediaRecorder.start();
+            setMicStream(stream);
             setTranslationState('audio_recording');
             
             // 5초 후 자동으로 녹음 중지
@@ -260,6 +264,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             console.error("Microphone access error:", err);
             alert("마이크에 접근할 수 없습니다. 권한을 확인해주세요.");
             setTranslationState('idle');
+            setMicStream(null);
         }
     };
 
@@ -728,11 +733,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                         <button className="audio-mic-btn recording" onClick={stopRecording} style={{ animation: 'none' }}>
                                             <Mic size={50} color="#ef4444" strokeWidth={2.5} />
                                         </button>
-                                        <div className="audio-waves">
-                                            {[...Array(15)].map((_, i) => (
-                                                <div key={i} className="audio-wave-bar" style={{ animationDelay: `${i * 0.1}s` }} />
-                                            ))}
-                                        </div>
+                                        <AudioWaveform stream={micStream} />
                                         <p className="audio-instruction">듣는 중...</p>
                                         <p className="audio-sub-instruction">마이크 버튼을 한 번 더 누르면 녹음이 중지됩니다</p>
                                     </>

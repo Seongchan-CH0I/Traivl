@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -68,7 +68,7 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
     };
 
     const formatDateRange = () => {
-        const format = (d: Date) => `${d.getFullYear()}??${String(d.getMonth() + 1).padStart(2, '0')}??${String(d.getDate()).padStart(2, '0')}??;
+        const format = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         if (startDate && endDate) {
             return `${format(startDate)} ~ ${format(endDate)}`;
         } else if (startDate) {
@@ -127,20 +127,20 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
             <div className="cal-header">
                 <button className="cal-nav-btn" onClick={handlePrevMonth}><ChevronLeft size={20} /></button>
                 <div style={{ textAlign: 'center' }}>
-                    <h3 onClick={() => setShowMonthPicker(true)}>{currentMonth.getMonth() + 1}??/h3>
+                    <h3 onClick={() => setShowMonthPicker(true)}>{currentMonth.getMonth() + 1}월</h3>
                     <div className="cal-year" onClick={() => setShowYearPicker(true)}>{currentMonth.getFullYear()}</div>
                 </div>
                 <button className="cal-nav-btn" onClick={handleNextMonth}><ChevronRight size={20} /></button>
             </div>
 
             <div className="cal-grid-header">
-                <div className="cal-day-label sun">??/div>
-                <div className="cal-day-label">??/div>
-                <div className="cal-day-label">??/div>
-                <div className="cal-day-label">??/div>
-                <div className="cal-day-label">紐?/div>
-                <div className="cal-day-label">湲?/div>
-                <div className="cal-day-label sat">??/div>
+                <div className="cal-day-label sun">일</div>
+                <div className="cal-day-label">월</div>
+                <div className="cal-day-label">화</div>
+                <div className="cal-day-label">수</div>
+                <div className="cal-day-label">목</div>
+                <div className="cal-day-label">금</div>
+                <div className="cal-day-label sat">토</div>
             </div>
 
             <div className="cal-grid" style={{ flex: 1 }}>
@@ -148,18 +148,18 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
             </div>
 
             <div className="cal-result-area" style={{ flexShrink: 0 }}>
-                <div className="cal-result-text">{formatDateRange() || "?좎쭨瑜??좏깮?댁＜?몄슂"}</div>
+                <div className="cal-result-text">{formatDateRange() || "날짜를 선택해주세요"}</div>
             </div>
 
             <div className="cal-footer" style={{ marginTop: 'auto', flexShrink: 0 }}>
-                <button className="cal-btn-cancel" onClick={onCancel}>痍⑥냼</button>
+                <button className="cal-btn-cancel" onClick={onCancel}>취소</button>
                 <button 
                   className="cal-btn-confirm" 
                   onClick={() => startDate && endDate && onConfirm(startDate, endDate)}
                   disabled={!startDate || !endDate}
                   style={{ opacity: (startDate && endDate) ? 1 : 0.6 }}
                 >
-                    ?뺤씤
+                    확인
                 </button>
             </div>
 
@@ -167,7 +167,7 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
             {showMonthPicker && (
                 <div className="cal-picker-overlay">
                     <div className="cal-picker-header">
-                        <h4>???좏깮</h4>
+                        <h4>월 선택</h4>
                         <button className="cal-nav-btn" onClick={() => setShowMonthPicker(false)}><X size={20} /></button>
                     </div>
                     <div className="cal-picker-grid">
@@ -177,7 +177,8 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
                                 className={`cal-picker-item ${currentMonth.getMonth() === i ? 'selected' : ''}`}
                                 onClick={() => handleMonthSelect(i)}
                             >
-                                {i + 1}??                            </div>
+                                {i + 1}월
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -187,7 +188,7 @@ export default function Calendar({ onConfirm, onCancel }: CalendarProps) {
             {showYearPicker && (
                 <div className="cal-picker-overlay">
                     <div className="cal-picker-header">
-                        <h4>?곕룄 ?좏깮</h4>
+                        <h4>연도 선택</h4>
                         <button className="cal-nav-btn" onClick={() => setShowYearPicker(false)}><X size={20} /></button>
                     </div>
                     <div className="cal-picker-grid">

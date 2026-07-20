@@ -22,6 +22,7 @@ model User {
 
   aiUsageLogs   AiUsageLog[]
   dnaStat       UserDnaStat?
+  schedules     Schedule[]
 }
 
 // 8개 고정 추천 도시
@@ -106,4 +107,19 @@ model langchain_pg_embedding {
   custom_id               String?                  @db.VarChar
   uuid                    String                   @id @db.Uuid
   langchain_pg_collection langchain_pg_collection? @relation(fields: [collection_id], references: [uuid], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Schedule {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String   // 예: "나의 서울 2박 3일 여행"
+  city          String   // 예: "서울"
+  startDate     DateTime?
+  endDate       DateTime?
+  itineraryData Json     // AI가 리턴한 일자별 상세 코스 데이터 (JSON)
+  isShared      Boolean  @default(false) // 피드 공유 여부
+  shareContent  String?  // 피드 공유시 남길 한줄평/소개글
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

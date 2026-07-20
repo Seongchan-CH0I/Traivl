@@ -3,16 +3,28 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
-import { Dna, Plus } from 'lucide-react';
+import { Dna, Plus, Download, Map, Share2, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 
 export default function ProfilePage() {
   const { user, logout, withdraw } = useAuth();
-  const { hasActiveJourney } = useAi();
+  const { hasActiveJourney, setHasActiveJourney, setItineraryData } = useAi();
+  
   const [isResetting, setIsResetting] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
+  // 3D 카드 뒤집기 상태
+  const [isFlipped, setIsFlipped] = useState(false);
+  
+  // 내 저장된 일정 리스트 상태
+  const [savedSchedules, setSavedSchedules] = useState<any[]>([]);
+  const [schedulesLoading, setSchedulesLoading] = useState(false);
+
+  // html2canvas 다운로드 로딩 상태
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // CustomAlertModal 상태 관리
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     type: 'alert' | 'confirm';
@@ -58,14 +70,10 @@ export default function ProfilePage() {
   };
 
   const handleWithdraw = () => {
-    console.log("handleWithdraw clicked! user:", user);
-    if (!user?.id) {
-      console.log("handleWithdraw: user or user.id is missing!");
-      return;
-    }
+    if (!user?.id) return;
     showConfirm(
-      "정말로 회원 탈퇴를 진행하시겠습니까?",
-      "회원 탈퇴",
+      "정말로 회원 탈퇴를 진행하시겠습니까?\n탈퇴 시 모든 정보와 저장된 일정 데이터가 안전하게 완전히 파기됩니다.",
+      "회원 탈퇴 😢",
       async () => {
         setIsWithdrawing(true);
         try {
@@ -90,38 +98,60 @@ export default function ProfilePage() {
   const [aiUsageHistory, setAiUsageHistory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchProfileData() {
-      if (!user?.id) return;
-      try {
-        setIsLoading(true);
-        const [profileRes, historyRes] = await Promise.all([
-          fetch(`/api/profile/${user.id}`),
-          fetch(`/api/profile/${user.id}/history`)
-        ]);
+  // 1. 프로필 및 히스토리 데이터 로드
+  const fetchProfileData = async () => {
+    if (!user?.id) return;
+    try {
+      setIsLoading(true);
+      const [profileRes, historyRes] = await Promise.all([
+        fetch(`/api/profile/${user.id}`),
+        fetch(`/api/profile/${user.id}/history`)
+      ]);
 
-        if (profileRes.ok) {
-          const profile = await profileRes.json();
-          setProfileData(profile);
-        }
-        if (historyRes.ok) {
-          const history = await historyRes.json();
-          setAiUsageHistory(history);
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile data:", error);
-      } finally {
-        setIsLoading(false);
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        setProfileData(profile);
       }
+      if (historyRes.ok) {
+        const history = await historyRes.json();
+        setAiUsageHistory(history);
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile data:", error);
+    } finally {
+      setIsLoading(false);
     }
-    fetchProfileData();
+  };
+
+  // 2. 내 일정 보관함 데이터 로드
+  const fetchSavedSchedules = async () => {
+    if (!user?.id) return;
+    setSchedulesLoading(true);
+    try {
+      const res = await fetch(`/api/schedules?userId=${user.id}`);
+      const result = await res.json();
+      if (result.success) {
+        setSavedSchedules(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch saved schedules:", error);
+    } finally {
+      setSchedulesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchProfileData();
+      fetchSavedSchedules();
+    }
   }, [user?.id]);
 
   const handleResetDna = () => {
     if (!user?.id) return;
     showConfirm(
       "정말 나의 여행 DNA 결과를 완전히 초기화하시겠습니까? (되돌릴 수 없습니다.)",
-      "DNA 결과 초기화",
+      "DNA 결과 초기화 🗑️",
       async () => {
         setIsResetting(true);
         try {
@@ -137,6 +167,116 @@ export default function ProfilePage() {
           showAlert("네트워크 통신 중 오류가 발생했습니다.", "오류");
         } finally {
           setIsResetting(false);
+        }
+      }
+    );
+  };
+
+  // 3. DNA 카드 이미지 다운로드 기능 (html2canvas)
+  const handleDownloadCard = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // 카드 뒤집히지 않도록 이벤트 전파 차단
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      // dynamic import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      const cardElement = document.getElementById('travel-dna-card-front');
+      if (cardElement) {
+        const canvas = await html2canvas(cardElement, {
+          useCORS: true,
+          allowTaint: true,
+          scale: 3, // 초고화질 SNS 크기
+          backgroundColor: null,
+          logging: false
+        });
+
+        const link = document.createElement('a');
+        link.download = `${user?.name || 'Traveler'}_Travel_DNA.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        showAlert("여행 DNA 카드가 갤러리에 다운로드되었습니다! SNS에 자유롭게 공유해보세요. ✨", "다운로드 완료");
+      }
+    } catch (err) {
+      console.error("Card download failed:", err);
+      showAlert("이미지 저장 중 오류가 발생했습니다.", "오류");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // 4. 저장 일정 활성화 (지도로 보기)
+  const handleActivateSchedule = (schedule: any) => {
+    showConfirm(
+      `'${schedule.title}' 일정을 현재 활성 여행으로 등록하시겠습니까?\n달력 및 지도 화면이 이 일정으로 동기화됩니다.`,
+      "일정 활성화 🗺️",
+      () => {
+        setItineraryData(schedule.itineraryData);
+        setHasActiveJourney(true);
+        showAlert("선택한 일정이 활성화되었습니다! 지도로 바로 이동합니다.", "활성화 완료", () => {
+          window.location.href = "/calendar";
+        });
+      }
+    );
+  };
+
+  // 5. 저장 일정 공유 상태 변경
+  const handleToggleShare = async (schedule: any) => {
+    const nextShared = !schedule.isShared;
+    const sharePrompt = nextShared 
+      ? "이 일정을 커뮤니티 피드에 공개하시겠습니까?" 
+      : "이 일정을 피드에서 비공개로 전환하시겠습니까?";
+
+    showConfirm(
+      sharePrompt,
+      "공유 상태 변경 🔄",
+      async () => {
+        try {
+          const res = await fetch(`/api/schedules/${schedule.id}/share`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isShared: nextShared,
+              shareContent: nextShared ? `${user?.name || '트래블러'}님의 추천 여행 코스!` : ''
+            })
+          });
+          const result = await res.json();
+          if (result.success) {
+            showAlert(
+              nextShared ? "커뮤니티 피드에 일정이 성공적으로 공유되었습니다!" : "피드에서 일정을 내렸습니다.",
+              "설정 완료"
+            );
+            // 로컬 목록 상태 업데이트
+            setSavedSchedules(prev => prev.map(item => 
+              item.id === schedule.id ? { ...item, isShared: nextShared } : item
+            ));
+          }
+        } catch (e) {
+          showAlert("공유 변경 도중 서버 통신 실패", "오류");
+        }
+      }
+    );
+  };
+
+  // 6. 저장 일정 삭제
+  const handleDeleteSchedule = async (scheduleId: string) => {
+    showConfirm(
+      "이 일정을 완전히 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.",
+      "일정 삭제 🗑️",
+      async () => {
+        try {
+          const res = await fetch(`/api/schedules?id=${scheduleId}`, {
+            method: 'DELETE'
+          });
+          const result = await res.json();
+          if (result.success) {
+            showAlert("일정이 성공적으로 삭제되었습니다.", "삭제 완료");
+            // 로컬 목록 상태에서 제거
+            setSavedSchedules(prev => prev.filter(item => item.id !== scheduleId));
+          }
+        } catch (e) {
+          showAlert("삭제 중 오류가 발생했습니다.", "오류");
         }
       }
     );
@@ -160,12 +300,12 @@ export default function ProfilePage() {
   ];
 
   // 그래프 계산 로직
-  const getPoint = (index: number, value: number, maxR: number = 100) => {
+  const getPoint = (index: number, value: number, maxR: number = 80) => {
     const r = (value / 100) * maxR;
     // 위쪽(문화)부터 시계 방향으로 60도씩(PI/3) 회전
     const angle = (Math.PI / 3) * index - Math.PI / 2;
-    const x = 150 + r * Math.cos(angle);
-    const y = 150 + r * Math.sin(angle);
+    const x = 110 + r * Math.cos(angle);
+    const y = 110 + r * Math.sin(angle);
     return { x, y };
   };
 
@@ -174,14 +314,21 @@ export default function ProfilePage() {
     return `${x},${y}`;
   }).join(" ");
 
-  // 배경 육각형 가이드라인을 그리기 위한 단계 
   const levels = [20, 40, 60, 80, 100];
 
   if (isLoading) {
-    return <div style={{ padding: '40px', textAlign: 'center', color: '#888' }}>프로필 데이터를 불러오는 중입니다...</div>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', color: '#888', gap: '12px' }}>
+        <Loader2 size={36} className="animate-spin" style={{ color: '#8c52ff' }} />
+        <p style={{ fontWeight: 600 }}>프로필 데이터를 불러오는 중입니다...</p>
+      </div>
+    );
   }
 
-  if (!hasActiveJourney) {
+  // DNA가 없거나 일정이 아예 없을 때 (설문 안한 유저 방어)
+  const hasDna = !!profileData?.dnaType;
+
+  if (!hasDna) {
     return (
       <div className="profile-empty-container">
         <header className="profile-empty-header" style={{ padding: '20px', borderBottom: '1px solid #f0f0f0', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -242,165 +389,324 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="profile-content">
-      {/* 상단 프로필 섹션 */}
-      <div className="profile-avatar-section">
-        <div className="profile-avatar-outer">
-          <div className="profile-avatar-inner">
-            <div className="profile-avatar-image">
-              <span style={{ fontSize: '30px' }}>👤</span>
+    <div className="profile-content" style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      
+      {/* 상단 프로필 기본 헤더 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#1e293b', margin: 0 }}>나의 여행 DNA</h1>
+          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>개인화된 여행 라이프스타일</p>
+        </div>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            onClick={handleResetDna}
+            disabled={isResetting}
+            style={{
+              fontSize: '11px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0',
+              padding: '6px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700
+            }}
+          >
+            DNA 재검사 🗑️
+          </button>
+          <button
+            onClick={() => {
+              showConfirm("로그아웃 하시겠습니까?", "로그아웃", () => {
+                logout();
+                window.location.href = "/";
+              });
+            }}
+            style={{
+              fontSize: '11px', background: '#f1f5f9', color: '#475569', border: 'none',
+              padding: '6px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700
+            }}
+          >
+            로그아웃 🚪
+          </button>
+        </div>
+      </div>
+
+      {/* 3D 플립 카드 컨테이너 */}
+      <div 
+        className="dna-card-container"
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        <div className={`dna-card ${isFlipped ? 'flipped' : ''}`}>
+          
+          {/* 카드 앞면 (SNS 공유용 DNA 정보 시각화) */}
+          <div className="dna-card-front" id="travel-dna-card-front">
+            <div className="dna-card-deco-circle" />
+            <div className="dna-card-deco-circle-bottom" />
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="dna-card-logo">
+                <span>🧬</span> TRAIVL DNA
+              </div>
+              <div className="dna-card-tagline">
+                verified card
+              </div>
+            </div>
+
+            <div style={{ margin: 'auto 0' }}>
+              <span style={{ fontSize: '11.5px', textTransform: 'uppercase', letterSpacing: '0.12em', opacity: 0.8, fontWeight: 700 }}>
+                MY TRAVELING STYLE
+              </span>
+              <h2 style={{ fontSize: '28px', fontWeight: 900, marginTop: '6px', lineHeight: '1.2', letterSpacing: '-0.02em', textShadow: '0 2px 10px rgba(0,0,0,0.15)' }}>
+                "{profileData?.dnaType}"
+              </h2>
+              
+              <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
+                <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '30px', fontSize: '12px', fontWeight: 700 }}>
+                  #성향맞춤
+                </span>
+                <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '30px', fontSize: '12px', fontWeight: 700 }}>
+                  #AI_인증
+                </span>
+                <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '30px', fontSize: '12px', fontWeight: 700 }}>
+                  #트래블러
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div>
+                <div style={{ fontSize: '11px', opacity: 0.7, fontWeight: 500 }}>HOLDER</div>
+                <div className="dna-card-name">{user?.name || 'TRAIVL USER'}</div>
+              </div>
+              <button
+                onClick={handleDownloadCard}
+                disabled={isDownloading}
+                style={{
+                  background: '#ffffff',
+                  color: '#8c52ff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '8px 12px',
+                  fontWeight: 800,
+                  fontSize: '11.5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+              >
+                {isDownloading ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <Download size={13} />
+                )}
+                카드 저장
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <h1 className="profile-title">나의 여행 DNA</h1>
-      <p className="profile-subtitle">개인화된 여행 프로필</p>
+          {/* 카드 뒷면 (육각 취향 그래프 상세 요약) */}
+          <div className="dna-card-back" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px dashed #e2e8f0', paddingBottom: '10px' }}>
+              <span style={{ fontSize: '12.5px', fontWeight: 800, color: '#64748b' }}>📊 세부 취향 스탯</span>
+              <button 
+                onClick={() => setIsFlipped(false)}
+                style={{ background: 'none', border: 'none', color: '#8c52ff', fontSize: '11.5px', fontWeight: 800, cursor: 'pointer' }}
+              >
+                돌아가기 🔄
+              </button>
+            </div>
 
-      {/* DNA 분석 결과 배너 */}
-      <div className="profile-dna-banner">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="profile-dna-badge">
-            ⚡ DNA 분석 결과
-          </span>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={handleResetDna}
-              disabled={isResetting}
-              style={{
-                fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
-                border: 'none', padding: '6px 12px', borderRadius: '6px',
-                cursor: isResetting ? 'not-allowed' : 'pointer', fontWeight: 'bold'
-              }}
-            >
-              {isResetting ? "삭제 중..." : "결과 데이터 지우기 🗑️"}
-            </button>
-            <button
-              onClick={handleWithdraw}
-              disabled={isWithdrawing}
-              style={{
-                fontSize: '12px', background: '#ffe4e6', color: '#e11d48',
-                border: 'none', padding: '6px 12px', borderRadius: '6px',
-                cursor: isWithdrawing ? 'not-allowed' : 'pointer', fontWeight: 'bold'
-              }}
-            >
-              {isWithdrawing ? "탈퇴 중..." : "회원 탈퇴 😢"}
-            </button>
-            <button
-              onClick={() => {
-                showConfirm("로그아웃 하시겠습니까?", "로그아웃", () => {
-                  logout();
-                  window.location.href = "/";
-                });
-              }}
-              style={{
-                fontSize: '12px', background: '#f1f5f9', color: '#475569',
-                border: 'none', padding: '6px 12px', borderRadius: '6px',
-                cursor: 'pointer', fontWeight: 'bold'
-              }}
-            >
-              로그아웃 🚪
-            </button>
-          </div>
-        </div>
-        <h2 className="profile-dna-result">"{profileData?.dnaType || "여행 DNA 분석 중..."}"</h2>
-        <div className="profile-dna-tags">
-          <span className="profile-dna-tag">#문화중심</span>
-          <span className="profile-dna-tag">#빡빡한일정</span>
-          <span className="profile-dna-tag">#가성비맛집</span>
-        </div>
-      </div>
-
-      {/* 취향 분석 그래프 영역 */}
-      <div className="profile-graph-container">
-        <h3 className="profile-graph-title">취향 분석 그래프</h3>
-
-        {/* 방사형 SVG 그래프 */}
-        <div className="profile-radar-wrapper">
-          <svg viewBox="0 0 300 300" className="profile-radar-svg">
-
-            {/* 가이드라인 다각형 (육각형) */}
-            {levels.map(level => {
-              const points = stats.map((_, i) => {
-                const { x, y } = getPoint(i, level);
-                return `${x},${y}`;
-              }).join(" ");
-              return (
+            {/* 레이더 차트 SVG */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: 'auto 0' }}>
+              <svg viewBox="0 0 220 220" style={{ width: '190px', height: '190px' }}>
+                {levels.map(level => {
+                  const points = stats.map((_, i) => {
+                    const { x, y } = getPoint(i, level);
+                    return `${x},${y}`;
+                  }).join(" ");
+                  return (
+                    <polygon
+                      key={`level-${level}`}
+                      points={points}
+                      fill="none"
+                      stroke="#f1f5f9"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+                {stats.map((_, i) => {
+                  const { x, y } = getPoint(i, 100);
+                  return (
+                    <line
+                      key={`axis-${i}`}
+                      x1="110"
+                      y1="110"
+                      x2={x}
+                      y2={y}
+                      stroke="#f1f5f9"
+                      strokeWidth="1.2"
+                    />
+                  );
+                })}
                 <polygon
-                  key={`level-${level}`}
-                  points={points}
-                  fill="none"
-                  stroke="#e2e8f0"
-                  strokeWidth="1.5"
+                  points={dataPoints}
+                  fill="rgba(140, 82, 255, 0.25)"
+                  stroke="#8c52ff"
+                  strokeWidth="2"
                 />
-              );
-            })}
+                {stats.map((stat, i) => {
+                  const { x, y } = getPoint(i, stat.value);
+                  return (
+                    <circle
+                      key={`dot-${i}`}
+                      cx={x}
+                      cy={y}
+                      r="2.5"
+                      fill="#8c52ff"
+                    />
+                  );
+                })}
+                {stats.map((stat, i) => {
+                  const { x, y } = getPoint(i, 98);
+                  return (
+                    <text
+                      key={`label-${i}`}
+                      x={x}
+                      y={y}
+                      fill="#64748b"
+                      fontSize="9"
+                      fontWeight="800"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      {stat.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            </div>
 
-            {/* 중심에서 뻗어나가는 축 선 */}
-            {stats.map((_, i) => {
-              const { x, y } = getPoint(i, 100);
-              return (
-                <line
-                  key={`axis-${i}`}
-                  x1="150"
-                  y1="150"
-                  x2={x}
-                  y2={y}
-                  stroke="#e2e8f0"
-                  strokeWidth="1.5"
-                />
-              );
-            })}
+            <div style={{ fontSize: '11px', color: '#94a3b8', textAlign: 'center', marginTop: 'auto' }}>
+              카드를 다시 탭하면 앞면을 볼 수 있습니다.
+            </div>
+          </div>
 
-            {/* 실제 취향 데이터 영역 */}
-            <polygon
-              points={dataPoints}
-              fill="rgba(99, 102, 241, 0.35)"
-              stroke="#6366f1"
-              strokeWidth="2.5"
-              style={{ transition: 'all 0.5s ease-out' }}
-            />
-
-            {/* 꼭지점 포인트 (선택적) */}
-            {stats.map((stat, i) => {
-              const { x, y } = getPoint(i, stat.value);
-              return (
-                <circle
-                  key={`dot-${i}`}
-                  cx={x}
-                  cy={y}
-                  r="3.5"
-                  fill="#6366f1"
-                />
-              );
-            })}
-
-            {/* 외부 레이블 텍스트 */}
-            {stats.map((stat, i) => {
-              // 최외곽(100)보다 조금 더 떨어져서 텍스트 표시
-              const { x, y } = getPoint(i, 122);
-              return (
-                <text
-                  key={`label-${i}`}
-                  x={x}
-                  y={y}
-                  fill="#334155"
-                  fontSize="13"
-                  fontWeight="700"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                >
-                  {stat.label}
-                </text>
-              );
-            })}
-          </svg>
         </div>
       </div>
+      
+      <p style={{ textAlign: 'center', fontSize: '12.5px', color: '#94a3b8', margin: '-10px 0 10px 0' }}>
+        💡 카드를 터치하면 취향 분석 그래프를 확인할 수 있습니다.
+      </p>
 
-      {/* AI 기능 활용 기록 영역 (추후 실제 데이터가 들어올 때 aiUsageHistory 상태만 업데이트하면 되도록 구현) */}
-      <div className="profile-ai-history-container" style={{ marginTop: '32px' }}>
-        <h3 className="profile-graph-title" style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+      {/* 내 일정 보관함 섹션 */}
+      <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+        <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span>📦</span> 내 일정 보관함
+        </h3>
+
+        {schedulesLoading ? (
+          <div style={{ padding: '24px 0', textAlign: 'center', color: '#888' }}>
+            <Loader2 className="animate-spin" style={{ margin: '0 auto 8px', color: '#8c52ff' }} />
+            보관함 일정을 불러오는 중입니다...
+          </div>
+        ) : savedSchedules.length === 0 ? (
+          <div style={{ padding: '30px 20px', textAlign: 'center', color: '#888', background: '#f8fafc', borderRadius: '20px' }}>
+            저장하거나 생성한 일정이 없습니다.<br />
+            AI를 통해 일정을 생성하거나 피드에서 다른 사용자의 일정을 가져와 보세요!
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {savedSchedules.map((schedule) => (
+              <div key={schedule.id} className="saved-itinerary-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                      {schedule.title}
+                    </h4>
+                    <p style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>
+                      📍 {schedule.city} • {schedule.itineraryData?.itinerary?.length || 0}일 코스
+                    </p>
+                  </div>
+                  <span style={{
+                    fontSize: '10.5px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: schedule.isShared ? '#f3eeff' : '#f1f5f9',
+                    color: schedule.isShared ? '#8c52ff' : '#64748b'
+                  }}>
+                    {schedule.isShared ? "공유 중 🌐" : "비공개 🔒"}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                  <button
+                    onClick={() => handleActivateSchedule(schedule)}
+                    style={{
+                      flex: 1.5,
+                      padding: '8px 12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      backgroundColor: '#8c52ff',
+                      color: 'white',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Map size={13} />
+                    지도로 활성화
+                  </button>
+
+                  <button
+                    onClick={() => handleToggleShare(schedule)}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '10px',
+                      border: '1px solid #e2e8f0',
+                      backgroundColor: 'white',
+                      color: '#475569',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px'
+                    }}
+                  >
+                    <Share2 size={13} />
+                    {schedule.isShared ? "공유 해제" : "피드 공유"}
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteSchedule(schedule.id)}
+                    style={{
+                      padding: '8px 10px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      backgroundColor: '#ffe4e6',
+                      color: '#e11d48',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* AI 기능 활용 기록 영역 */}
+      <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
+        <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span>🤖</span> AI 기능 활용 기록
         </h3>
         <div className="ai-history-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -410,45 +716,70 @@ export default function ProfilePage() {
             </div>
           ) : (
             aiUsageHistory.map((log) => (
-            <div key={log.id} className="ai-history-item" style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '14px',
-              padding: '16px',
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)',
-              border: '1px solid #f0f0f0'
-            }}>
-              <div className="ai-history-icon" style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)',
+              <div key={log.id} className="ai-history-item" style={{
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-                flexShrink: 0
+                alignItems: 'flex-start',
+                gap: '14px',
+                padding: '16px',
+                backgroundColor: 'white',
+                borderRadius: '16px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
+                border: '1px solid #f1f5f9'
               }}>
-                {log.icon}
-              </div>
-              <div className="ai-history-content" style={{ flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                  <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#111', lineHeight: '1.4' }}>{log.title}</h4>
-                  <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', marginLeft: '10px' }}>
-                    {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : log.date}
-                  </span>
+                <div className="ai-history-icon" style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0
+                }}>
+                  {log.icon || '✨'}
                 </div>
-                <p style={{ fontSize: '13px', color: '#555', lineHeight: '1.5', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #8c52ff' }}>
-                  {log.content}
-                </p>
+                <div className="ai-history-content" style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                    <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0f172a', lineHeight: '1.4' }}>{log.title}</h4>
+                    <span style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap', marginLeft: '10px' }}>
+                      {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : log.date}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '12.5px', color: '#475569', lineHeight: '1.5', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #8c52ff' }}>
+                    {log.content}
+                  </p>
+                </div>
               </div>
-            </div>
-          )))}
+            ))
+          )}
         </div>
       </div>
-      <CustomAlertModal {...modalConfig} />
+
+      <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
+        <button
+          onClick={handleWithdraw}
+          disabled={isWithdrawing}
+          style={{
+            width: '100%',
+            fontSize: '12.5px', background: '#ffe4e6', color: '#e11d48',
+            border: 'none', padding: '12px', borderRadius: '14px',
+            cursor: isWithdrawing ? 'not-allowed' : 'pointer', fontWeight: 'bold'
+          }}
+        >
+          {isWithdrawing ? "탈퇴 중..." : "회원 탈퇴 😢"}
+        </button>
+      </div>
+
+      {/* Custom Alert Modal */}
+      <CustomAlertModal
+        isOpen={modalConfig.isOpen}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        onConfirm={modalConfig.onConfirm}
+        onCancel={modalConfig.onCancel}
+      />
     </div>
   );
 }
