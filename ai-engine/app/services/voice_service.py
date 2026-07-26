@@ -12,7 +12,7 @@ class VoiceService:
         # Gemini API 클라이언트 초기화
         if settings.GOOGLE_API_KEY:
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.target_model = "gemini-flash-latest"
+            self.target_model = "gemini-2.5-flash-lite"
             print(f"✅ 보이스 서비스: Gemini 준비 완료 (Target: {self.target_model})")
         else:
             self.client = None

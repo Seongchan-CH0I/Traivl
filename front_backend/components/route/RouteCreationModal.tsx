@@ -59,7 +59,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     destination: city,
                     duration: { days: diffDays, nights: Math.max(1, diffDays - 1) },
                     travelStyle: themes,
-                    dnaType: "클래식 슬로우뷰어" // 실제 유저 DNA 연동 필요
+                    dnaType: user?.dnaType || "클래식 슬로우뷰어"
                 })
             });
 
@@ -79,6 +79,28 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleStartJourneyClick = async () => {
+        if (user?.id) {
+            try {
+                await fetch('/api/schedules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        title: `${user.name || '트래블러'}님의 ${city} 여행`,
+                        city,
+                        startDate: startDate ? startDate.toISOString() : null,
+                        endDate: endDate ? endDate.toISOString() : null,
+                        itineraryData: itineraryResult
+                    })
+                });
+            } catch (e) {
+                console.error("Failed to save schedule to DB:", e);
+            }
+        }
+        onStartJourney(city);
     };
 
     const toggleTheme = (t: string) => {
@@ -491,7 +513,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             {step === 6 && (
                 <div className="rc-res-bottom text-center">
                     <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
-                    <button className="rc-btn-primary" onClick={() => onStartJourney(city)}>여행 시작하기</button>
+                    <button className="rc-btn-primary" onClick={handleStartJourneyClick}>여행 시작하기</button>
                 </div>
             )}
         </div>

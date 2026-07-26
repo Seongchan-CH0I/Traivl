@@ -29,10 +29,10 @@ class PlanService:
     def __init__(self):
         # Google Gemini API 설정 (최신 v1.0 SDK 적용)
         if settings.GOOGLE_API_KEY:
-            # 2.0 모델 차단 이슈 해결 및 최적의 가성비(1.5 Flash) 모델 적용
+            # 최적의 초저지연 및 고효율(2.5 Flash-Lite) 모델 적용
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.target_model = "gemini-flash-latest"
-            print(f"✅ 최적 가성비 모델(1.5 Flash) 준비 완료 (Target: {self.target_model})")
+            self.target_model = "gemini-2.5-flash-lite"
+            print(f"✅ 최적의 초저지연 모델(2.5 Flash-Lite) 준비 완료 (Target: {self.target_model})")
         else:
             self.client = None
             print("⚠️ GOOGLE_API_KEY가 없어 AI 기능을 사용할 수 없습니다.")

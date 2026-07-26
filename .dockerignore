@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+front_backend/node_modules
+front_backend/.next
+ai-engine/venv
+ai-engine/.venv
+osrm-data
