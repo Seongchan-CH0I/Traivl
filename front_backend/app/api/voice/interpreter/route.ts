@@ -6,7 +6,7 @@ export async function POST(request: Request) {
         const { user_location, source_text, audio_base64 } = body;
 
         // AI 서버(FastAPI) URL 설정 (도커 컴포즈 호환 및 로컬 호스트 폴백)
-        const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://ai-server:8000";
+        const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
 
         console.log(`[Proxy] AI 음성 번역 및 해설 요청 중... URL: ${AI_ENGINE_URL}/api/v1/voice/interpreter`);
 

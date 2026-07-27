@@ -6,7 +6,7 @@ export async function POST(request: Request) {
         const { user_location, image_base64, mode, extracted_text } = body;
 
         // AI 서버(FastAPI) URL 설정 (도커 컴포즈 호환 및 로컬 호스트 폴백)
-        const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://ai-server:8000";
+        const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
 
         console.log(`[Proxy] AI 비전 렌즈 분석 요청 중... URL: ${AI_ENGINE_URL}/api/v1/vision/lens`);
 
