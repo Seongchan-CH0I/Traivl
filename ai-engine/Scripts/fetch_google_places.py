@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 
 # 환경 변수 로드 (.env 파일 경로 정확히 지정)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(BASE_DIR)
 
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
 GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 if not GOOGLE_API_KEY or GOOGLE_API_KEY.startswith("AIzaSy..."):

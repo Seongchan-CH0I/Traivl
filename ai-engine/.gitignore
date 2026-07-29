@@ -3,7 +3,9 @@
 
 # 로컬 테스트용 벡터 DB 폴더 무시
 chroma_real_db/
-chroma_local_db/
+chroma_local_db/	1. 구축된 pgvector 벡터 데이터베이스와 챗봇에 연동하기
+	-> 장소가 저장된 데이터베이스를 챗봇이 활용할 수 있도록 
+
 
 # 임시/원본 수집 데이터 파일 무시 (용량 폭탄 방지)
 data/

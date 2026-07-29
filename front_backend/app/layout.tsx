@@ -346,7 +346,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         setIsStreaming(true);
         // 2. AI 응답 placeholder 추가
         const aiMsgId = Date.now() + 1;
-        setChatMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: '' }]);
+        setChatMessages(prev => [...prev, { id: aiMsgId, sender: 'ai', text: '', time: '', statusText: '' }]);
 
         let isStreamDone = false;
         let typingInterval: any = null;
@@ -376,6 +376,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
             let accumulatedText = '';
             let displayedText = '';
+            let statusText = '';
             // 타이핑 연출용 인터벌 설정 (20ms마다 최대 2글자씩 출력)
             typingInterval = setInterval(() => {
                 if (displayedText.length < accumulatedText.length) {
@@ -404,7 +405,12 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     if (line.startsWith('data: ')) {
                         try {
                             const chunk = JSON.parse(line.slice(6));
-                            if (chunk.type === 'token') {
+                            if (chunk.type === 'status') {
+                                statusText = chunk.content;
+                                setChatMessages(prev => prev.map(msg =>
+                                    msg.id === aiMsgId ? { ...msg, statusText } : msg
+                                ));
+                            } else if (chunk.type === 'token') {
                                 accumulatedText += chunk.content;
                             } else if (chunk.type === 'error') {
                                 accumulatedText = chunk.content || '오류가 발생했습니다. 다시 시도해주세요.';
@@ -831,6 +837,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                             const isEmptyAi = !isUser && msg.text === '' && isStreaming;
                             return (
                                 <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', maxWidth: '82%', alignSelf: isUser ? 'flex-end' : 'flex-start', alignItems: isUser ? 'flex-end' : 'flex-start' }}>
+                                    {!isUser && msg.statusText && (
+                                        <p style={{ fontSize: '11px', color: '#aaa', fontStyle: 'italic', margin: '0 0 4px 4px' }}>{msg.statusText}</p>
+                                    )}
                                     <div style={{ padding: '12px 16px', fontSize: '15px', color: isUser ? '#fff' : '#222', backgroundColor: isUser ? '#8c52ff' : '#f1f3f5', border: isUser ? 'none' : '1px solid #e9ecef', borderRadius: '20px', borderBottomRightRadius: isUser ? '4px' : '20px', borderBottomLeftRadius: isUser ? '20px' : '4px', lineHeight: '1.5', wordBreak: 'keep-all', overflowWrap: 'break-word', boxShadow: '0 2px 6px rgba(0,0,0,0.03)', minHeight: isEmptyAi ? '24px' : 'auto' }}>
                                         {isEmptyAi ? (
                                             <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
