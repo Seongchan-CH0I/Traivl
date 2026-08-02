@@ -12,8 +12,8 @@ class VoiceService:
         # Gemini API 클라이언트 초기화
         if settings.GOOGLE_API_KEY:
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.target_model = "gemini-2.5-flash"
-            print(f"✅ 보이스 서비스: Gemini 준비 완료 (Target: {self.target_model})")
+            self.target_model = "gemini-3.5-flash"
+            print(f"✅ 보이스 서비스: Gemini 3.5 Flash 준비 완료 (Target: {self.target_model})")
         else:
             self.client = None
             print("⚠️ 보이스 서비스: GOOGLE_API_KEY가 없어 AI 번역/에티켓 해설 기능을 사용할 수 없습니다.")

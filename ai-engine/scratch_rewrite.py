@@ -32,8 +32,8 @@ class PlanService:
         if settings.GOOGLE_API_KEY:
             # 최적의 초저지연 및 고효율(2.5 Flash-Lite) 모델 적용
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.target_model = "gemini-2.5-flash-lite"
-            print(f"✅ 최적의 초저지연 모델(2.5 Flash-Lite) 준비 완료 (Target: {self.target_model})")
+            self.target_model = "gemini-3.5-flash"
+            print(f"✅ 최적의 초저지연 모델(3.5 Flash) 준비 완료 (Target: {self.target_model})")
         else:
             self.client = None
             print("⚠️ GOOGLE_API_KEY가 없어 AI 기능을 사용할 수 없습니다.")

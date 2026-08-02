@@ -30,8 +30,8 @@ class PlanService:
         # Google Gemini API 설정 (최신 v1.0 SDK 적용)
         if settings.GOOGLE_API_KEY:
             self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-            self.target_model = "gemini-2.5-flash"
-            print(f"✅ 플랜 서비스: Gemini 2.5 Flash 준비 완료 (Target: {self.target_model})")
+            self.target_model = "gemini-3.5-flash"
+            print(f"✅ 플랜 서비스: Gemini 3.5 Flash 준비 완료 (Target: {self.target_model})")
         else:
             self.client = None
             print("⚠️ GOOGLE_API_KEY가 없어 AI 기능을 사용할 수 없습니다.")
@@ -229,7 +229,9 @@ JSON 형식:
                             place_id=matched_item['place'].place_id,
                             suggested_time=step.expected_arrival,
                             title=matched_item['place'].title,
-                            location=matched_item['reason'] # 기존 Gemini가 쓴 이유 그대로 유지!
+                            location=matched_item['reason'], # 기존 Gemini가 쓴 이유 그대로 유지!
+                            lat=matched_item['place'].lat,
+                            lng=matched_item['place'].lng
                         ))
             
             if not day_items: # Fallback (혹시 최적화 실패 시 기존 방식)
@@ -238,7 +240,9 @@ JSON 형식:
                         place_id=item['place'].place_id,
                         suggested_time=f"{10 + i * 3}:00",
                         title=item['place'].title,
-                        location=item['reason']
+                        location=item['reason'],
+                        lat=item['place'].lat,
+                        lng=item['place'].lng
                     ))
                     
             days.append(DayItinerary(day=d+1, places=day_items))

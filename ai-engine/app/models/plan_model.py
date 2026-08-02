@@ -34,6 +34,8 @@ class PlaceItem(BaseModel):
     suggested_time: str
     title: str
     location: str
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 class DayItinerary(BaseModel):
     day: int

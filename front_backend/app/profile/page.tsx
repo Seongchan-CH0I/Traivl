@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
-import { Dna, Plus, Download, Map, Share2, Trash2, Loader2 } from 'lucide-react';
+import { Dna, Plus, Download, Map, Share2, Trash2, Loader2, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 
@@ -392,21 +392,40 @@ export default function ProfilePage() {
     <div className="profile-content" style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       {/* 상단 프로필 기본 헤더 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#1e293b', margin: 0 }}>나의 여행 DNA</h1>
-          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>개인화된 여행 라이프스타일</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#1e293b', margin: 0 }}>나의 여행 DNA</h1>
+            <p style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>개인화된 여행 라이프스타일</p>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '6px' }}>
+        
+        {/* 버튼 그룹: 더 넓고 터치하기 편하며 겹치지 않는 모던 탭 스타일 */}
+        <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
           <button
             onClick={handleResetDna}
             disabled={isResetting}
             style={{
-              fontSize: '11px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0',
-              padding: '6px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              fontSize: '12px',
+              background: '#ffffff',
+              color: '#475569',
+              border: '1px solid #e2e8f0',
+              padding: '10px 8px',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: 700,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
             }}
           >
-            DNA 재검사 🗑️
+            <Trash2 size={13} style={{ color: '#64748b' }} />
+            DNA 재검사
           </button>
           <button
             onClick={() => {
@@ -416,11 +435,25 @@ export default function ProfilePage() {
               });
             }}
             style={{
-              fontSize: '11px', background: '#f1f5f9', color: '#475569', border: 'none',
-              padding: '6px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              fontSize: '12px',
+              background: '#f1f5f9',
+              color: '#475569',
+              border: 'none',
+              padding: '10px 8px',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              fontWeight: 700,
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
             }}
           >
-            로그아웃 🚪
+            <LogOut size={13} style={{ color: '#475569' }} />
+            로그아웃
           </button>
         </div>
       </div>

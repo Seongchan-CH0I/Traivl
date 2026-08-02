@@ -90,10 +90,6 @@ export default function HomePage() {
         setSelectedCity(city);
     };
 
-    if (isJourneyStarted) {
-        return <JourneyMap onBack={() => setIsJourneyStarted(false)} />;
-    }
-
     if (hasCompletedSurvey) {
         return (
             <main className="home-page pb-safe relative">
@@ -184,6 +180,14 @@ export default function HomePage() {
                     cityName={dnaResult?.name?.split(',')[0] || '교토'}
                 />
                 <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
+                {isJourneyStarted && (
+                    <JourneyMap 
+                        onBack={() => {
+                            setIsJourneyStarted(false);
+                            setIsRouteModalOpen(true);
+                        }} 
+                    />
+                )}
             </main>
         );
     }
