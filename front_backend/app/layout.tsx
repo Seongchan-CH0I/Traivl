@@ -317,8 +317,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         }
     };
 
+    interface ChatMessage {
+        id: number;
+        sender: string;
+        text: string;
+        time: string;
+        statusText?: string;
+    }
+
     const [chatInput, setChatInput] = useState('');
-    const [chatMessages, setChatMessages] = useState([
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
         { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }
     ]);
     const [isStreaming, setIsStreaming] = useState(false);

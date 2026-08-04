@@ -331,12 +331,12 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
 
                 return (
                     <>
-                        <div style={{ paddingBottom: '30px' }}>
+                        <div style={{ paddingBottom: '0px' }}>
                             <div className="rc-res-header" style={{ padding: '24px 20px', background: 'linear-gradient(135deg, #8c52ff, #6214ff)', color: 'white', borderRadius: '0 0 24px 24px', marginBottom: '20px' }}>
-                                <h1 className="rc-res-title" style={{ fontSize: '18px', fontWeight: 800, lineHeight: '1.4', margin: 0 }}>
+                                <h1 className="rc-res-title" style={{ fontSize: '18px', fontWeight: 800, lineHeight: '1.4', margin: 0, color: 'white' }}>
                                     {displayData.course_title}
                                 </h1>
-                                <p className="rc-res-subtitle" style={{ fontSize: '12px', opacity: 0.9, marginTop: '8px', margin: 0 }}>
+                                <p className="rc-res-subtitle" style={{ fontSize: '12px', opacity: 0.9, marginTop: '8px', margin: 0, color: 'rgba(255, 255, 255, 0.95)' }}>
                                     {displayData.course_subtitle}
                                 </p>
                                 <div style={{ 
@@ -383,21 +383,28 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                             <div className="rc-timeline" style={{ padding: '0 20px' }}>
                                 {currentDayData.places && currentDayData.places.length > 0 ? (
                                     currentDayData.places.map((place: any, idx: number) => (
-                                        <div key={place.place_id || idx} className="rc-time-item" style={{ display: 'flex', gap: '16px', marginBottom: '20px', position: 'relative' }}>
+                                        <div key={place.place_id || idx} className="rc-time-item" style={{ 
+                                            display: 'flex', 
+                                            gap: '16px', 
+                                            marginBottom: idx === currentDayData.places.length - 1 ? '0px' : '20px', 
+                                            position: 'relative' 
+                                        }}>
                                             {/* 타임라인 왼쪽 시간 라벨 */}
                                             <div className="rc-time-badge" style={{ 
                                                 width: '60px', 
                                                 height: '30px', 
                                                 borderRadius: '15px', 
                                                 border: '1.5px solid #8c52ff', 
-                                                backgroundColor: 'white',
+                                                backgroundColor: '#f3eeff',
                                                 color: '#8c52ff',
                                                 fontSize: '12px',
-                                                fontWeight: 700,
+                                                fontWeight: 800,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                flexShrink: 0
+                                                flexShrink: 0,
+                                                marginTop: '16px',
+                                                boxShadow: '0 2px 6px rgba(140, 82, 255, 0.1)'
                                             }}>
                                                 {place.suggested_time}
                                             </div>
@@ -406,16 +413,17 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                             <div className="rc-time-card" style={{ 
                                                 flex: 1, 
                                                 backgroundColor: 'white', 
-                                                borderRadius: '16px', 
+                                                borderRadius: '18px', 
                                                 border: '1px solid #eef0f3',
-                                                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                                                overflow: 'hidden'
+                                                boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+                                                overflow: 'hidden',
+                                                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                                             }}>
-                                                <div style={{ padding: '16px' }}>
-                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '15px', fontWeight: 800, color: '#1a1a1a' }}>
+                                                <div style={{ padding: '18px 20px' }}>
+                                                    <h4 style={{ margin: '0 0 8px 0', fontSize: '15.5px', fontWeight: 800, color: '#111827' }}>
                                                         {place.title}
                                                     </h4>
-                                                    <p style={{ margin: 0, fontSize: '12.5px', color: '#555', lineHeight: '1.5', wordBreak: 'keep-all' }}>
+                                                    <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: '1.6', wordBreak: 'keep-all' }}>
                                                         {place.location}
                                                     </p>
                                                 </div>

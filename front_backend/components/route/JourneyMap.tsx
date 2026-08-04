@@ -530,7 +530,7 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                             padding: '8px 0',
                             display: 'flex',
                             flexDirection: 'column',
-                            zIndex: 100
+                            zIndex: 2000
                         }}>
                             <button 
                                 onClick={() => {
@@ -691,8 +691,17 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                 )}
             </div>
 
-            {/* 하단 정보 플로팅 바 */}
-            <div className="jm-float-msg" style={{ transition: 'all 0.3s', border: routeMode === 'transit' ? '1.5px solid #8c52ff' : 'none', zIndex: 5 }}>
+            {/* 상단 정보 플로팅 바 (삼선 메뉴 열릴 때 자연스럽게 페이드아웃) */}
+            <div 
+                className="jm-float-msg" 
+                style={{ 
+                    transition: 'all 0.3s ease', 
+                    border: routeMode === 'transit' ? '1.5px solid #8c52ff' : 'none',
+                    opacity: isMenuDropdownOpen ? 0 : 1,
+                    pointerEvents: isMenuDropdownOpen ? 'none' : 'auto',
+                    transform: isMenuDropdownOpen ? 'translate(-50%, -10px)' : 'translate(-50%, 0)'
+                }}
+            >
                 {routeMode === 'walking' ? (
                     <>
                         <MapPin size={16} color="#3182f6" fill="#3182f6" /> 목적지까지 도보 {walkTime}분 ({distance.toFixed(1)}km)
@@ -705,14 +714,17 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             </div>
 
             {/* 바텀 시트 */}
-            <div className="jm-bottom-sheet" style={{ padding: '20px', minHeight: '210px', zIndex: 5 }}>
-                <div className="jm-sheet-subtitle" style={{ fontSize: '13px', color: '#8c52ff', fontWeight: 700 }}>
+            <div className="jm-bottom-sheet">
+                {/* 모바일 감성의 드래그 핸들 */}
+                <div className="jm-drag-handle"></div>
+
+                <div className="jm-sheet-subtitle">
                     {isAirportMode 
                         ? `${currentDayIndex + 1}일차 경로 (공항 이동)` 
                         : `${currentDayIndex + 1}일차 경로 (${Math.max(1, currentStepIndex + 2)}단계)`}
                 </div>
-                <div className="jm-sheet-title" style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 8px 0' }}>{destPoint.name}</div>
-                <p style={{ fontSize: '12px', color: '#666', lineHeight: '1.4', margin: '0 0 16px 0', wordBreak: 'keep-all' }}>
+                <div className="jm-sheet-title">{destPoint.name}</div>
+                <p className="jm-sheet-description">
                     {destPoint.reason}
                 </p>
 

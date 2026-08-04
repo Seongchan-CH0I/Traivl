@@ -21,7 +21,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function HomePage() {
     const { user } = useAuth(); // 사용자 정보 가져오기
-    const { setHasActiveJourney, setSelectedCity, dnaResult, setDnaResult } = useAi();
+    const { setHasActiveJourney, selectedCity, setSelectedCity, dnaResult, setDnaResult } = useAi();
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -34,13 +34,19 @@ export default function HomePage() {
     // ✅ 설문 완료 여부를 전역 상태인 dnaResult 유무로 판단! (중요)
     const hasCompletedSurvey = !!dnaResult;
 
-    // URL 파라미터 체크하여 설문 트리거
+    // URL 파라미터 체크하여 설문 및 지도 여정 트리거
     useEffect(() => {
         const trigger = searchParams.get('trigger');
         if (trigger === 'survey') {
             setIsSurveyOpen(true);
+        } else if (trigger === 'map') {
+            setIsJourneyStarted(true);
+            setHasActiveJourney(true);
+            if (!selectedCity && dnaResult) {
+                setSelectedCity(dnaResult.name?.split(',')[0] || '교토');
+            }
         }
-    }, [searchParams]);
+    }, [searchParams, dnaResult, selectedCity, setSelectedCity, setHasActiveJourney]);
 
     // 유저 정보가 확인되면 DB에서 기존 설문 결과 조회해오기 (이미 전역 데이터가 있으면 생략)
     useEffect(() => {

@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Clock, RotateCcw, ChevronRight, Plus, Calendar as CalendarIcon, Share2 } from 'lucide-react';
+import { Clock, RotateCcw, ChevronRight, Plus, Calendar as CalendarIcon, Share2, Navigation } from 'lucide-react';
 import { useAi } from '../../context/AiContext';
 import { useAuth } from '../../hooks/useAuth';
 import CalendarPicker from '../../components/calendar/CalendarPicker';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
+import PlaceDetailModal from '../../components/ui/PlaceDetailModal';
 
 export default function CalendarPage() {
   const { user } = useAuth();
-  const { hasActiveJourney, setHasActiveJourney, setItineraryData, itineraryData } = useAi();
+  const { hasActiveJourney, setHasActiveJourney, setItineraryData, itineraryData, setSelectedCity } = useAi();
 
   const [loading, setLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
@@ -29,6 +30,58 @@ export default function CalendarPage() {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMsg, setAlertMsg] = useState('');
 
+  // 클릭한 장소 상세 정보 상태
+  const [selectedPlace, setSelectedPlace] = useState<any>(null);
+
+  // 장소 클릭 핸들러
+  const handlePlaceClick = async (item: any) => {
+    if (!item || !item.title) return;
+
+    try {
+      const res = await fetch(`/api/places?name=${encodeURIComponent(item.title)}`);
+      const result = await res.json();
+      if (result.success && result.data && result.data.length > 0) {
+        setSelectedPlace(result.data[0]);
+      } else {
+        // DB에 없을 경우 Fallback Place 객체 구성
+        setSelectedPlace({
+          id: -1,
+          name: item.title,
+          category: item.category || "관광지",
+          description: item.description || `${item.title}에 대한 상세 정보가 준비 중입니다.`,
+          address: item.location || "",
+          imageUrl: "/images/placeholder.jpg",
+          rating: 4.5,
+          tags: [item.category || "명소", "AI 추천"],
+          openingHours: item.suggested_time ? `${item.suggested_time} 이후` : "정보 없음",
+          phoneNumber: "정보 없음",
+          averagePrice: 0,
+          destination: {
+            name: activeSchedule?.city || "추천 도시"
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch place details:", error);
+      setSelectedPlace({
+        id: -1,
+        name: item.title,
+        category: item.category || "관광지",
+        description: item.description || `${item.title}에 대한 상세 정보가 준비 중입니다.`,
+        address: item.location || "",
+        imageUrl: "/images/placeholder.jpg",
+        rating: 4.5,
+        tags: [item.category || "명소", "AI 추천"],
+        openingHours: item.suggested_time ? `${item.suggested_time} 이후` : "정보 없음",
+        phoneNumber: "정보 없음",
+        averagePrice: 0,
+        destination: {
+          name: activeSchedule?.city || "추천 도시"
+        }
+      });
+    }
+  };
+
   // 1. 유저의 최신 일정 DB 로드 함수
   const fetchUserSchedules = async () => {
     if (!user?.id) return;
@@ -42,13 +95,13 @@ export default function CalendarPage() {
         
         // Context에 일정 데이터 연동 (지도 및 다른 탭 연동을 위해)
         setItineraryData(latest.itineraryData);
+        setSelectedCity(latest.city);
         setHasActiveJourney(true);
       } else {
-        // DB에 일정이 없으면 빈 상태로 설정
+        // DB에 일정이 없으면 빈 상태로 설정 및 Context 리셋
         setActiveSchedule(null);
-        if (!itineraryData) {
-          setHasActiveJourney(false);
-        }
+        setItineraryData(null);
+        setHasActiveJourney(false);
       }
     } catch (error) {
       console.error("Failed to load schedules from DB:", error);
@@ -139,7 +192,7 @@ export default function CalendarPage() {
   return (
     <>
       <div className="calendar-content">
-        {!activeSchedule && !itineraryData ? (
+        {!activeSchedule ? (
           <div className="empty-schedule-container">
             <header className="feed-header" style={{ marginBottom: '40px', background: 'transparent', border: 'none' }}>
               <h1 className="feed-header-title">여행 가이드</h1>
@@ -204,16 +257,16 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            {/* 다른 루트 추천 버튼 */}
-            <button
-              onClick={handleRefresh}
-              className="calendar-refresh-btn"
-              disabled={loading}
-              style={{ marginTop: '16px' }}
-            >
-              <RotateCcw size={18} className={`refresh-icon ${loading ? 'spin' : ''}`} />
-              새로고침
-            </button>
+            {/* 실시간 경로 지도 보기 버튼 */}
+            <Link href="/?trigger=map" style={{ textDecoration: 'none', width: '100%' }}>
+              <button
+                className="calendar-map-btn"
+                style={{ marginTop: '16px' }}
+              >
+                <Navigation size={18} fill="white" />
+                실시간 경로 지도 보기
+              </button>
+            </Link>
 
             {/* 일차 탭 스위처 */}
             {rawItinerary.length > 1 && (
@@ -263,7 +316,11 @@ export default function CalendarPage() {
                     </div>
 
                     {/* 일정 카드 */}
-                    <div className="timeline-card" style={{ cursor: 'default' }}>
+                    <div 
+                      className="timeline-card" 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handlePlaceClick(item)}
+                    >
                       <div className="timeline-card-icon">
                         {getCategoryIcon(item.category)}
                       </div>
@@ -415,6 +472,12 @@ export default function CalendarPage() {
       >
         <Plus size={32} strokeWidth={1.5} />
       </button>
+
+      {/* 상세 정보 모달 */}
+      <PlaceDetailModal 
+        place={selectedPlace} 
+        onClose={() => setSelectedPlace(null)} 
+      />
     </>
   );
 }

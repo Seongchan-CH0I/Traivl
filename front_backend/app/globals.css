@@ -1394,6 +1394,34 @@
         background-color: #f8fafc;
     }
 
+    .calendar-map-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        padding: 16px;
+        margin-bottom: 24px;
+        background: var(--gradient-bg);
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(124, 115, 255, 0.25);
+        border: none;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .calendar-map-btn:active {
+        transform: scale(0.98);
+        box-shadow: 0 4px 15px rgba(124, 115, 255, 0.2);
+    }
+
+    .calendar-map-btn:hover {
+        opacity: 0.95;
+    }
+
     .refresh-icon {
         color: #6366f1;
     }
@@ -2793,17 +2821,17 @@
         gap: 24px;
         position: relative;
         margin-top: 16px;
-        margin-bottom: 40px;
+        margin-bottom: 12px;
     }
 
     .rc-timeline::before {
         content: '';
         position: absolute;
-        left: 40px;
+        left: 50px;
         top: 0;
         bottom: 0;
         width: 2px;
-        background: #e0e0e0;
+        background: #e9eef5;
     }
 
     .rc-time-item {
@@ -2999,13 +3027,13 @@
 
     .jm-float-msg {
         position: absolute;
-        bottom: 20px;
+        top: 76px;
         left: 50%;
         transform: translateX(-50%);
         background: white;
         border-radius: 24px;
-        padding: 12px 24px;
-        font-size: 14px;
+        padding: 10px 20px;
+        font-size: 13.5px;
         font-weight: 600;
         color: var(--text-main);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -3013,78 +3041,115 @@
         align-items: center;
         gap: 8px;
         white-space: nowrap;
+        z-index: 1000;
     }
 
     .jm-bottom-sheet {
         background: white;
         border-top-left-radius: 30px;
         border-top-right-radius: 30px;
-        padding: 30px 24px 40px;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+        padding: 16px 24px 24px;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
         z-index: 2;
         text-align: center;
+        position: relative;
+    }
+
+    .jm-drag-handle {
+        width: 40px;
+        height: 5px;
+        background-color: #e2e8f0;
+        border-radius: 3px;
+        margin: 0 auto 16px;
     }
 
     .jm-sheet-subtitle {
-        font-size: 13px;
-        color: var(--text-sub);
-        margin-bottom: 8px;
+        display: inline-block;
+        font-size: 11px;
+        color: #8c52ff;
+        font-weight: 700;
+        background-color: #f3f0ff;
+        padding: 4px 12px;
+        border-radius: 12px;
+        margin-bottom: 12px;
     }
 
     .jm-sheet-title {
-        font-size: 26px;
-        font-weight: 700;
-        margin-bottom: 30px;
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .jm-sheet-description {
+        font-size: 13.5px;
+        color: #475569;
+        line-height: 1.6;
+        margin: 0 auto 24px;
+        word-break: keep-all;
+        max-width: 90%;
     }
 
     .jm-btn-row {
         display: flex;
         gap: 12px;
+        align-items: center;
     }
 
     .jm-btn-main {
         flex: 1;
-        background: #1a1b2b;
+        background: #1e1b4b;
         color: white;
         border: none;
-        padding: 16px;
-        border-radius: 18px;
-        font-size: 16px;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-size: 15px;
         font-weight: 700;
         cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(30, 27, 75, 0.15);
+    }
+
+    .jm-btn-main:active {
+        transform: scale(0.97);
     }
 
     .jm-btn-sub {
         flex: 1;
-        background: #f5f6f8;
-        color: var(--text-main);
+        background: #f5f3ff;
+        color: #6366f1;
         border: none;
-        padding: 16px;
-        border-radius: 18px;
-        font-size: 16px;
-        font-weight: 600;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-size: 15px;
+        font-weight: 700;
         cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .jm-btn-sub:active {
+        transform: scale(0.97);
     }
 
     .jm-ai-center-btn {
         position: absolute;
-        bottom: 32px;
-        /* Aligned with the center of the buttons row */
+        bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 2100;
     }
 
     .jm-ai-star-btn {
-        width: 64px;
-        height: 64px;
+        width: 58px;
+        height: 58px;
         border-radius: 50%;
         background: var(--gradient-bg);
-        border: none;
+        border: 4px solid white;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 20px rgba(138, 82, 255, 0.5);
+        box-shadow: 0 4px 20px rgba(138, 82, 255, 0.4);
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -3648,14 +3713,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 30px 20px;
     animation: placeModalFadeIn 0.3s ease;
 }
 
 .place-modal-content {
     background: white;
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
     border-radius: 24px;
     overflow: hidden;
     position: relative;
@@ -3690,7 +3755,7 @@
 .modal-hero {
     position: relative;
     width: 100%;
-    height: 220px;
+    height: 160px;
 }
 
 .modal-hero img {
@@ -3707,37 +3772,37 @@
     color: white;
     padding: 4px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(140, 82, 255, 0.3);
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 18px 20px;
 }
 
 .modal-location-tag {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #8c52ff;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .modal-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: #1a202c;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .modal-divider {
     height: 1px;
     background: #f0f0f0;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .modal-description {
-    font-size: 15px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: #4a5568;
     word-break: keep-all;
@@ -3779,14 +3844,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 30px 20px;
     animation: placeModalFadeIn 0.3s ease;
 }
 
 .place-modal-content {
     background: white;
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
     border-radius: 24px;
     overflow: hidden;
     position: relative;
@@ -3821,7 +3886,7 @@
 .modal-hero {
     position: relative;
     width: 100%;
-    height: 220px;
+    height: 160px;
 }
 
 .modal-hero img {
@@ -3838,37 +3903,37 @@
     color: white;
     padding: 4px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     box-shadow: 0 4px 12px rgba(140, 82, 255, 0.3);
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 18px 20px;
 }
 
 .modal-location-tag {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #8c52ff;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .modal-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: #1a202c;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .modal-divider {
     height: 1px;
     background: #f0f0f0;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .modal-description {
-    font-size: 15px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: #4a5568;
     word-break: keep-all;
@@ -3939,12 +4004,12 @@
 }
 
 .modal-meta-list {
-    margin-top: 24px;
+    margin-top: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     background: #fcfaff;
-    padding: 16px;
+    padding: 12px 14px;
     border-radius: 16px;
     border: 1px solid #f0f0f0;
 }

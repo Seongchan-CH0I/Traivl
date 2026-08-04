@@ -10,12 +10,14 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const destinationId = searchParams.get('destinationId');
         const category = searchParams.get('category');
+        const name = searchParams.get('name');
         const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
 
         const places = await prisma.place.findMany({
             where: {
                 ...(destinationId ? { destinationId } : {}),
                 ...(category ? { category } : {}),
+                ...(name ? { name } : {}),
             },
             include: {
                 destination: {
