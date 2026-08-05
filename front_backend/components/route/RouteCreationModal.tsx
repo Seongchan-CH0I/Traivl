@@ -217,6 +217,13 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                         const firstCity = citiesByCountry[`${c.code} ${c.name}`]?.[0];
                                         if (firstCity) setCity(firstCity.name);
                                     }}>
+                                        {/* Blended national flag background */}
+                                        <img 
+                                            src={`https://flagcdn.com/w160/${c.code.toLowerCase()}.png`} 
+                                            alt={`${c.name} flag`} 
+                                            className="rc-country-flag-bg"
+                                            draggable={false}
+                                        />
                                         <span className="rc-country-code">{c.code}</span>
                                         <span className="rc-country-name">{c.name}</span>
                                     </div>

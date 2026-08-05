@@ -2640,21 +2640,50 @@
     }
 
     .rc-country-item {
+        position: relative;
+        overflow: hidden;
         display: flex;
         align-items: center;
         padding: 16px;
         border-radius: 12px;
-        background: #fffafb;
-        border: 1px solid transparent;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
         cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .rc-country-item:hover {
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
     }
 
     .rc-country-item.selected {
         border-color: var(--primary-color);
-        background: #fcf9ff;
+        background: #fdfcff;
+        box-shadow: 0 4px 12px rgba(140, 82, 255, 0.08);
+    }
+
+    .rc-country-flag-bg {
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 140%;
+        width: auto;
+        object-fit: cover;
+        opacity: 0.28;
+        pointer-events: none;
+        filter: blur(0.5px);
+        mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+        -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+        z-index: 0;
     }
 
     .rc-country-code {
+        position: relative;
+        z-index: 1;
         width: 40px;
         font-weight: 700;
         font-size: 16px;
@@ -2662,6 +2691,8 @@
     }
 
     .rc-country-name {
+        position: relative;
+        z-index: 1;
         font-size: 16px;
     }
 
