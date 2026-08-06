@@ -42,6 +42,15 @@ class RouteService:
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 data = response.json()
+                
+                # OSRM 지도 영역을 벗어난 경우 (예: Kanto 외의 교토, 오키나와, 한국 등) 
+                # 매우 먼 거리의 매핑 도로로 스냅되므로 snapping distance가 커집니다.
+                # 임계값(10km) 초과 시 Haversine 직선거리 공식으로 안전하게 폴백합니다.
+                destinations = data.get('destinations', [])
+                if any(dest.get('distance', 0) > 10000 for dest in destinations):
+                    print("⚠️ [Route] OSRM 스냅 거리가 너무 멉니다 (>10km). 지도 영역 밖이므로 Haversine 폴백을 실행합니다.")
+                    raise ValueError("Coordinates are out of OSRM map bounds")
+                
                 durations_sec = data.get('durations', [])
                 # 초를 분 단위로 변환 (최소 1분 보장)
                 matrix = []
@@ -49,7 +58,7 @@ class RouteService:
                     matrix.append([math.ceil(val/60) if val is not None else 999 for val in row])
                 return matrix
         except Exception as e:
-            print(f"⚠️ [Route] OSRM API 호출 실패 ({e}), 직선 거리(Haversine) 기반으로 대체합니다.")
+            print(f"⚠️ [Route] OSRM API 호출 실패 또는 폴백 트리거됨 ({e}), 직선 거리(Haversine) 기반으로 대체합니다.")
             
         # Fallback: Haversine
         num = len(locations)
@@ -68,10 +77,13 @@ class RouteService:
         all_locations = [request.start_location] + request.places_to_visit
         
         time_matrix = self._get_time_matrix(all_locations)
+        
+        # start_location의 service_time은 0이 아닌 실제 체류 시간으로 설정
+        start_service_time = getattr(request.start_location, 'stay_duration_mins', 90)
 
         return {
             'time_matrix': time_matrix,
-            'service_times': [0] + [p.stay_duration_mins for p in request.places_to_visit],
+            'service_times': [start_service_time] + [p.stay_duration_mins for p in request.places_to_visit],
             'time_windows': [(0, 1440)] + [p.opening_hours for p in request.places_to_visit],
             'num_vehicles': 1,
             'depot': 0,

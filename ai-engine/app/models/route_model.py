@@ -7,6 +7,7 @@ from typing import List
 class Location(BaseModel):
     lat: float
     lng: float
+    stay_duration_mins: int = 90
 
 class PlaceVisitItem(BaseModel):
     place_id: str
