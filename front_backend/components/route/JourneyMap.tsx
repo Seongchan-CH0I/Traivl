@@ -71,6 +71,9 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
     const [isLocating, setIsLocating] = useState(true);
     const [leafletLoaded, setLeafletLoaded] = useState(false);
     const [showVirtualAlert, setShowVirtualAlert] = useState(false);
+    const [isLodgingMode, setIsLodgingMode] = useState<boolean>(false);
+    const [showLodgingAlert, setShowLodgingAlert] = useState<boolean>(false);
+    const [isTimeBadgeExpanded, setIsTimeBadgeExpanded] = useState<boolean>(true);
     
     // 삼선 메뉴 및 단계별 안내 상태
     const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
@@ -167,10 +170,23 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
 
     // 4. 현재 여정 단계에 맞는 출발지(startPoint)와 목적지(destPoint) 결정
     const cityKey = selectedCity || "교토";
+    
+    // 기본 출발지 (이전 날 숙소가 있다면 거기서 시작, 없으면 현재 위치/역)
+    const prevDay = daysList[currentDayIndex - 1];
+    let defaultStartName = startPlaceName;
+    let defaultStartLat = userLocation?.lat || 35.0116;
+    let defaultStartLng = userLocation?.lng || 135.7681;
+
+    if (currentDayIndex > 0 && prevDay && prevDay.accommodation) {
+        defaultStartName = `[출발] ${prevDay.accommodation.name}`;
+        defaultStartLat = prevDay.accommodation.lat || prevDay.accommodation.latitude;
+        defaultStartLng = prevDay.accommodation.lng || prevDay.accommodation.longitude;
+    }
+
     let startPoint: { name: string, lat: number, lng: number } = {
-        name: startPlaceName,
-        lat: userLocation?.lat || 35.0116,
-        lng: userLocation?.lng || 135.7681
+        name: defaultStartName,
+        lat: defaultStartLat,
+        lng: defaultStartLng
     };
     
     let destPoint: { name: string, lat: number, lng: number, reason: string } = {
@@ -197,8 +213,26 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             lng: airport.lng,
             reason: `${cityKey} 여행을 마무리하고 안전하게 공항으로 이동하는 경로입니다. 비행기 탑승 시간에 늦지 않도록 조심히 이동하세요!`
         };
+    } else if (isLodgingMode) {
+        // 숙소 안내 모드
+        if (currentDay?.accommodation) {
+            if (currentStepIndex >= 0 && currentStepIndex < placesList.length) {
+                const currentPlace = placesList[currentStepIndex];
+                startPoint = {
+                    name: currentPlace.title,
+                    lat: currentPlace.lat || currentPlace.latitude || destLat,
+                    lng: currentPlace.longitude || currentPlace.lng || destLng
+                };
+            }
+            destPoint = {
+                name: `[숙소] ${currentDay.accommodation.name}`,
+                lat: currentDay.accommodation.lat || currentDay.accommodation.latitude,
+                lng: currentDay.accommodation.lng || currentDay.accommodation.longitude,
+                reason: `현재 위치 혹은 마지막 장소에서 오늘 예약하신 숙소(${currentDay.accommodation.name})로 이동하는 경로입니다. 편안한 휴식을 위해 안전하게 이동하세요!`
+            };
+        }
     } else if (currentStepIndex >= 0) {
-        // 다음 경로 탐색 모드 (방문지 N -> 방문지 N+1)
+        // 다음 경로 탐색 모드 (방문지 N -> 방문지 N+1 또는 방문지 N -> 오늘 숙소)
         const currentPlace = placesList[currentStepIndex];
         const nextPlace = placesList[currentStepIndex + 1];
         
@@ -208,7 +242,14 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             lng: currentPlace.lng || currentPlace.longitude || destLng
         };
         
-        if (nextPlace) {
+        if (currentStepIndex === placesList.length - 1 && currentDay?.accommodation) {
+            destPoint = {
+                name: `[숙소] ${currentDay.accommodation.name}`,
+                lat: currentDay.accommodation.lat || currentDay.accommodation.latitude,
+                lng: currentDay.accommodation.lng || currentDay.accommodation.longitude,
+                reason: `${currentDay.accommodation.name} 숙소로 안전하게 이동하여 오늘의 피로를 풀어보세요.`
+            };
+        } else if (nextPlace) {
             destPoint = {
                 name: nextPlace.title,
                 lat: nextPlace.lat || nextPlace.latitude || destLat,
@@ -272,29 +313,84 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             iconAnchor: [40, 45]
         });
 
+        const shouldDrawStartMarker = !startPoint.name.startsWith('[출발]');
+        const shouldDrawDestMarker = !destPoint.name.startsWith('[숙소]');
+
         // 마커 지도에 추가
-        const startMarker = L.marker(startCoords, { icon: currentIcon }).addTo(map);
-        const destMarker = L.marker(destCoords, { icon: destIcon }).addTo(map);
+        const startMarker = shouldDrawStartMarker ? L.marker(startCoords, { icon: currentIcon }).addTo(map) : null;
+        const destMarker = shouldDrawDestMarker ? L.marker(destCoords, { icon: destIcon }).addTo(map) : null;
 
         // 플래닝 모드에서 첫 마커 클릭 시 얼럿 팝업 띄우기
-        startMarker.on('click', () => {
-            if (userLocation.isVirtual && currentStepIndex === -1 && !isAirportMode) {
-                setShowVirtualAlert(true);
-            }
-        });
+        if (startMarker) {
+            startMarker.on('click', () => {
+                if (userLocation.isVirtual && currentStepIndex === -1 && !isAirportMode) {
+                    setShowVirtualAlert(true);
+                }
+            });
+        }
+
+        // 숙소 마커 추가
+        let todayHotelMarker: any = null;
+        let prevHotelMarker: any = null;
+
+        if (currentDay?.accommodation) {
+            const hIcon = L.divIcon({
+                className: 'custom-map-marker-hotel',
+                html: `
+                    <div class="map-marker-wrapper">
+                        <div class="map-marker-label" style="background: #8c52ff;">🏨 ${currentDay.accommodation.name.slice(0, 10)}</div>
+                        <div class="map-marker-outer-hotel" style="width: 20px; height: 20px; background: rgba(140, 82, 255, 0.2); border: 1.5px solid rgba(140, 82, 255, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 10px; height: 10px; background: #8c52ff; border: 2px solid white; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                `,
+                iconSize: [80, 50],
+                iconAnchor: [40, 45]
+            });
+            todayHotelMarker = L.marker([currentDay.accommodation.lat || currentDay.accommodation.latitude, currentDay.accommodation.lng || currentDay.accommodation.longitude], { icon: hIcon }).addTo(map);
+        }
+
+        const prevDayObj = daysList[currentDayIndex - 1];
+        if (prevDayObj?.accommodation) {
+            const pIcon = L.divIcon({
+                className: 'custom-map-marker-hotel-prev',
+                html: `
+                    <div class="map-marker-wrapper">
+                        <div class="map-marker-label" style="background: #10b981;">🏠 ${prevDayObj.accommodation.name.slice(0, 10)}</div>
+                        <div class="map-marker-outer-hotel" style="width: 20px; height: 20px; background: rgba(16, 185, 129, 0.2); border: 1.5px solid rgba(16, 185, 129, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 10px; height: 10px; background: #10b981; border: 2px solid white; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                `,
+                iconSize: [80, 50],
+                iconAnchor: [40, 45]
+            });
+            prevHotelMarker = L.marker([prevDayObj.accommodation.lat || prevDayObj.accommodation.latitude, prevDayObj.accommodation.lng || prevDayObj.accommodation.longitude], { icon: pIcon }).addTo(map);
+        }
 
         // 경로 그리기
         let pathLine: any;
+        const isToAccommodation = destPoint.name.startsWith('[숙소]');
+        const isFromAccommodation = startPoint.name.startsWith('[출발]');
+
+        // 선 색상 결정: 숙소 복귀(purple), 숙소 출발(green), 일반 도보(blue), 일반 대중교통(purple)
+        let lineColor = '#8c52ff';
+        if (isFromAccommodation) {
+            lineColor = '#10b981';
+        } else if (routeMode === 'walking') {
+            lineColor = '#3182f6';
+        }
+
         if (routeMode === 'walking') {
-            // 도보: 파란색 점선
+            // 도보: 점선
             pathLine = L.polyline([startCoords, destCoords], {
-                color: '#3182f6',
+                color: lineColor,
                 weight: 4,
                 dashArray: '8, 8',
-                opacity: 0.8
+                opacity: 0.9
             }).addTo(map);
         } else {
-            // 대중교통: 보라색 부드러운 2차 베지에 곡선 경로 시뮬레이션
+            // 대중교통: 실선 (부드러운 곡선)
             const midLat = (startCoords[0] + destCoords[0]) / 2;
             const midLng = (startCoords[1] + destCoords[1]) / 2;
             const offsetLat = (destCoords[1] - startCoords[1]) * 0.15;
@@ -310,20 +406,25 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             }
 
             pathLine = L.polyline(curvePoints, {
-                color: '#8c52ff',
+                color: lineColor,
                 weight: 5,
                 opacity: 0.8
             }).addTo(map);
         }
 
-        // 두 좌표가 완벽하게 다 보이도록 맵 범위 피팅
-        const group = new L.featureGroup([startMarker, destMarker]);
+        // 두 좌표 및 숙소가 완벽하게 다 보이도록 맵 범위 피팅
+        const markersArray = [];
+        if (startMarker) markersArray.push(startMarker);
+        if (destMarker) markersArray.push(destMarker);
+        if (todayHotelMarker) markersArray.push(todayHotelMarker);
+        if (prevHotelMarker) markersArray.push(prevHotelMarker);
+        const group = new L.featureGroup(markersArray);
         map.fitBounds(group.getBounds().pad(0.35));
 
         return () => {
             map.remove();
         };
-    }, [leafletLoaded, userLocation, routeMode, startPoint.lat, startPoint.lng, startPoint.name, destPoint.lat, destPoint.lng, destPoint.name]);
+    }, [leafletLoaded, userLocation, routeMode, startPoint.lat, startPoint.lng, startPoint.name, destPoint.lat, destPoint.lng, destPoint.name, currentDay, daysList, currentDayIndex]);
 
     // 거리 및 시간 계산
     const distance = calculateDistance(startPoint.lat, startPoint.lng, destPoint.lat, destPoint.lng);
@@ -499,6 +600,44 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                 </div>
             )}
 
+            {/* 숙소 미설정 알림 배너 */}
+            {showLodgingAlert && (
+                <div style={{
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '85%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    color: '#1e293b',
+                    padding: '14px 18px',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+                    zIndex: 3000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    border: '1.5px solid #ff4757',
+                    backdropFilter: 'blur(8px)',
+                    animation: 'fadeInDown 0.3s ease-out'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#ff4757', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            ⚠️ 숙소 미설정 안내
+                        </span>
+                        <button 
+                            onClick={() => setShowLodgingAlert(false)}
+                            style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', padding: '0 4px' }}
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <p style={{ fontSize: '12.5px', color: '#475569', margin: 0, lineHeight: '1.5', wordBreak: 'keep-all' }}>
+                        숙소가 설정되지 않아 기능 사용이 불가능합니다.
+                    </p>
+                </div>
+            )}
+
             {/* 탑바 */}
             <div className="jm-top-bar" style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 10, display: 'flex', justifyContent: 'space-between', padding: '16px 20px' }}>
                 <button className="jm-circle-btn" onClick={onBack} title="뒤로가기">
@@ -532,94 +671,122 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                             flexDirection: 'column',
                             zIndex: 2000
                         }}>
-                            <button 
-                                onClick={() => {
-                                    setIsMenuDropdownOpen(false);
-                                    if (isAirportMode) {
-                                        setIsAirportMode(false);
-                                    } else {
-                                        setCurrentStepIndex(prev => prev + 1);
-                                    }
-                                }}
-                                disabled={isAirportMode || currentStepIndex >= placesList.length - 1}
-                                style={{
-                                    padding: '12px 16px',
-                                    textAlign: 'left',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    color: (isAirportMode || currentStepIndex >= placesList.length - 1) ? '#cbd5e1' : '#1e293b',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: (isAirportMode || currentStepIndex >= placesList.length - 1) ? 'default' : 'pointer',
-                                    borderBottom: '1px solid #f1f5f9'
-                                }}
-                            >
-                                🗺️ 다음 경로 안내
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    setIsMenuDropdownOpen(false);
-                                    if (isAirportMode) {
-                                        setIsAirportMode(false);
-                                        setCurrentStepIndex(placesList.length - 2);
-                                    } else {
-                                        setCurrentStepIndex(prev => prev - 1);
-                                    }
-                                }}
-                                disabled={!isAirportMode && currentStepIndex === -1}
-                                style={{
-                                    padding: '12px 16px',
-                                    textAlign: 'left',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    color: (!isAirportMode && currentStepIndex === -1) ? '#cbd5e1' : '#1e293b',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: (!isAirportMode && currentStepIndex === -1) ? 'default' : 'pointer',
-                                    borderBottom: '1px solid #f1f5f9'
-                                }}
-                            >
-                                ↩️ 이전 경로 안내
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    setIsMenuDropdownOpen(false);
-                                    setIsAirportMode(true);
-                                }}
-                                style={{
-                                    padding: '12px 16px',
-                                    textAlign: 'left',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    color: '#8c52ff',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    borderBottom: '1px solid #f1f5f9'
-                                }}
-                            >
-                                ✈️ 공항으로 안내
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    setIsMenuDropdownOpen(false);
-                                    setCurrentStepIndex(-1);
-                                    setIsAirportMode(false);
-                                }}
-                                style={{
-                                    padding: '12px 16px',
-                                    textAlign: 'left',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    color: '#ff4757',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    borderBottom: daysList.length > 1 ? '1.5px solid #cbd5e1' : 'none'
-                                }}
-                            >
-                                🔄 경로 초기화
-                            </button>
+                             <button 
+                                 onClick={() => {
+                                     setIsMenuDropdownOpen(false);
+                                     setIsLodgingMode(false);
+                                     if (isAirportMode) {
+                                         setIsAirportMode(false);
+                                     } else {
+                                         setCurrentStepIndex(prev => prev + 1);
+                                     }
+                                 }}
+                                 disabled={isAirportMode || isLodgingMode || currentStepIndex >= (currentDay?.accommodation ? placesList.length - 1 : placesList.length - 2)}
+                                 style={{
+                                     padding: '12px 16px',
+                                     textAlign: 'left',
+                                     fontSize: '13px',
+                                     fontWeight: 600,
+                                     color: (isAirportMode || isLodgingMode || currentStepIndex >= (currentDay?.accommodation ? placesList.length - 1 : placesList.length - 2)) ? '#cbd5e1' : '#1e293b',
+                                     background: 'none',
+                                     border: 'none',
+                                     cursor: (isAirportMode || isLodgingMode || currentStepIndex >= (currentDay?.accommodation ? placesList.length - 1 : placesList.length - 2)) ? 'default' : 'pointer',
+                                     borderBottom: '1px solid #f1f5f9'
+                                 }}
+                             >
+                                 🗺️ 다음 경로 안내
+                             </button>
+                             <button 
+                                 onClick={() => {
+                                     setIsMenuDropdownOpen(false);
+                                     setIsLodgingMode(false);
+                                     if (isAirportMode) {
+                                         setIsAirportMode(false);
+                                         setCurrentStepIndex(placesList.length - 2);
+                                     } else {
+                                         setCurrentStepIndex(prev => prev - 1);
+                                     }
+                                 }}
+                                 disabled={!isAirportMode && !isLodgingMode && currentStepIndex === -1}
+                                 style={{
+                                     padding: '12px 16px',
+                                     textAlign: 'left',
+                                     fontSize: '13px',
+                                     fontWeight: 600,
+                                     color: (!isAirportMode && !isLodgingMode && currentStepIndex === -1) ? '#cbd5e1' : '#1e293b',
+                                     background: 'none',
+                                     border: 'none',
+                                     cursor: (!isAirportMode && !isLodgingMode && currentStepIndex === -1) ? 'default' : 'pointer',
+                                     borderBottom: '1px solid #f1f5f9'
+                                 }}
+                             >
+                                 ↩️ 이전 경로 안내
+                             </button>
+                             <button 
+                                 onClick={() => {
+                                     setIsMenuDropdownOpen(false);
+                                     if (!currentDay?.accommodation) {
+                                         setShowLodgingAlert(true);
+                                         return;
+                                     }
+                                     setIsAirportMode(false);
+                                     setIsLodgingMode(true);
+                                 }}
+                                 style={{
+                                     padding: '12px 16px',
+                                     textAlign: 'left',
+                                     fontSize: '13px',
+                                     fontWeight: 600,
+                                     color: '#8c52ff',
+                                     background: 'none',
+                                     border: 'none',
+                                     cursor: 'pointer',
+                                     borderBottom: '1px solid #f1f5f9'
+                                 }}
+                             >
+                                 🏨 숙소로 안내
+                             </button>
+                             <button 
+                                 onClick={() => {
+                                     setIsMenuDropdownOpen(false);
+                                     setIsLodgingMode(false);
+                                     setIsAirportMode(true);
+                                 }}
+                                 style={{
+                                     padding: '12px 16px',
+                                     textAlign: 'left',
+                                     fontSize: '13px',
+                                     fontWeight: 600,
+                                     color: '#8c52ff',
+                                     background: 'none',
+                                     border: 'none',
+                                     cursor: 'pointer',
+                                     borderBottom: '1px solid #f1f5f9'
+                                 }}
+                             >
+                                 ✈️ 공항으로 안내
+                             </button>
+                             <button 
+                                 onClick={() => {
+                                     setIsMenuDropdownOpen(false);
+                                     setCurrentStepIndex(-1);
+                                     setIsAirportMode(false);
+                                     setIsLodgingMode(false);
+                                 }}
+                                 style={{
+                                     padding: '12px 16px',
+                                     textAlign: 'left',
+                                     fontSize: '13px',
+                                     fontWeight: 600,
+                                     color: '#ff4757',
+                                     background: 'none',
+                                     border: 'none',
+                                     cursor: 'pointer',
+                                     borderBottom: daysList.length > 1 ? '1.5px solid #cbd5e1' : 'none'
+                                 }}
+                             >
+                                 🔄 경로 초기화
+                             </button>
 
                             {/* 💡 1박 2일 이상 다중 일정인 경우 일자 선택 항목 목록 표시 */}
                             {daysList.length > 1 && (
@@ -691,24 +858,44 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                 )}
             </div>
 
-            {/* 상단 정보 플로팅 바 (삼선 메뉴 열릴 때 자연스럽게 페이드아웃) */}
+            {/* 상단 정보 플로팅 바 (삼선 메뉴 열릴 때 자연스럽게 페이드아웃, 클릭 시 접기/펴기 가능) */}
             <div 
                 className="jm-float-msg" 
+                onClick={() => setIsTimeBadgeExpanded(!isTimeBadgeExpanded)}
                 style={{ 
                     transition: 'all 0.3s ease', 
                     border: routeMode === 'transit' ? '1.5px solid #8c52ff' : 'none',
                     opacity: isMenuDropdownOpen ? 0 : 1,
                     pointerEvents: isMenuDropdownOpen ? 'none' : 'auto',
-                    transform: isMenuDropdownOpen ? 'translate(-50%, -10px)' : 'translate(-50%, 0)'
+                    transform: isMenuDropdownOpen ? 'translate(-50%, -10px)' : 'translate(-50%, 0)',
+                    cursor: 'pointer',
+                    padding: isTimeBadgeExpanded ? '12px 20px' : '8px 16px',
+                    borderRadius: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    userSelect: 'none'
                 }}
             >
-                {routeMode === 'walking' ? (
+                {isTimeBadgeExpanded ? (
                     <>
-                        <MapPin size={16} color="#3182f6" fill="#3182f6" /> 목적지까지 도보 {walkTime}분 ({distance.toFixed(1)}km)
+                        {routeMode === 'walking' ? (
+                            <>
+                                <MapPin size={16} color="#3182f6" fill="#3182f6" /> 목적지까지 도보 {walkTime}분 ({distance.toFixed(1)}km)
+                            </>
+                        ) : (
+                            <>
+                                <Bus size={16} color="#8c52ff" /> 대중교통 이용 시 약 {transitTime}분 ({distance.toFixed(1)}km)
+                            </>
+                        )}
+                        <span style={{ fontSize: '10px', color: '#94a3b8', marginLeft: '6px', whiteSpace: 'nowrap' }}>접기</span>
                     </>
                 ) : (
                     <>
-                        <Bus size={16} color="#8c52ff" /> 대중교통 이용 시 약 {transitTime}분 ({distance.toFixed(1)}km)
+                        <Navigation size={14} color={routeMode === 'walking' ? '#3182f6' : '#8c52ff'} />
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', whiteSpace: 'nowrap' }}>
+                            경로 요약 보기
+                        </span>
                     </>
                 )}
             </div>

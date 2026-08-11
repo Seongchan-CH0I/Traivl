@@ -22,6 +22,9 @@ interface DestinationDetailModalProps {
 }
 
 const DestinationDetailModal: React.FC<DestinationDetailModalProps> = ({ destination, onClose }) => {
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const dragInfo = React.useRef({ isDragging: false, startY: 0, scrollTop: 0 });
+
     if (!destination) return null;
 
     // 계절별 이모지 매핑
@@ -33,9 +36,54 @@ const DestinationDetailModal: React.FC<DestinationDetailModalProps> = ({ destina
         "초여름": "🍃"
     };
 
+    const handleMouseDown = (e: React.MouseEvent) => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('a')) return;
+
+        dragInfo.current = {
+            isDragging: true,
+            startY: e.pageY,
+            scrollTop: container.scrollTop
+        };
+        container.style.cursor = 'grabbing';
+        container.style.userSelect = 'none';
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!dragInfo.current.isDragging) return;
+        const container = containerRef.current;
+        if (!container) return;
+
+        const deltaY = e.pageY - dragInfo.current.startY;
+        container.scrollTop = dragInfo.current.scrollTop - deltaY;
+    };
+
+    const handleMouseUpOrLeave = () => {
+        if (!dragInfo.current.isDragging) return;
+        dragInfo.current.isDragging = false;
+        
+        const container = containerRef.current;
+        if (container) {
+            container.style.cursor = 'grab';
+            container.style.removeProperty('user-select');
+        }
+    };
+
     return (
         <div className="place-modal-overlay" onClick={onClose}>
-            <div className="place-modal-content relative max-w-[400px] w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div 
+                ref={containerRef}
+                className="place-modal-content relative max-w-[400px] w-full max-h-[85vh] overflow-y-auto" 
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUpOrLeave}
+                onMouseLeave={handleMouseUpOrLeave}
+                style={{ cursor: 'grab', overflowY: 'auto', maxHeight: '85vh', maxWidth: '400px' }}
+            >
                 <button className="close-modal-btn" onClick={onClose}>
                     <X size={20} />
                 </button>

@@ -70,6 +70,37 @@ export async function POST(req: NextRequest) {
     }
 }
 
+// PUT /api/schedules
+export async function PUT(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const { id, itineraryData } = body;
+
+        if (!id || !itineraryData) {
+            return NextResponse.json(
+                { success: false, message: 'id와 itineraryData가 필요합니다.' },
+                { status: 400 }
+            );
+        }
+
+        const updatedSchedule = await prisma.schedule.update({
+            where: { id },
+            data: { itineraryData }
+        });
+
+        return NextResponse.json({
+            success: true,
+            data: updatedSchedule
+        });
+    } catch (error: any) {
+        console.error('PUT Schedule error:', error);
+        return NextResponse.json(
+            { success: false, message: '일정을 수정하는 도중 오류가 발생했습니다.' },
+            { status: 500 }
+        );
+    }
+}
+
 // DELETE /api/schedules?id=xxx
 export async function DELETE(req: NextRequest) {
     try {
