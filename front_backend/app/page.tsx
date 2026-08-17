@@ -195,11 +195,11 @@ export default function HomePage() {
                     }
                 }} />
                 {isJourneyStarted && (
-                    <JourneyMap 
+                    <JourneyMap
                         onBack={() => {
+                            // 루트 생성 모달을 다시 열지 않고 기본 홈 화면으로 복귀
                             setIsJourneyStarted(false);
-                            setIsRouteModalOpen(true);
-                        }} 
+                        }}
                     />
                 )}
             </main>
