@@ -81,26 +81,34 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         }
     };
 
-    const handleStartJourneyClick = async () => {
-        if (user?.id) {
-            try {
-                await fetch('/api/schedules', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: user.id,
-                        title: `${user.name || '트래블러'}님의 ${city} 여행`,
-                        city,
-                        startDate: startDate ? startDate.toISOString() : null,
-                        endDate: endDate ? endDate.toISOString() : null,
-                        itineraryData: itineraryResult
-                    })
-                });
-            } catch (e) {
-                console.error("Failed to save schedule to DB:", e);
-            }
+    const saveScheduleToDb = async () => {
+        if (!user?.id || !itineraryResult) return;
+        try {
+            await fetch('/api/schedules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.id,
+                    title: `${user.name || '트래블러'}님의 ${city} 여행`,
+                    city,
+                    startDate: startDate ? startDate.toISOString() : null,
+                    endDate: endDate ? endDate.toISOString() : null,
+                    itineraryData: itineraryResult
+                })
+            });
+        } catch (e) {
+            console.error("Failed to save schedule to DB:", e);
         }
+    };
+
+    const handleStartJourneyClick = async () => {
+        await saveScheduleToDb();
         onStartJourney(city);
+    };
+
+    const handleBackFromResult = async () => {
+        await saveScheduleToDb();
+        onClose();
     };
 
     const toggleTheme = (t: string) => {
@@ -452,7 +460,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         <div className="rc-modal">
             <div className={`rc-header ${step === 6 ? '' : 'border'}`}>
                 {step === 6 ? (
-                    <button className="rc-back-btn" onClick={() => onClose()}>
+                    <button className="rc-back-btn" onClick={() => handleBackFromResult()}>
                         <ChevronLeft />
                     </button>
                 ) : (

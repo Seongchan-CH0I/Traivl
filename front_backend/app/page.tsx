@@ -21,12 +21,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function HomePage() {
     const { user } = useAuth(); // 사용자 정보 가져오기
-    const { setHasActiveJourney, selectedCity, setSelectedCity, dnaResult, setDnaResult } = useAi();
+    const { hasActiveJourney, setHasActiveJourney, selectedCity, setSelectedCity, dnaResult, setDnaResult } = useAi();
     const searchParams = useSearchParams();
     const router = useRouter();
 
     const [isSurveyOpen, setIsSurveyOpen] = useState(false);
     const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
+    // 홈 탭에 진입할 때는 항상 기본 홈 화면부터 보여줌 (여정 지도는 명시적으로 요청했을 때만 표시)
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
     const [isHotPlacesExpanded, setIsHotPlacesExpanded] = useState(false);
     const [selectedDestination, setSelectedDestination] = useState<any>(null);
@@ -185,7 +186,14 @@ export default function HomePage() {
                     destinationId={dnaResult?.id || 'JP_KYOTO'}
                     cityName={dnaResult?.name?.split(',')[0] || '교토'}
                 />
-                <FloatingButton onClick={() => setIsRouteModalOpen(true)} />
+                <FloatingButton onClick={() => {
+                    // 이미 완료된 여정이 있으면 새로 만들지 않고 바로 결과/지도로 이동
+                    if (hasActiveJourney && selectedCity) {
+                        setIsJourneyStarted(true);
+                    } else {
+                        setIsRouteModalOpen(true);
+                    }
+                }} />
                 {isJourneyStarted && (
                     <JourneyMap 
                         onBack={() => {
