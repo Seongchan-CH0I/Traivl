@@ -30,8 +30,31 @@ class RouteService:
             )
         )
 
+    def _ensure_gcs_map_download(self, destination: str = "kanto"):
+        """GCS 클라우드 스토리지에서 필요한 도시의 완성 지도를 온디맨드(핫스와핑)로 동적 다운로드"""
+        try:
+            from app.services.gcs_service import gcs_service
+            city_code = destination.lower()
+            if "tokyo" in city_code or "kyoto" in city_code or "japan" in city_code or "kanto" in city_code:
+                city_code = "kanto"
+            
+            local_dir = f"data/maps/{city_code}"
+            gcs_prefix = f"maps/{city_code}/"
+            
+            # GCS 버킷에 보관된 해당 도시 지도를 로컬 핫스와핑 캐시로 다운로드
+            essential_files = ["kanto-latest.osrm", "kanto-latest.osrm.mldgr", "kanto-latest.osrm.fileIndex"]
+            for fname in essential_files:
+                gcs_path = f"{gcs_prefix}{fname}"
+                local_path = os.path.join(local_dir, fname)
+                gcs_service.download_file(gcs_path, local_path)
+        except Exception as e:
+            print(f"⚠️ [GCS Hot-swapping] 지도 동적 다운로드 로깅: {e}")
+
     def _get_time_matrix(self, locations: List[Any]) -> List[List[int]]:
-        """OSRM API를 호출하여 실제 도로망 기반 이동 시간(분) 행렬 생성"""
+        """OSRM API를 호출하여 실제 도로망 기반 이동 시간(분) 행렬 생성 (GCS 핫스와핑 지원)"""
+        # GCS 클라우드 지도 핫스와핑 사전 점검
+        self._ensure_gcs_map_download("kanto")
+        
         # OSRM은 lng,lat 순서를 요구함
         coords = ";".join([f"{loc.lng},{loc.lat}" for loc in locations])
         osrm_base_url = os.getenv("OSRM_BASE_URL", "http://osrm-backend:5000")
