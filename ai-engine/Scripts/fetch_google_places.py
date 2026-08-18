@@ -47,7 +47,7 @@ def generate_grids(name, north, south, west, east, rows, cols):
             })
     return grids
 
-# 3. 타겟 도시 및 그리드 설정 (핵심 8개 도시, 각각 크기에 맞게 등분)
+# 3. 타겟 도시 및 그리드 설정 (핵심 10개 도시, 각각 크기에 맞게 등분)
 TARGET_CITIES = {
     # 일본
     "도쿄": generate_grids("도쿄", 35.75, 35.60, 139.60, 139.85, 2, 2), # 4구역
@@ -55,14 +55,16 @@ TARGET_CITIES = {
     "교토": generate_grids("교토", 35.05, 34.95, 135.70, 135.85, 2, 2), # 4구역
     "후쿠오카": generate_grids("후쿠오카", 33.65, 33.50, 130.30, 130.50, 2, 2), # 4구역
     "삿포로": generate_grids("삿포로", 43.15, 42.95, 141.20, 141.45, 2, 2), # 4구역
+    "오키나와": generate_grids("오키나와", 26.75, 26.15, 127.60, 128.05, 3, 2), # 6구역 (남북으로 긴 섬 형태)
     # 한국
     "서울": generate_grids("서울", 37.70, 37.40, 126.75, 127.20, 3, 3), # 9구역 (워낙 넓고 밀집도가 높음)
     "부산": generate_grids("부산", 35.30, 35.00, 128.80, 129.30, 2, 2), # 4구역
-    "제주": generate_grids("제주", 33.60, 33.20, 126.15, 126.95, 2, 2) # 4구역
+    "제주": generate_grids("제주", 33.60, 33.20, 126.15, 126.95, 2, 2), # 4구역
+    "속초": generate_grids("속초", 38.25, 38.10, 128.40, 128.65, 2, 2) # 4구역
 }
 
 def get_country_for_city(city):
-    if city in ["서울", "부산", "제주", "인천", "경주"]:
+    if city in ["서울", "부산", "제주", "인천", "경주", "속초"]:
         return "대한민국"
     return "일본"
 
@@ -178,14 +180,30 @@ def main():
                     
                 time.sleep(1) # 테마 전환 시 휴식
 
-    # 덤프(저장)
+    # 덤프(저장) - 기존 places_raw.json이 있으면 병합(다른 도시로 나눠 실행해도 데이터 유실 없음)
     print(f"\n🎉 수집 대장정 완료!")
     print(f"📊 총 API 호출: {total_api_calls}회")
-    print(f"📦 확보된 총 고품질 장소 데이터: {len(all_raw_places)}개")
-    
+    print(f"📦 이번 실행으로 확보된 장소 데이터: {len(all_raw_places)}개")
+
+    merged_places = {}
+    if os.path.exists(DATA_OUTPUT_PATH):
+        with open(DATA_OUTPUT_PATH, "r", encoding="utf-8") as f:
+            for place in json.load(f):
+                merged_places[place["id"]] = place
+
+    for place in all_raw_places:
+        place_id = place["id"]
+        if place_id in merged_places:
+            existing_tags = merged_places[place_id].get("tags", [])
+            merged_places[place_id] = place
+            merged_places[place_id]["tags"] = list(set(existing_tags + place.get("tags", [])))
+        else:
+            merged_places[place_id] = place
+
     with open(DATA_OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(all_raw_places, f, ensure_ascii=False, indent=4)
-        
+        json.dump(list(merged_places.values()), f, ensure_ascii=False, indent=4)
+
+    print(f"📦 병합 후 총 장소 데이터: {len(merged_places)}개")
     print(f"📁 데이터 저장 성공: {DATA_OUTPUT_PATH}")
     print("👉 이제 'python ai-engine/Scripts/ingestion_pipeline.py' 를 실행해 DB에 적재하세요!")
 
