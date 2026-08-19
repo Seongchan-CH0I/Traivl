@@ -180,16 +180,17 @@ class PlanService:
 - 이름: {request.user_name}
 - 목적지: {request.destination}
 - 여행 기간: {request.duration.days}일
-- 선호 스타일: {', '.join(request.travel_style)}
+- 필수 포함 선호 스타일/테마: {', '.join(request.travel_style)}
 - 유저 DNA: {request.dna_type}
 
 [후보 장소 리스트]
 {candidates_text}
 
-[임무]
-1. 위 유저 성향(DNA, 스타일)에 가장 잘 어울리는 장소를 {count}개 골라주세요.
-2. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 가이드 말투"로 짧고 친절한 한국어 추천 사유를 써주세요.
-3. 반드시 아래 JSON 형식으로만 답변하세요.
+[중요 임무]
+1. 위 유저 성향과 선호 테마({', '.join(request.travel_style)})에 맞는 명소와 맛집/식당/야경 장소를 골고루 조합하여 총 {count}개를 골라주세요.
+2. 유저가 '맛집투어'나 '야경투어', '액티비티'를 선택했다면 관련 장소가 반드시 포함되어야 합니다.
+3. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 친절한 가이드 말투"로 유익한 추천 사유를 1~2줄로 작성해 주세요.
+4. 반드시 아래 JSON 형식으로만 답변하세요.
 
 JSON 형식:
 {{
@@ -210,7 +211,6 @@ JSON 형식:
             # 인공지능이 설명 문구를 붙여도 JSON만 쏙 골라내도록 전처리
             raw_text = response.text.strip()
             if raw_text.startswith("```"):
-                # ```json ... ``` 형태인 경우 앞뒤 문구 제거
                 raw_text = raw_text.split("```")[1]
                 if raw_text.startswith("json"):
                     raw_text = raw_text[4:]
@@ -224,29 +224,62 @@ JSON 형식:
                 if c.place_id in selected_ids:
                     result.append({"place": c, "reason": selected_ids[c.place_id]})
             
-            return result[:count] if result else [{"place": c, "reason": "AI 추천 장소"} for c in candidates[:count]]
+            return result[:count] if result else [{"place": c, "reason": c.description or f"{c.title}의 매력을 깊이 경험할 수 있는 추천 장소입니다."} for c in candidates[:count]]
         except Exception as e:
             print(f"❌ Gemini 호출 오류: {e}")
-            return [{"place": c, "reason": "AI 추천 장소"} for c in candidates[:count]]
+            return [{"place": c, "reason": c.description or f"{c.title}의 매력을 깊이 경험할 수 있는 추천 장소입니다."} for c in candidates[:count]]
 
     async def _simulate_itinerary_v2(self, selected_data: List[Dict[str, Any]], duration: Any) -> List[DayItinerary]:
         """
-        Gemini가 선정한 장소들을 K-Means 클러스터링과 OSRM(경로최적화)를 통해 날짜별로 완벽히 배분합니다.
+        Gemini가 선정한 장소들을 K-Means 공간 밀도 및 OSRM 지리적 거리에 기반하여 (2개~4개)로 동적 배분합니다.
         """
         if not selected_data:
             return []
 
-        # 1. K-Means 클러스터링 (일자별로 지리적으로 가까운 곳 묶기)
+        days_count = duration.days
         coords = np.array([[item['place'].lat, item['place'].lng] for item in selected_data])
-        if len(selected_data) >= duration.days:
-            kmeans = KMeans(n_clusters=duration.days, random_state=42, n_init=10)
+        
+        # 1. K-Means 공간 클러스터링으로 지리적 1차 그룹화
+        if len(selected_data) >= days_count:
+            kmeans = KMeans(n_clusters=days_count, random_state=42, n_init=10)
             labels = kmeans.fit_predict(coords)
         else:
-            labels = [0] * len(selected_data)
+            labels = [i % days_count for i in range(len(selected_data))]
             
-        clusters = {i: [] for i in range(duration.days)}
+        raw_clusters = {i: [] for i in range(days_count)}
         for i, label in enumerate(labels):
-            clusters[label].append(selected_data[i])
+            raw_clusters[label].append(selected_data[i])
+
+        # 2. Spatial Density Adaptive Dynamic Balancer (공간 밀도 및 지리적 반경 기반 동적 밸런싱)
+        clusters = {i: [] for i in range(days_count)}
+        for d in range(days_count):
+            c_items = raw_clusters[d]
+            if not c_items:
+                continue
+            # 클러스터 지리적 분산(반경) 계산
+            if len(c_items) > 1:
+                c_coords = np.array([[it['place'].lat, it['place'].lng] for it in c_items])
+                center = c_coords.mean(axis=0)
+                mean_dist = np.mean(np.sqrt(np.sum((c_coords - center)**2, axis=1))) * 111.0 # 약 km 변환
+            else:
+                mean_dist = 0.0
+
+            # 공간 밀도에 따른 동적 정원 결정 (밀집 구역 4개, 보통 3개, 광역 2개)
+            if mean_dist <= 3.0 and len(c_items) >= 4:
+                target_capacity = 4
+            elif mean_dist >= 8.0:
+                target_capacity = 2
+            else:
+                target_capacity = 3
+                
+            clusters[d] = c_items[:target_capacity]
+
+        # 잉여 장소들은 가장 여유로운 일차로 동적 할당
+        used_ids = {it['place'].place_id for d in clusters for it in clusters[d]}
+        leftover = [it for it in selected_data if it['place'].place_id not in used_ids]
+        for it in leftover:
+            min_day = min(clusters.keys(), key=lambda k: len(clusters[k]))
+            clusters[min_day].append(it)
 
         days = []
         # 2. 각 일자별 TSP 최적화 (RouteService 연동)

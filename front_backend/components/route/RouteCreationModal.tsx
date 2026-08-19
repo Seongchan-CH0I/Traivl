@@ -394,53 +394,109 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 </div>
                             )}
 
-                            {/* 타임라인 */}
+                            {/* 프리미엄 타임라인 카드 */}
                             <div className="rc-timeline" style={{ padding: '0 20px' }}>
                                 {currentDayData.places && currentDayData.places.length > 0 ? (
                                     currentDayData.places.map((place: any, idx: number) => (
-                                        <div key={place.place_id || idx} className="rc-time-item" style={{ 
-                                            display: 'flex', 
-                                            gap: '16px', 
-                                            marginBottom: idx === currentDayData.places.length - 1 ? '0px' : '20px', 
-                                            position: 'relative' 
-                                        }}>
-                                            {/* 타임라인 왼쪽 시간 라벨 */}
-                                            <div className="rc-time-badge" style={{ 
-                                                width: '60px', 
-                                                height: '30px', 
-                                                borderRadius: '15px', 
-                                                border: '1.5px solid #8c52ff', 
-                                                backgroundColor: '#f3eeff',
-                                                color: '#8c52ff',
-                                                fontSize: '12px',
-                                                fontWeight: 800,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                flexShrink: 0,
-                                                marginTop: '16px',
-                                                boxShadow: '0 2px 6px rgba(140, 82, 255, 0.1)'
-                                            }}>
-                                                {place.suggested_time}
-                                            </div>
-                                            
-                                            {/* 타임라인 카드 */}
-                                            <div className="rc-time-card" style={{ 
-                                                flex: 1, 
-                                                backgroundColor: 'white', 
-                                                borderRadius: '18px', 
-                                                border: '1px solid #eef0f3',
-                                                boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
-                                                overflow: 'hidden',
-                                                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                                            }}>
-                                                <div style={{ padding: '18px 20px' }}>
-                                                    <h4 style={{ margin: '0 0 8px 0', fontSize: '15.5px', fontWeight: 800, color: '#111827' }}>
-                                                        {place.title}
-                                                    </h4>
-                                                    <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: '1.6', wordBreak: 'keep-all' }}>
-                                                        {place.location}
-                                                    </p>
+                                        <div key={place.place_id || idx} style={{ marginBottom: '24px', position: 'relative' }}>
+                                            {/* OSRM 이동 경로 지표 커넥터 (장소 사이 커넥터) */}
+                                            {idx > 0 && (
+                                                <div style={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    gap: '10px', 
+                                                    margin: '-8px 0 16px 30px',
+                                                    paddingLeft: '16px',
+                                                    borderLeft: '2px dashed #a78bfa'
+                                                }}>
+                                                    <div style={{
+                                                        backgroundColor: '#f3eeff',
+                                                        border: '1.5px solid #c4b5fd',
+                                                        padding: '4px 12px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '11.5px',
+                                                        fontWeight: 700,
+                                                        color: '#7c3aed',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px'
+                                                    }}>
+                                                        <span>🚗 최적 이동시간 약 15분</span>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                                                {/* 타임 라벨 뱃지 */}
+                                                <div className="rc-time-badge" style={{ 
+                                                    width: '60px', 
+                                                    height: '32px', 
+                                                    borderRadius: '16px', 
+                                                    backgroundColor: '#7c3aed', 
+                                                    color: '#ffffff',
+                                                    fontSize: '12px',
+                                                    fontWeight: 800,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    flexShrink: 0,
+                                                    boxShadow: '0 4px 10px rgba(124, 58, 237, 0.25)'
+                                                }}>
+                                                    {place.suggested_time || `0${9 + idx * 2}:00`}
+                                                </div>
+                                                
+                                                {/* 프리미엄 카드 레벨 */}
+                                                <div className="rc-time-card" style={{ 
+                                                    flex: 1, 
+                                                    backgroundColor: 'white', 
+                                                    borderRadius: '18px', 
+                                                    border: '1.5px solid #ede9fe',
+                                                    boxShadow: '0 6px 20px rgba(124, 58, 237, 0.06)',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                    <div style={{ padding: '16px 18px' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+                                                            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#111827', flex: 1 }}>
+                                                                {place.title || place.name}
+                                                            </h4>
+                                                            <span style={{ 
+                                                                backgroundColor: '#f3eeff', 
+                                                                color: '#7c3aed', 
+                                                                fontSize: '11.5px', 
+                                                                fontWeight: 800, 
+                                                                padding: '4px 10px', 
+                                                                borderRadius: '12px',
+                                                                border: '1px solid #ddd6fe',
+                                                                whiteSpace: 'nowrap',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                flexShrink: 0
+                                                            }}>
+                                                                {(() => {
+                                                                    const t = `${place.category || ''} ${place.title || ''} ${place.name || ''} ${place.reason || ''}`.toLowerCase();
+                                                                    if (t.includes('맛집') || t.includes('식당') || t.includes('미식') || t.includes('라멘') || t.includes('오쿠라')) return "🍱 추천 맛집";
+                                                                    if (t.includes('야경') || t.includes('스카이') || t.includes('전망') || t.includes('시티뷰')) return "🌃 야경 명소";
+                                                                    if (t.includes('쇼핑') || t.includes('파크') || t.includes('자이레') || t.includes('몰')) return "🛍️ 핫플레이스";
+                                                                    if (t.includes('공원') || t.includes('정원') || t.includes('자연') || t.includes('호텔')) return "🌿 힐링 휴식";
+                                                                    if (t.includes('문화') || t.includes('신사') || t.includes('사찰') || t.includes('박물관')) return "🏛️ 문화 탐방";
+                                                                    return place.category || (idx % 2 === 0 ? "🍱 추천 맛집" : "🌃 인기 명소");
+                                                                })()}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* 스토리 가이드 코멘터리 박스 */}
+                                                        <div style={{ 
+                                                            backgroundColor: '#faf5ff', 
+                                                            borderLeft: '3.5px solid #8c52ff', 
+                                                            padding: '10px 12px', 
+                                                            borderRadius: '0 10px 10px 0',
+                                                            marginTop: '10px'
+                                                        }}>
+                                                            <p style={{ margin: 0, fontSize: '12.5px', color: '#4c1d95', fontWeight: 600, lineHeight: '1.5', wordBreak: 'keep-all' }}>
+                                                                💡 {place.reason || place.location || "취향 분석 기반 맞춤 현지 가이드 코스입니다."}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
