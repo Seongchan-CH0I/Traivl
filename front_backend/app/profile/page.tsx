@@ -6,6 +6,7 @@ import { useAi } from '../../context/AiContext';
 import { Dna, Plus, Download, Map, Share2, Trash2, Loader2, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function ProfilePage() {
   const { user, logout, withdraw } = useAuth();
@@ -38,6 +39,11 @@ export default function ProfilePage() {
     message: '',
     onConfirm: () => {},
   });
+
+  // 모바일 뒤로가기 동기화 훅
+  const { safeClose: closeProfileModal } = useBackHandler(modalConfig.isOpen, () => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+  }, 'prof_modal');
 
   const showAlert = (message: string, title?: string, onConfirm?: () => void) => {
     setModalConfig({

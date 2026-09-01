@@ -1,0 +1,21 @@
+{
+  "name": "Traivl - AI 여행 길잡이",
+  "short_name": "Traivl",
+  "description": "AI 기반 맞춤형 여행 일정 및 실시간 현지 길안내 서비스",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8c52ff",
+  "icons": [
+    {
+      "src": "/images/japan.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/images/japan.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

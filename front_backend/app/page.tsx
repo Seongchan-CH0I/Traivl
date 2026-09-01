@@ -18,6 +18,7 @@ import JourneyMap from '../components/route/JourneyMap';
 
 import { useAi } from '../context/AiContext';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useBackHandler } from '../hooks/useBackHandler';
 
 export default function HomePage() {
     const { user } = useAuth(); // 사용자 정보 가져오기
@@ -31,6 +32,12 @@ export default function HomePage() {
     const [isJourneyStarted, setIsJourneyStarted] = useState(false);
     const [isHotPlacesExpanded, setIsHotPlacesExpanded] = useState(false);
     const [selectedDestination, setSelectedDestination] = useState<any>(null);
+
+    // 모바일 뒤로가기 버튼 연동 (모달/지도 팝업)
+    const { safeClose: closeSurvey } = useBackHandler(isSurveyOpen, () => setIsSurveyOpen(false), 'survey');
+    const { safeClose: closeRouteModal } = useBackHandler(isRouteModalOpen, () => setIsRouteModalOpen(false), 'route');
+    const { safeClose: closeDestination } = useBackHandler(!!selectedDestination, () => setSelectedDestination(null), 'destination');
+    const { safeClose: closeJourney } = useBackHandler(isJourneyStarted, () => setIsJourneyStarted(false), 'journey');
 
     // ✅ 설문 완료 여부를 전역 상태인 dnaResult 유무로 판단! (중요)
     const hasCompletedSurvey = !!dnaResult;
@@ -102,13 +109,13 @@ export default function HomePage() {
             <main className="home-page pb-safe relative">
                 <RouteCreationModal
                     isOpen={isRouteModalOpen}
-                    onClose={() => setIsRouteModalOpen(false)}
+                    onClose={closeRouteModal}
                     onStartJourney={handleStartJourney}
                 />
                 {selectedDestination && (
                     <DestinationDetailModal 
                         destination={selectedDestination} 
-                        onClose={() => setSelectedDestination(null)} 
+                        onClose={closeDestination} 
                     />
                 )}
                 <Header title="어디로 떠나볼까요?" />
@@ -196,10 +203,7 @@ export default function HomePage() {
                 }} />
                 {isJourneyStarted && (
                     <JourneyMap
-                        onBack={() => {
-                            // 루트 생성 모달을 다시 열지 않고 기본 홈 화면으로 복귀
-                            setIsJourneyStarted(false);
-                        }}
+                        onBack={closeJourney}
                     />
                 )}
             </main>
@@ -210,13 +214,13 @@ export default function HomePage() {
         <main className="home-page relative">
             <SurveyModal
                 isOpen={isSurveyOpen}
-                onClose={() => setIsSurveyOpen(false)}
+                onClose={closeSurvey}
                 onComplete={handleCompleteSurvey}
             />
             {selectedDestination && (
                 <DestinationDetailModal 
                     destination={selectedDestination} 
-                    onClose={() => setSelectedDestination(null)} 
+                    onClose={closeDestination} 
                 />
             )}
             <Header title="어디로 떠나볼까요?" />

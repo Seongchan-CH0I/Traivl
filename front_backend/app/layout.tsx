@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AiProvider, useAi } from '../context/AiContext';
 import { AuthProvider, useAuth } from '../hooks/useAuth';
+import { useBackHandler } from '../hooks/useBackHandler';
 import LandingPage from '../components/ui/LandingPage';
 import LoginScreen from '../components/ui/LoginScreen';
 import AudioWaveform from '../components/ui/AudioWaveform';
@@ -32,6 +33,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     const { isAiMenuOpen, setIsAiMenuOpen, translationState, setTranslationState, toggleAiMenu, isJourneyMapMode, selectedCity, chatSessionId, dnaResult } = useAi();
     const { user } = useAuth(); // 이제 Context에서 유저 정보를 가져옴
     const [entryStep, setEntryStep] = useState<'landing' | 'login' | 'app'>('landing');
+
+    // 오버레이 및 로그인 뒤로가기 동기화 훅
+    const isOverlayOpen = translationState !== 'idle';
+    const { safeClose: closeOverlay } = useBackHandler(isOverlayOpen, () => {
+        setTranslationState('idle');
+        setVisionImage(null);
+        setVisionResult(null);
+        setVisionError(null);
+    }, 'overlay');
+
+    const isLoginOpen = entryStep === 'login';
+    const { safeClose: closeLogin } = useBackHandler(isLoginOpen, () => {
+        setEntryStep('landing');
+    }, 'login');
 
     // 앱 로드 시 기존 세션 유무에 따라 메인 진입 여부 결정
     useEffect(() => {
@@ -463,7 +478,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         return (
             <div className="app-container">
                 <LoginScreen 
-                    onBack={() => setEntryStep('landing')} 
+                    onBack={closeLogin} 
                     onLogin={() => setEntryStep('app')} 
                 />
             </div>
@@ -531,7 +546,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     {translationState === 'camera' && (
                         <>
                             <div className="camera-header">
-                                <button className="camera-close-btn" onClick={() => setTranslationState('idle')}>
+                                <button className="camera-close-btn" onClick={closeOverlay}>
                                     <X size={20} />
                                 </button>
                             </div>
@@ -719,7 +734,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                 </>
                             ) : null}
                             
-                            <button className="result-close-btn" onClick={handleCloseResult}>닫기</button>
+                            <button className="result-close-btn" onClick={closeOverlay}>닫기</button>
                         </div>
                     )}
                 </div>
@@ -730,7 +745,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     {(translationState === 'audio_idle' || translationState === 'audio_recording') && (
                         <>
                             <div className="audio-header">
-                                <button className="camera-close-btn" onClick={() => setTranslationState('idle')}>
+                                <button className="camera-close-btn" onClick={closeOverlay}>
                                     <X size={20} />
                                 </button>
                             </div>
@@ -813,12 +828,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
                             <div className="audio-bottom-actions" style={{ position: 'relative', bottom: 'auto', left: 'auto', right: 'auto', padding: '20px', display: 'flex', gap: '10px' }}>
                                 <button className="audio-action-btn audio-btn-primary" style={{ flex: 1 }} onClick={() => setTranslationState('audio_idle')}>다시 사용하기</button>
-                                <button className="audio-action-btn audio-btn-secondary" style={{ flex: 1 }} onClick={() => {
-                                    setTranslationState('idle');
-                                    setAudioBlob(null);
-                                    setVoiceResult(null);
-                                    setVoiceError(null);
-                                }}>닫기</button>
+                                <button className="audio-action-btn audio-btn-secondary" style={{ flex: 1 }} onClick={closeOverlay}>닫기</button>
                             </div>
                         </div>
                     )}
@@ -835,7 +845,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                 <p style={{ fontSize: '12px', color: '#888', margin: 0, marginTop: '2px' }}>실시간 여행 도우미</p>
                             </div>
                         </div>
-                        <button onClick={() => setTranslationState('idle')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                        <button onClick={closeOverlay} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
                             <X size={24} color="#333" />
                         </button>
                     </div>
@@ -887,6 +897,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ko" suppressHydrationWarning>
+            <head>
+                <link rel="manifest" href="/manifest.json" />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                <meta name="apple-mobile-web-app-title" content="Traivl" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+            </head>
             <body suppressHydrationWarning>
                 <AuthProvider>
                     <AiProvider>

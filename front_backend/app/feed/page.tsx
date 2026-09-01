@@ -8,6 +8,7 @@ import { Plane, Flame, Star, Lightbulb, PartyPopper, X, Plus, Loader2, ArrowRigh
 import PlaceDetailModal from '../../components/ui/PlaceDetailModal';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 import { Place } from '../../types/place';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 interface GuideItem {
     id: string;
@@ -46,6 +47,10 @@ export default function FeedPage() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertMsg, setAlertMsg] = useState('');
+
+    // 뒤로가기 동기화 훅
+    const { safeClose: closePlaceDetail } = useBackHandler(!!selectedPlace, () => setSelectedPlace(null), 'place_detail');
+    const { safeClose: closeAlert } = useBackHandler(alertOpen, () => setAlertOpen(false), 'alert');
 
     // DB 플레이스 카테고리별로 분류하는 로직
     const categorizePlace = (name: string, description: string) => {
@@ -491,7 +496,7 @@ export default function FeedPage() {
 
             <PlaceDetailModal
                 place={selectedPlace}
-                onClose={() => setSelectedPlace(null)}
+                onClose={closePlaceDetail}
             />
 
             {/* Custom Alert Modal */}
@@ -500,7 +505,7 @@ export default function FeedPage() {
                 type="alert"
                 title={alertTitle}
                 message={alertMsg}
-                onConfirm={() => setAlertOpen(false)}
+                onConfirm={closeAlert}
             />
         </>
     );

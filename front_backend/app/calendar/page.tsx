@@ -8,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth';
 import CalendarPicker from '../../components/calendar/CalendarPicker';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 import PlaceDetailModal from '../../components/ui/PlaceDetailModal';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export default function CalendarPage() {
   const { user } = useAuth();
@@ -38,6 +39,17 @@ export default function CalendarPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [applyToRemaining, setApplyToRemaining] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // 모바일 뒤로가기 동기화 훅
+  const { safeClose: closePlaceDetail } = useBackHandler(!!selectedPlace, () => setSelectedPlace(null), 'cal_place');
+  const { safeClose: closePicker } = useBackHandler(showPicker, () => setShowPicker(false), 'cal_picker');
+  const { safeClose: closeShare } = useBackHandler(showShareModal, () => setShowShareModal(false), 'cal_share');
+  const { safeClose: closeAccSearch } = useBackHandler(showAccommodationSearch, () => {
+    setShowAccommodationSearch(false);
+    setSearchQuery('');
+  }, 'cal_acc');
+  const { safeClose: closeDelete } = useBackHandler(showDeleteModal, () => setShowDeleteModal(false), 'cal_delete');
+  const { safeClose: closeAlert } = useBackHandler(alertOpen, () => setAlertOpen(false), 'cal_alert');
 
   const CITY_CENTERS: Record<string, { lat: number, lng: number }> = {
     '서울': { lat: 37.5665, lng: 126.9780 },
@@ -633,7 +645,7 @@ export default function CalendarPage() {
         <div className="survey-modal" style={{ padding: '0' }}>
           <CalendarPicker 
             onConfirm={handleConfirmDates} 
-            onCancel={() => setShowPicker(false)} 
+            onCancel={closePicker} 
           />
         </div>
       )}
@@ -687,7 +699,7 @@ export default function CalendarPage() {
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
-                onClick={() => setShowShareModal(false)}
+                onClick={closeShare}
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -833,10 +845,7 @@ export default function CalendarPage() {
             {/* 하단 버튼 */}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
-                onClick={() => {
-                  setShowAccommodationSearch(false);
-                  setSearchQuery('');
-                }}
+                onClick={closeAccSearch}
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -917,7 +926,7 @@ export default function CalendarPage() {
                 {activeDay}일차 숙소만 삭제
               </button>
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={closeDelete}
                 style={{
                   padding: '12px',
                   borderRadius: '12px',
@@ -942,7 +951,7 @@ export default function CalendarPage() {
         type="alert"
         title={alertTitle}
         message={alertMsg}
-        onConfirm={() => setAlertOpen(false)}
+        onConfirm={closeAlert}
       />
 
       {/* 플로팅 버튼 */}
@@ -956,7 +965,7 @@ export default function CalendarPage() {
       {/* 상세 정보 모달 */}
       <PlaceDetailModal 
         place={selectedPlace} 
-        onClose={() => setSelectedPlace(null)} 
+        onClose={closePlaceDetail} 
       />
     </>
   );
