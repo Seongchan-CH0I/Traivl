@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// AI 추론 + TSP 최적화 + OSRM 왕복이라 응답이 길어 기본 타임아웃(10초)으로는 부족함
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
