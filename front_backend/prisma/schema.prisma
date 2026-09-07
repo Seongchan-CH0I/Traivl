@@ -46,7 +46,7 @@ model Destination {
 model Place {
   id            Int         @id @default(autoincrement())
   destinationId String
-  destination   Destination @relation(fields: [destinationId], references: [id])
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
   name          String
   category      String      // "관광지" | "맛집" | "카페"
   imageUrl      String?

@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Whisper 음성 인식 + Gemini 번역 대기 시간 확보
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();

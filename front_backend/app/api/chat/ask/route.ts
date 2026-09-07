@@ -1,6 +1,10 @@
 // Next.js App Router — FastAPI SSE 스트림 프록시
 // FastAPI의 SSE 응답을 그대로 클라이언트에 전달합니다.
 
+// SSE 스트리밍이라 응답이 끝날 때까지 함수가 살아있어야 함
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const body = await request.json();
   const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
