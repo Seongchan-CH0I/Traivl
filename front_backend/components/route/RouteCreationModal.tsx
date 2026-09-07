@@ -515,7 +515,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                                             marginTop: '10px'
                                                         }}>
                                                             <p style={{ margin: 0, fontSize: '12.5px', color: '#4c1d95', fontWeight: 600, lineHeight: '1.5', wordBreak: 'keep-all' }}>
-                                                                💡 {place.reason || place.location || "취향 분석 기반 맞춤 현지 가이드 코스입니다."}
+                                                                💡 {(place.reason || place.location || "취향 분석 기반 맞춤 현지 가이드 코스입니다.").replace(/^\[.*?\]\s*/, '')}
                                                             </p>
                                                         </div>
                                                     </div>

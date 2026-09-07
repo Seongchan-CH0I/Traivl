@@ -553,7 +553,7 @@ export default function CalendarPage() {
                           <ChevronRight size={18} className="chevron-icon" />
                         </div>
                         <p className="timeline-card-desc">
-                          {item.location}
+                          {item.location?.replace(/^\[.*?\]\s*/, '')}
                         </p>
                         <div className="timeline-card-badges">
                           {item.duration && (

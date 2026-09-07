@@ -89,7 +89,7 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
     // Day별 Fallback 계산용 좌표
     const firstPlace = placesList[0];
     const destinationTitle = firstPlace?.title || "간사이 공항";
-    const recommendedReason = firstPlace?.location || "여행의 설레는 첫 출발지입니다.";
+    const recommendedReason = firstPlace?.location?.replace(/^\[.*?\]\s*/, '') || "여행의 설레는 첫 출발지입니다.";
     const destLat = firstPlace?.lat || firstPlace?.latitude || 35.0394;
     const destLng = firstPlace?.lng || firstPlace?.longitude || 135.7292;
 
@@ -254,7 +254,7 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                 name: nextPlace.title,
                 lat: nextPlace.lat || nextPlace.latitude || destLat,
                 lng: nextPlace.lng || nextPlace.longitude || destLng,
-                reason: nextPlace.location || "다음 목적지로 안전하게 안내합니다."
+                reason: nextPlace.location?.replace(/^\[.*?\]\s*/, '') || "다음 목적지로 안전하게 안내합니다."
             };
         }
     }
