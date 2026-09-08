@@ -96,6 +96,19 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                     itineraryData: itineraryResult
                 })
             });
+
+            // AI 일정 생성 완료 기록 DB 저장
+            const daysCount = itineraryResult?.itinerary?.length || 0;
+            await fetch(`/api/profile/${user.id}/history`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'schedule_generation',
+                    title: 'AI 추천 여행 일정 생성',
+                    content: `'${city}' ${daysCount > 0 ? `${daysCount}일 코스` : ''} 여행 일정이 보관함에 새로 생성 및 저장되었습니다.`,
+                    icon: '✨'
+                })
+            });
         } catch (e) {
             console.error("Failed to save schedule to DB:", e);
         }

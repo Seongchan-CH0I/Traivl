@@ -101,22 +101,30 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-// DELETE /api/schedules?id=xxx
+// DELETE /api/schedules?id=xxx OR /api/schedules?ids=xxx,yyy
 export async function DELETE(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
+        const idsParam = searchParams.get('ids');
 
-        if (!id) {
+        if (!id && !idsParam) {
             return NextResponse.json(
-                { success: false, message: 'id가 필요합니다.' },
+                { success: false, message: 'id 또는 ids가 필요합니다.' },
                 { status: 400 }
             );
         }
 
-        await prisma.schedule.delete({
-            where: { id }
-        });
+        if (idsParam) {
+            const idsList = idsParam.split(',').map(s => s.trim()).filter(Boolean);
+            await prisma.schedule.deleteMany({
+                where: { id: { in: idsList } }
+            });
+        } else if (id) {
+            await prisma.schedule.delete({
+                where: { id }
+            });
+        }
 
         return NextResponse.json({
             success: true,

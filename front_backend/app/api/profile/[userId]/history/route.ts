@@ -78,3 +78,42 @@ export async function POST(
     );
   }
 }
+
+// DELETE /api/profile/[userId]/history?id=xxx OR ?clearAll=true
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  try {
+    const { userId } = await params;
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    const clearAll = searchParams.get('clearAll');
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    if (clearAll === 'true') {
+      await prisma.aiUsageLog.deleteMany({
+        where: { userId }
+      });
+      return NextResponse.json({ success: true, message: "모든 AI 사용 기록이 삭제되었습니다." });
+    }
+
+    if (id) {
+      await prisma.aiUsageLog.delete({
+        where: { id: parseInt(id, 10) }
+      });
+      return NextResponse.json({ success: true, message: "AI 사용 기록이 삭제되었습니다." });
+    }
+
+    return NextResponse.json({ error: "id 또는 clearAll 파라미터가 필요합니다." }, { status: 400 });
+  } catch (error) {
+    console.error("Error deleting AI usage history:", error);
+    return NextResponse.json(
+      { error: "Failed to delete AI usage history" },
+      { status: 500 }
+    );
+  }
+}

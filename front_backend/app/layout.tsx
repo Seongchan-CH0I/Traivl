@@ -154,6 +154,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         reader.readAsDataURL(file);
     };
 
+    // AI 기능 활용 기록 DB 저장 헬퍼
+    const saveAiUsageLog = async (type: string, title: string, content: string, icon?: string) => {
+        if (!user?.id) return;
+        try {
+            await fetch(`/api/profile/${user.id}/history`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type, title, content, icon: icon || '🤖' })
+            });
+        } catch (err) {
+            console.error("Failed to save AI usage log:", err);
+        }
+    };
+
     // 비전 API 전송 로직
     const sendVisionRequest = async (base64Str: string) => {
         setIsLoadingVision(true);
@@ -176,6 +190,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             const data = await response.json();
             if (data.status === 'success') {
                 setVisionResult(data.data);
+                saveAiUsageLog('vision_lens', '카메라 렌즈 분석', data.data?.detected_name ? `${data.data.detected_name} - ${data.data.description || '이미지 분석 완료'}` : '이미지 및 메뉴판 분석을 진행했습니다.', '📸');
             } else {
                 throw new Error(data.message || "이미지 분석 중 오류가 발생했습니다.");
             }
@@ -314,6 +329,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     const data = await response.json();
                     if (data.status === 'success') {
                         setVoiceResult(data.data);
+                        saveAiUsageLog('voice_interpreter', '음성 실시간 통역', data.data?.translated_text ? `번역: ${data.data.translated_text}` : '현지 음성 통역을 이용하셨습니다.', '🎙️');
                     } else {
                         throw new Error(data.message || "음성 통역에 실패했습니다.");
                     }
@@ -341,11 +357,40 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     const [chatInput, setChatInput] = useState('');
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-        { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }
-    ]);
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('traivl_chat_history');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                } catch (e) {}
+            }
+        }
+        return [
+            { id: 1, sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }
+        ];
+    });
     const [isStreaming, setIsStreaming] = useState(false);
     const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+    // 채팅 내역 변경 시 localStorage 자동 동기화
+    useEffect(() => {
+        if (typeof window !== 'undefined' && chatMessages.length > 0) {
+            localStorage.setItem('traivl_chat_history', JSON.stringify(chatMessages));
+        }
+    }, [chatMessages]);
+
+    // 대화 초기화 함수
+    const handleClearChatHistory = () => {
+        const initialMsg: ChatMessage[] = [
+            { id: Date.now(), sender: 'ai', text: '안녕하세요! 여행을 도와드리는 AI 가이드입니다. 궁금한 점을 물어보세요! 🗺️', time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }
+        ];
+        setChatMessages(initialMsg);
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('traivl_chat_history');
+        }
+    };
 
     // 채팅 스크롤 자동 하단 이동
     useEffect(() => {
@@ -373,6 +418,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
         let isStreamDone = false;
         let typingInterval: any = null;
+        let finalAiResponse = '';
 
         try {
             // 3. SSE 스트림 연결
@@ -435,8 +481,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                 ));
                             } else if (chunk.type === 'token') {
                                 accumulatedText += chunk.content;
+                                finalAiResponse = accumulatedText;
                             } else if (chunk.type === 'error') {
                                 accumulatedText = chunk.content || '오류가 발생했습니다. 다시 시도해주세요.';
+                                finalAiResponse = accumulatedText;
                                 isStreamDone = true;
                             } else if (chunk.type === 'done') {
                                 isStreamDone = true;
@@ -449,6 +497,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             }
 
             isStreamDone = true;
+
+            // 마이페이지 AI 사용 기록 저장 (DB 연동)
+            if (user?.id && text.trim()) {
+                const qSummary = text.length > 40 ? text.substring(0, 40) + '...' : text;
+                const aSummary = finalAiResponse ? (finalAiResponse.length > 70 ? finalAiResponse.substring(0, 70) + '...' : finalAiResponse) : '답변을 제공했습니다.';
+                saveAiUsageLog('ai_chat', 'AI 가이드 채팅 질의응답', `Q: ${qSummary}\nA: ${aSummary}`, '💬');
+            }
 
         } catch (err: any) {
             console.error('Chat SSE error:', err);
@@ -845,9 +900,27 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                 <p style={{ fontSize: '12px', color: '#888', margin: 0, marginTop: '2px' }}>실시간 여행 도우미</p>
                             </div>
                         </div>
-                        <button onClick={closeOverlay} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-                            <X size={24} color="#333" />
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button 
+                                onClick={handleClearChatHistory}
+                                title="대화 내용 비우기"
+                                style={{
+                                    fontSize: '11.5px',
+                                    fontWeight: 700,
+                                    color: '#64748b',
+                                    backgroundColor: '#f1f5f9',
+                                    border: 'none',
+                                    padding: '5px 10px',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                대화 초기화 🧹
+                            </button>
+                            <button onClick={closeOverlay} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                                <X size={24} color="#333" />
+                            </button>
+                        </div>
                     </div>
                     <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#fcfcfc' }}>
                         {chatMessages.map((msg) => {

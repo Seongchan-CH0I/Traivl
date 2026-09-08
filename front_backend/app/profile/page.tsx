@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
-import { Dna, Plus, Download, Map, Share2, Trash2, Loader2, LogOut } from 'lucide-react';
+import { Dna, Plus, Download, Map, Share2, Trash2, Loader2, LogOut, X } from 'lucide-react';
 import Link from 'next/link';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 import { useBackHandler } from '../../hooks/useBackHandler';
@@ -21,6 +21,7 @@ export default function ProfilePage() {
   // 내 저장된 일정 리스트 상태
   const [savedSchedules, setSavedSchedules] = useState<any[]>([]);
   const [schedulesLoading, setSchedulesLoading] = useState(false);
+  const [selectedScheduleIds, setSelectedScheduleIds] = useState<string[]>([]);
 
   // html2canvas 다운로드 로딩 상태
   const [isDownloading, setIsDownloading] = useState(false);
@@ -265,7 +266,23 @@ export default function ProfilePage() {
     );
   };
 
-  // 6. 저장 일정 삭제
+  // 6. 저장 일정 개별 및 다중 삭제/선택 핸들러
+  const handleToggleSelect = (scheduleId: string) => {
+    setSelectedScheduleIds(prev =>
+      prev.includes(scheduleId)
+        ? prev.filter(id => id !== scheduleId)
+        : [...prev, scheduleId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedScheduleIds.length === savedSchedules.length) {
+      setSelectedScheduleIds([]);
+    } else {
+      setSelectedScheduleIds(savedSchedules.map(s => s.id));
+    }
+  };
+
   const handleDeleteSchedule = async (scheduleId: string) => {
     showConfirm(
       "이 일정을 완전히 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.",
@@ -278,11 +295,80 @@ export default function ProfilePage() {
           const result = await res.json();
           if (result.success) {
             showAlert("일정이 성공적으로 삭제되었습니다.", "삭제 완료");
-            // 로컬 목록 상태에서 제거
             setSavedSchedules(prev => prev.filter(item => item.id !== scheduleId));
+            setSelectedScheduleIds(prev => prev.filter(id => id !== scheduleId));
           }
         } catch (e) {
           showAlert("삭제 중 오류가 발생했습니다.", "오류");
+        }
+      }
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedScheduleIds.length === 0) return;
+
+    showConfirm(
+      `선택한 ${selectedScheduleIds.length}개의 일정을 완전히 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.`,
+      "일정 일괄 삭제 🗑️",
+      async () => {
+        try {
+          const res = await fetch(`/api/schedules?ids=${selectedScheduleIds.join(',')}`, {
+            method: 'DELETE'
+          });
+          const result = await res.json();
+          if (result.success) {
+            showAlert(`${selectedScheduleIds.length}개의 일정이 성공적으로 삭제되었습니다.`, "삭제 완료");
+            setSavedSchedules(prev => prev.filter(item => !selectedScheduleIds.includes(item.id)));
+            setSelectedScheduleIds([]);
+          } else {
+            showAlert(result.message || "삭제 중 오류가 발생했습니다.", "오류");
+          }
+        } catch (e) {
+          showAlert("삭제 중 네트워크 오류가 발생했습니다.", "오류");
+        }
+      }
+    );
+  };
+
+  // AI 활용 기록 삭제 핸들러
+  const handleDeleteHistoryItem = async (logId: number) => {
+    showConfirm(
+      "이 AI 기능 활용 기록을 삭제하시겠습니까?",
+      "기록 삭제 🗑️",
+      async () => {
+        try {
+          const res = await fetch(`/api/profile/${user?.id}/history?id=${logId}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (data.success) {
+            setAiUsageHistory(prev => prev.filter(item => item.id !== logId));
+          }
+        } catch (e) {
+          showAlert("기록 삭제 중 오류가 발생했습니다.", "오류");
+        }
+      }
+    );
+  };
+
+  const handleClearAllHistory = async () => {
+    if (aiUsageHistory.length === 0) return;
+    showConfirm(
+      "모든 AI 기능 활용 기록을 완전히 삭제하시겠습니까?",
+      "전체 기록 삭제 🧹",
+      async () => {
+        try {
+          const res = await fetch(`/api/profile/${user?.id}/history?clearAll=true`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (data.success) {
+            setAiUsageHistory([]);
+            showAlert("모든 AI 활용 기록이 삭제되었습니다.", "삭제 완료");
+          }
+        } catch (e) {
+          showAlert("기록 삭제 중 오류가 발생했습니다.", "오류");
         }
       }
     );
@@ -636,9 +722,46 @@ export default function ProfilePage() {
 
       {/* 내 일정 보관함 섹션 */}
       <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
-        <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span>📦</span> 내 일정 보관함
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>📦</span> 내 일정 보관함 ({savedSchedules.length})
+          </h3>
+          {savedSchedules.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', fontWeight: 700, color: '#475569', cursor: 'pointer', userSelect: 'none' }}>
+                <input
+                  type="checkbox"
+                  checked={savedSchedules.length > 0 && selectedScheduleIds.length === savedSchedules.length}
+                  onChange={handleSelectAll}
+                  style={{ width: '15px', height: '15px', accentColor: '#8c52ff', cursor: 'pointer' }}
+                />
+                전체 선택
+              </label>
+              <button
+                onClick={handleDeleteSelected}
+                disabled={selectedScheduleIds.length === 0}
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: selectedScheduleIds.length > 0 ? '#ffe4e6' : '#f1f5f9',
+                  color: selectedScheduleIds.length > 0 ? '#e11d48' : '#94a3b8',
+                  cursor: selectedScheduleIds.length > 0 ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <Trash2 size={13} />
+                선택 삭제{selectedScheduleIds.length > 0 ? ` (${selectedScheduleIds.length})` : ''}
+              </button>
+            </div>
+          )}
+        </div>
 
         {schedulesLoading ? (
           <div style={{ padding: '24px 0', textAlign: 'center', color: '#888' }}>
@@ -652,102 +775,154 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {savedSchedules.map((schedule) => (
-              <div key={schedule.id} className="saved-itinerary-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      {schedule.title}
-                    </h4>
-                    <p style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>
-                      📍 {schedule.city} • {schedule.itineraryData?.itinerary?.length || 0}일 코스
-                    </p>
+            {savedSchedules.map((schedule) => {
+              const isSelected = selectedScheduleIds.includes(schedule.id);
+              return (
+                <div 
+                  key={schedule.id} 
+                  className="saved-itinerary-card"
+                  style={{
+                    border: isSelected ? '1.5px solid #8c52ff' : '1.5px solid #f1f5f9',
+                    backgroundColor: isSelected ? '#faf8ff' : 'white',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleSelect(schedule.id)}
+                      style={{ width: '18px', height: '18px', marginTop: '2px', accentColor: '#8c52ff', cursor: 'pointer', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <div>
+                          <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                            {schedule.title}
+                          </h4>
+                          <p style={{ fontSize: '12px', color: '#64748b', marginTop: '3px' }}>
+                            📍 {schedule.city} • {schedule.itineraryData?.itinerary?.length || 0}일 코스
+                          </p>
+                        </div>
+                        <span style={{
+                          fontSize: '10.5px',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          backgroundColor: schedule.isShared ? '#f3eeff' : '#f1f5f9',
+                          color: schedule.isShared ? '#8c52ff' : '#64748b',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0
+                        }}>
+                          {schedule.isShared ? "공유 중 🌐" : "비공개 🔒"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <span style={{
-                    fontSize: '10.5px',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    backgroundColor: schedule.isShared ? '#f3eeff' : '#f1f5f9',
-                    color: schedule.isShared ? '#8c52ff' : '#64748b'
-                  }}>
-                    {schedule.isShared ? "공유 중 🌐" : "비공개 🔒"}
-                  </span>
+
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                    <button
+                      onClick={() => handleActivateSchedule(schedule)}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: '10px',
+                        border: 'none',
+                        backgroundColor: '#8c52ff',
+                        color: 'white',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <Map size={13} />
+                      지도로 활성화
+                    </button>
+
+                    <button
+                      onClick={() => handleToggleShare(schedule)}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: '10px',
+                        border: '1px solid #e2e8f0',
+                        backgroundColor: 'white',
+                        color: '#475569',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <Share2 size={13} />
+                      {schedule.isShared ? "공유 해제" : "피드 공유"}
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteSchedule(schedule.id)}
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: '10px',
+                        border: 'none',
+                        backgroundColor: '#ffe4e6',
+                        color: '#e11d48',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                      title="삭제"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
-
-                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                  <button
-                    onClick={() => handleActivateSchedule(schedule)}
-                    style={{
-                      flex: 1.5,
-                      padding: '8px 12px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      backgroundColor: '#8c52ff',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '4px'
-                    }}
-                  >
-                    <Map size={13} />
-                    지도로 활성화
-                  </button>
-
-                  <button
-                    onClick={() => handleToggleShare(schedule)}
-                    style={{
-                      flex: 1,
-                      padding: '8px 12px',
-                      borderRadius: '10px',
-                      border: '1px solid #e2e8f0',
-                      backgroundColor: 'white',
-                      color: '#475569',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '4px'
-                    }}
-                  >
-                    <Share2 size={13} />
-                    {schedule.isShared ? "공유 해제" : "피드 공유"}
-                  </button>
-
-                  <button
-                    onClick={() => handleDeleteSchedule(schedule.id)}
-                    style={{
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      backgroundColor: '#ffe4e6',
-                      color: '#e11d48',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
       {/* AI 기능 활용 기록 영역 */}
       <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px' }}>
-        <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span>🤖</span> AI 기능 활용 기록
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#1e293b', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>🤖</span> AI 기능 활용 기록
+          </h3>
+          {aiUsageHistory.length > 0 && (
+            <button
+              onClick={handleClearAllHistory}
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                padding: '6px 10px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: '#f1f5f9',
+                color: '#64748b',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Trash2 size={13} />
+              전체 비우기
+            </button>
+          )}
+        </div>
         <div className="ai-history-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {aiUsageHistory.length === 0 ? (
             <div style={{ padding: '20px', textAlign: 'center', color: '#888', background: '#f8fafc', borderRadius: '12px' }}>
@@ -763,7 +938,8 @@ export default function ProfilePage() {
                 backgroundColor: 'white',
                 borderRadius: '16px',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.02)',
-                border: '1px solid #f1f5f9'
+                border: '1px solid #f1f5f9',
+                position: 'relative'
               }}>
                 <div className="ai-history-icon" style={{
                   width: '40px',
@@ -778,7 +954,7 @@ export default function ProfilePage() {
                 }}>
                   {log.icon || '✨'}
                 </div>
-                <div className="ai-history-content" style={{ flex: 1 }}>
+                <div className="ai-history-content" style={{ flex: 1, paddingRight: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                     <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0f172a', lineHeight: '1.4' }}>{log.title}</h4>
                     <span style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap', marginLeft: '10px' }}>
@@ -789,6 +965,27 @@ export default function ProfilePage() {
                     {log.content}
                   </p>
                 </div>
+                <button
+                  onClick={() => handleDeleteHistoryItem(log.id)}
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#cbd5e1',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                  title="기록 삭제"
+                >
+                  <X size={14} />
+                </button>
               </div>
             ))
           )}
