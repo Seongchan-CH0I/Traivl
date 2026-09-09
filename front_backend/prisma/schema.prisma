@@ -23,6 +23,7 @@ model User {
   aiUsageLogs   AiUsageLog[]
   dnaStat       UserDnaStat?
   schedules     Schedule[]
+  journals      TravelJournal[]
 }
 
 // 8개 고정 추천 도시
@@ -120,6 +121,27 @@ model Schedule {
   itineraryData Json     // AI가 리턴한 일자별 상세 코스 데이터 (JSON)
   isShared      Boolean  @default(false) // 피드 공유 여부
   shareContent  String?  // 피드 공유시 남길 한줄평/소개글
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// 여행 정리, 여행일지 및 추억회상 (후 단계)
+model TravelJournal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scheduleId    String?  // 연관된 일정 ID (선택사항)
+  title         String   // 예: "즐거웠던 제주도 3박 4일 추억"
+  city          String   // 예: "제주"
+  startDate     DateTime?
+  endDate       DateTime?
+  coverImage    String?  // 대표 이미지
+  content       String   // 요약 및 후기
+  highlights    String[] // 주요 추억 키워드/명소 태그
+  mood          String?  // 여행 분위기 (예: "🌿 힐링", "🎉 신남", "🍱 맛집 탐방")
+  rating        Float    @default(5.0) // 만점 5.0
+  aiSummary     String?  // AI 추억 복기 한줄평
+  journalData   Json?    // 일자별/장소별 메모 및 이미지 데이터 (JSON)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

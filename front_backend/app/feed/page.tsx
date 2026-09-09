@@ -193,6 +193,40 @@ export default function FeedPage() {
         <>
             {/* 상단 통합 헤더 */}
             <header className="feed-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
+                {!hasActiveJourney && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+                        borderRadius: '16px',
+                        padding: '12px 16px',
+                        marginBottom: '14px',
+                        border: '1px solid #ddd6fe',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <div>
+                            <div style={{ fontSize: '13px', fontWeight: 800, color: '#7c3aed' }}>
+                                🏁 지난 여행 종료 완료
+                            </div>
+                            <p style={{ fontSize: '11.5px', color: '#4b5563', margin: '2px 0 0 0' }}>
+                                새로운 여행 일정을 생성하시겠습니까?
+                            </p>
+                        </div>
+                        <Link href="/?trigger=survey" style={{
+                            fontSize: '12px',
+                            fontWeight: 800,
+                            backgroundColor: '#8c52ff',
+                            color: 'white',
+                            padding: '7px 12px',
+                            borderRadius: '10px',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap',
+                            boxShadow: '0 2px 6px rgba(140,82,255,0.25)'
+                        }}>
+                            새 일정 생성 +
+                        </Link>
+                    </div>
+                )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                     <h1 className="feed-header-title" style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>
                         여행 실시간 가이드

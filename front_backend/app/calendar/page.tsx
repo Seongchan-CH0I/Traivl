@@ -279,16 +279,24 @@ export default function CalendarPage() {
     try {
       const res = await fetch(`/api/schedules?userId=${user.id}`);
       const result = await res.json();
+
+      const endedSchedules = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('ended_schedule_ids') || '[]') : [];
+
       if (result.success && result.data && result.data.length > 0) {
-        const latest = result.data[0]; // 가장 최근 일정
-        setActiveSchedule(latest);
-        
-        // Context에 일정 데이터 연동 (지도 및 다른 탭 연동을 위해)
-        setItineraryData(latest.itineraryData);
-        setSelectedCity(latest.city);
-        setHasActiveJourney(true);
+        // 종료된 일정을 제외한 실제 활성 일정 검색
+        const activeList = result.data.filter((s: any) => !endedSchedules.includes(s.id));
+        if (activeList.length > 0) {
+          const latest = activeList[0];
+          setActiveSchedule(latest);
+          setItineraryData(latest.itineraryData);
+          setSelectedCity(latest.city);
+          setHasActiveJourney(true);
+        } else {
+          setActiveSchedule(null);
+          setItineraryData(null);
+          setHasActiveJourney(false);
+        }
       } else {
-        // DB에 일정이 없으면 빈 상태로 설정 및 Context 리셋
         setActiveSchedule(null);
         setItineraryData(null);
         setHasActiveJourney(false);
@@ -303,6 +311,99 @@ export default function CalendarPage() {
   useEffect(() => {
     fetchUserSchedules();
   }, [user]);
+
+  // 여행 종료 및 추억 보관 처리 함수 (중 -> 후 단계 연결 핵심)
+  const handleEndActiveJourney = async () => {
+    if (!activeSchedule) return;
+
+    try {
+      setLoading(true);
+      // 1. AI 추억 생성 API 호출
+      const aiRes = await fetch('/api/journals/ai-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `${activeSchedule.city} 여행 추억`,
+          city: activeSchedule.city,
+          itineraryData: activeSchedule.itineraryData,
+          dnaType: '자유로운 탐험가'
+        })
+      });
+      const aiData = await aiRes.json();
+      const generated = aiData.data || {};
+
+      // 2. 지난 여행일지 & 추억 보관함 저장 API 호출
+      const saveRes = await fetch('/api/journals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id || 'user-1',
+          scheduleId: activeSchedule.id,
+          title: generated.title || `${activeSchedule.city} 여행의 추억`,
+          city: activeSchedule.city,
+          coverImage: generated.coverImage,
+          content: generated.content,
+          highlights: generated.highlights,
+          mood: generated.mood,
+          rating: generated.rating || 5.0,
+          aiSummary: generated.aiSummary,
+          journalData: generated.journalData
+        })
+      });
+
+      const saveResult = await saveRes.json();
+      const journalObj = saveResult.data || {
+        id: `journal-${Date.now()}`,
+        userId: user?.id || 'user-1',
+        scheduleId: activeSchedule.id,
+        title: generated.title || `${activeSchedule.city} 여행 추억`,
+        city: activeSchedule.city,
+        coverImage: generated.coverImage,
+        content: generated.content,
+        highlights: generated.highlights,
+        mood: generated.mood,
+        rating: 5.0,
+        aiSummary: generated.aiSummary,
+        journalData: generated.journalData,
+        createdAt: new Date().toISOString()
+      };
+
+      // 3. 종료된 일정 ID 목록 및 영구 추억 목록 등록
+      if (typeof window !== 'undefined') {
+        const endedSchedules = JSON.parse(localStorage.getItem('ended_schedule_ids') || '[]');
+        if (!endedSchedules.includes(activeSchedule.id)) {
+          endedSchedules.push(activeSchedule.id);
+          localStorage.setItem('ended_schedule_ids', JSON.stringify(endedSchedules));
+        }
+
+        const savedJournals = JSON.parse(localStorage.getItem('traivl_user_journals') || '[]');
+        savedJournals.unshift(journalObj);
+        localStorage.setItem('traivl_user_journals', JSON.stringify(savedJournals));
+        sessionStorage.setItem('auto_open_recall_journal', JSON.stringify(journalObj));
+      }
+
+      // 4. DB에서 일정 삭제 (활성 상태 파기)
+      try {
+        await fetch(`/api/schedules?id=${activeSchedule.id}`, { method: 'DELETE' });
+      } catch (err) {
+        console.warn("Schedule delete error:", err);
+      }
+
+      // 5. 활성 일정 상태 완전 초기화
+      setHasActiveJourney(false);
+      setItineraryData(null);
+      setSelectedCity(null);
+      setActiveSchedule(null);
+
+      // 6. 무조건 내 정보(/profile?recall=true) 화면으로 이동!
+      window.location.href = "/profile?recall=true";
+    } catch (e) {
+      console.error("여행 종료 실패:", e);
+      alert("여행 종료 처리 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 다른 추천 루트 새로고침
   const handleRefresh = () => {
@@ -450,16 +551,56 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            {/* 실시간 경로 지도 보기 버튼 */}
-            <Link href="/?trigger=map" style={{ textDecoration: 'none', width: '100%' }}>
+            {/* 실시간 경로 지도 보기 및 여행 종료 버튼 (동일 크기 & 대칭 레이아웃) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%', marginTop: '16px' }}>
+              <Link href="/?trigger=map" style={{ textDecoration: 'none', width: '100%' }}>
+                <button
+                  style={{
+                    width: '100%',
+                    height: '46px',
+                    borderRadius: '14px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #a855f7 0%, #8c52ff 100%)',
+                    color: 'white',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 4px 14px rgba(140, 82, 255, 0.3)',
+                    transition: 'all 0.2s ease-in-out'
+                  }}
+                >
+                  <Navigation size={15} fill="white" />
+                  실시간 경로 지도 보기
+                </button>
+              </Link>
               <button
-                className="calendar-map-btn"
-                style={{ marginTop: '16px' }}
+                onClick={handleEndActiveJourney}
+                style={{
+                  width: '100%',
+                  height: '46px',
+                  borderRadius: '14px',
+                  border: 'none',
+                  backgroundColor: '#10b981',
+                  color: 'white',
+                  fontSize: '13px',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.2s ease-in-out',
+                  whiteSpace: 'nowrap'
+                }}
               >
-                <Navigation size={18} fill="white" />
-                실시간 경로 지도 보기
+                <span>🏁</span> 여행 종료 & 추억 보관
               </button>
-            </Link>
+            </div>
 
             {/* 일차 탭 스위처 */}
             {rawItinerary.length > 1 && (
