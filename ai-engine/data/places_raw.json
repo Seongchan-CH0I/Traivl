@@ -4126,5 +4126,1606 @@
             "힐링"
         ],
         "duration_mins": 90
+    },
+    {
+        "id": "ChIJQQMYIeJjezURmjWlDv243gI",
+        "name": "광명동굴",
+        "desc": "엔터테인먼트 명소로 탈바꿈한 옛 광산 동굴로 조명 쇼, 수족관, 와이너리가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.426597099999995,
+        "lng": 126.8659723,
+        "tags": [
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "졸업여행",
+            "자연",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJD3vd1Jh8ezURbh0AuKzX0Ig",
+        "name": "인천대공원",
+        "desc": "동물원, 수목원, 탁 트인 넓은 공간이 이 평화로운 도시공원 안에 모두 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.459244,
+        "lng": 126.75221970000001,
+        "tags": [
+            "힐링",
+            "자연",
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJwWrpUkJhezUReN6uIv0sL9o",
+        "name": "이케아 광명점",
+        "desc": "조립식 가구와 섬유 제품, 조명, 장식품을 판매하는 스칸디나비아풍 체인점입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4243003,
+        "lng": 126.88291269999999,
+        "tags": [
+            "힐링",
+            "졸업여행",
+            "쇼핑",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJwSDXTtOdfDURyE3ckGqF0fs",
+        "name": "코스트코 고척점",
+        "desc": "회원제로 운영되며 대용량 식료품, 전자제품 등 다양한 상품을 판매하는 창고형 매장입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4985322,
+        "lng": 126.85975920000001,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJkT4EGUFhezURmFNNjUBhZdw",
+        "name": "코스트코 광명점",
+        "desc": "회원제로 운영되며 대용량 식료품, 전자제품 등 다양한 상품을 판매하는 창고형 매장입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4208648,
+        "lng": 126.8858348,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJxT1BqfpgezURpyoBMmC3Abw",
+        "name": "안양예술공원",
+        "desc": "예술품과 실외 조각을 잇는 산책로가 있는 넓은 숲과 개울 지역입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4189577,
+        "lng": 126.9196967,
+        "tags": [
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ85I0KZSgfDURo1ZrZeUHACE",
+        "name": "렛츠런파크 서울",
+        "desc": "2개의 주요 관람석이 있는 경주로, 박물관, 식당, 쇼핑 공간을 갖춘 경마장입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.445276199999995,
+        "lng": 127.01221760000001,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ20xMxqGgfDURGokBIQOyJVI",
+        "name": "서울랜드",
+        "desc": "올림픽 시즌에 개장되었던 이 가족 명소는 5개의 테마 구역으로 나누어져 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4341563,
+        "lng": 127.02012669999999,
+        "tags": [
+            "힐링",
+            "졸업여행",
+            "액티비티",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJF6qEv7qffDURDbI8B6FcJ2Q",
+        "name": "보라매공원",
+        "desc": "공군사관학교가 있던 곳에 자리한 넓은 녹지 공원으로 개방된 운동장, 조깅 코스, 연못이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.493234199999996,
+        "lng": 126.91971149999999,
+        "tags": [
+            "힐링",
+            "졸업여행",
+            "액티비티",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJzVsprxigfDURV4a-bm7YzyU",
+        "name": "낙성대공원",
+        "desc": "강감찬 장군의 탄생지로 경치 좋은 공원으로 조성되어 있으며, 강감찬 장군을 기리는 사당과 동상이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4711007,
+        "lng": 126.95999,
+        "tags": [
+            "액티비티",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJNcDTNGdfezURe02IeYml3yQ",
+        "name": "서울대공원",
+        "desc": "동물원에 약 3,000마리의 동물이 서식하고 있으며 장미 정원, 미술관 및 테마파크를 이용할 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4275247,
+        "lng": 127.0170252,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJN2x0fu2ifDURbUa_16Le6ZQ",
+        "name": "국립현대미술관",
+        "desc": "한국과 전 세계 현대 예술가의 작품이 전시된 넓은 미술관과 조각 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.43103730000001,
+        "lng": 127.01996099999998,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJq5SjCJKlfDURGqkGbzT21Y8",
+        "name": "가락시장",
+        "desc": "해산물 전문 도매시장으로 정육점, 식료품점, 식당도 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4916175,
+        "lng": 127.11233610000001,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJL0ST5Y6lfDURERBp6U4f6po",
+        "name": "가락 관광 호텔",
+        "desc": "업무 지구에 위치한 편안한 분위기의 호텔로 실용적인 객실, 구내식당, 무료 Wi-Fi가 갖춰져 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4938625,
+        "lng": 127.11880640000001,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJXYUjqiKkfDUR6em7Bht8PeM",
+        "name": "배스킨라빈스31 은마사거리점",
+        "desc": "Ice cream parlor chain known for its many ice cream flavors & sundaes, plus cakes, drinks & other treats.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.498811599999996,
+        "lng": 127.0616425,
+        "tags": [
+            "맛집투어"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJg5bNhxykfDURzO0C720UStY",
+        "name": "롯데백화점 강남점",
+        "desc": "고급스러운 대형 백화점으로 의류, 신발, 생활용품을 판매하는 매장과 편안한 분위기의 식당이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4970578,
+        "lng": 127.0535939,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJLeh_APaufDURum8PaMwlMTE",
+        "name": "남한산성 전승문(북문)",
+        "desc": "유서 깊은 군사 도시에 넓게 걸쳐 있는 남한산성의 아치형 석문입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.4815927,
+        "lng": 127.18481990000001,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJy9Orun-efDURLERSVtWlgVw",
+        "name": "대한불교조계종 국제선센터",
+        "desc": "방문객을 위한 문화 프로그램과 더불어 깔끔한 숙소를 제공하는 현대적인 불교 사찰입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5207743,
+        "lng": 126.870085,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJm55e0QWcfDURa34zMwmEXA8",
+        "name": "맥도날드 등촌DT점",
+        "desc": "오랜 역사의 대표적인 패스트푸드 체인점으로 버거와 감자튀김이 유명합니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5582919,
+        "lng": 126.85976819999999,
+        "tags": [
+            "맛집투어"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJC2Xaw7-cfDURcMTqfEaTAz4",
+        "name": "롯데몰 김포공항점",
+        "desc": "넓은 쇼핑 단지로 유명 브랜드 매장, 편안한 분위기의 식당, 숙박 시설, 영화관이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.563364299999996,
+        "lng": 126.80314609999999,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ8aJ1KRaZfDURVUHcej_gDWg",
+        "name": "서울월드컵경기장",
+        "desc": "인기 있는 축구장이 자리한 유명한 경기장으로 쇼핑몰과 영화관을 갖추고 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5682859,
+        "lng": 126.8972585,
+        "tags": [
+            "힐링",
+            "자연",
+            "졸업여행",
+            "쇼핑"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJX2GTuVJFezURGK4FSyWdbak",
+        "name": "하늘공원",
+        "desc": "높이 자란 무성한 풀을 따라 난 길을 걸어가면 탁 트인 전망을 자랑하는 언덕이 나오는 아름다운 지역입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5674533,
+        "lng": 126.8854782,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ34dh6VCZfDUR2Aq2NMXq-yE",
+        "name": "난지한강공원",
+        "desc": "수영장, 자전거 트랙, 캠핑장이 있고 음악 축제가 열리는 한강 전망의 잔디 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5667873,
+        "lng": 126.8780119,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJN2YSAj6ZfDURgVbLv3afUAQ",
+        "name": "문화비축기지",
+        "desc": "더 이상 사용되지 않는 기름 탱크를 전시관과 공연장으로 탈바꿈한 공간이며 잘 조경된 정원이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5705673,
+        "lng": 126.8942802,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJE0i-X0eZfDURGCuFxA4UFeo",
+        "name": "월드컵공원",
+        "desc": "매립지 위에 건설한 드넓은 공원으로 강, 연못, 정원, 전망대가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5638735,
+        "lng": 126.8935007,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJMfwYnPCefDUR-ZwyNc2pZZc",
+        "name": "씨랄라 워터파크",
+        "desc": "슬라이드, 키즈존, 구내 매점, 마사지 서비스 등을 갖춘 실내 워터파크 & 스파입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5181263,
+        "lng": 126.89992480000001,
+        "tags": [
+            "액티비티",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ9TviAqadfDURzDMmyLGP0u8",
+        "name": "서서울호수공원",
+        "desc": "옛 정수장을 개조한 도심 공원으로 분수, 산책로, 피크닉 공간이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.527671999999995,
+        "lng": 126.829852,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ_TwZ_AmbfDURwA2XmwHBpDk",
+        "name": "행주산성",
+        "desc": "기념비와 누각 사이로 산책로가 나 있는 수백 년 된 요새로, 무기가 전시되어 있고 언덕 아래 전망이 멋집니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5955733,
+        "lng": 126.8281509,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJT8H4r9qifDURmuXJ_6m6vM0",
+        "name": "북촌 한옥마을",
+        "desc": "14세기를 재현해 놓은 마을로 좁은 골목을 따라 전통 가옥이 즐비해 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5814696,
+        "lng": 126.9849519,
+        "tags": [
+            "졸업여행",
+            "문화체험",
+            "역사탐방",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJIwCT4-yifDUR1E63iG76hr0",
+        "name": "청계천",
+        "desc": "산책로, 다리, 녹지가 있는 휴식 공간으로 개울 주변으로 복원공사가 이루어졌습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.569101499999995,
+        "lng": 126.97866919999998,
+        "tags": [
+            "인스타감성",
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "졸업여행",
+            "자연",
+            "야경투어",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJqWqOqFeifDURpYJ5LnxX-Fw",
+        "name": "N서울타워",
+        "desc": "1980년에 문을 연 이 상징적인 타워는 도심의 탁 트인 전망을 자랑하며 회전식 레스토랑을 이용할 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5511694,
+        "lng": 126.98822659999999,
+        "tags": [
+            "야경투어",
+            "문화체험",
+            "역사탐방",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJod7tSseifDUR9hXHLFNGMIs",
+        "name": "경복궁",
+        "desc": "박물관과 정원이 있는 거대한 14세기 왕궁이며 무료 가이드 투어가 제공됩니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.579617,
+        "lng": 126.977041,
+        "tags": [
+            "야경투어",
+            "문화체험",
+            "역사탐방",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJm3V0fu2ifDURL5X2_nPOeVQ",
+        "name": "남산 공원",
+        "desc": "서울에서 가장 큰 공원으로 조용하고 나무가 울창한 언덕에 산책로가 있으며 전망대와 케이블카도 이용할 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5509895,
+        "lng": 126.99089910000001,
+        "tags": [
+            "인스타감성",
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "졸업여행",
+            "자연",
+            "야경투어",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJz7ocWtiifDURU-HmRwLa3yQ",
+        "name": "종묘",
+        "desc": "조선 왕조의 왕족을 모시는 유교 사원으로 지금도 제사를 지냅니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5746313,
+        "lng": 126.9938158,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ63NnRS6jfDURt-efnKIjXzs",
+        "name": "이화동 벽화마을",
+        "desc": "색색의 벽화, 모자이크 타일로 된 계단, 철제 조형물이 늘어선 골목길입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5779788,
+        "lng": 127.00719149999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJy_KLudyifDUR8R3cB_PyJsU",
+        "name": "운현궁",
+        "desc": "왕실과 정치 지도자가 거주했던 역사적인 궁전으로 현재는 행사, 투어, 결혼식이 열립니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.576034,
+        "lng": 126.98705199999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJMcWZMY2ifDUR2NLv8F3Togc",
+        "name": "덕수궁",
+        "desc": "서울의 심장부에 있는 유서 깊은 궁전으로 왕궁수문장 교대 의식을 볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5658862,
+        "lng": 126.97490169999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJm6x0HTujfDURbf9iX8DtJ2A",
+        "name": "흥인지문(동대문)",
+        "desc": "이 복원된 문은 조선 시대에 지어진 서울 성곽의 일부분입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5710717,
+        "lng": 127.0096571,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJuX60FsCifDURSCCDD2krBiA",
+        "name": "국립고궁박물관",
+        "desc": "조선 왕조와 왕실을 다룬 전시와 다양한 유물을 볼 수 있으며 오디오 투어를 제공합니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5766084,
+        "lng": 126.974951,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJK_b0UX2jfDURmkYPvmWYm90",
+        "name": "서울숲공원",
+        "desc": "나무가 많고 자전거 도로가 있는 넓은 공원으로 장미, 호수, 나비 정원이 있고 사슴에게 먹이를 줄 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.544387799999996,
+        "lng": 127.03744239999999,
+        "tags": [
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJod7tSseifDUR4HuzvkBA2ns",
+        "name": "국립민속박물관",
+        "desc": "1946년에 설립된 국립 박물관으로 한국인의 역사, 문화, 삶을 기념합니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5816456,
+        "lng": 126.9789948,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJN9jfPNaifDURz_NR6E1r4Eo",
+        "name": "창경궁",
+        "desc": "네 곳의 한국 전통 궁궐, 사당, 정원으로 이루어진 단지로, 가이드 투어와 자유 관람을 즐길 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5788149,
+        "lng": 126.9949298,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJm3V0fu2ifDURRJ8IMUijVtY",
+        "name": "광장시장",
+        "desc": "다양한 전통 식료품, 의상, 기념품을 판매하는 유서 깊은 실내 시장입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.570038499999995,
+        "lng": 126.99960379999997,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ5foyH5KifDURV-Z2f8Q71MY",
+        "name": "서울역사박물관",
+        "desc": "임시 전시작품과 함께 선사시대부터 현재까지 서울의 역사를 보여주는 박물관입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.570267799999996,
+        "lng": 126.97052769999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ_ae0p86ifDURYCc5vk2z_5Q",
+        "name": "삼청동길",
+        "desc": "전통 한옥과 현대적인 부티크, 식당 등이 어우러져 있는 거리입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5837936,
+        "lng": 126.98191829999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJHYhJ5OmifDURMOSQ2D-6lFY",
+        "name": "대한불교조계종 총본산 조계사",
+        "desc": "대한 불교 조계종의 총본사로, 거대한 본당과 좌불상이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5738369,
+        "lng": 126.982202,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJfYjlFvWifDURYSDsoxYbN80",
+        "name": "남대문시장",
+        "desc": "1964년에 문을 연 이 넓은 노점상 지역에서는 옷, 생활용품, 지역 생산품이 판매됩니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.559277,
+        "lng": 126.9777029,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ666w-LCjfDURCTJtf5ivJ-I",
+        "name": "덕수궁 돌담길",
+        "desc": "넓은 보도와 벤치가 마련된 보행자 전용 거리로 가을 단풍으로 유명한 나무가 늘어서 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.564864799999995,
+        "lng": 126.9754485,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJb3-VnEOlfDUR9W6Wig50HsE",
+        "name": "한류스타거리",
+        "desc": "번화한 쇼핑가로 K팝 스타들을 나타내는 상징을 입힌 곰 모형들을 볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.527933999999995,
+        "lng": 127.0409421,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJM_b-JTajfDUR5MfhUIzhWJk",
+        "name": "동관왕묘 (동묘)",
+        "desc": "1601년에 축조한 담으로 둘러싸인 사당으로 3세기 중국 장수 관우의 목제 성화가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.573146,
+        "lng": 127.018215,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJSRcwSImjfDURyXerm4UAeJc",
+        "name": "도산공원",
+        "desc": "녹음이 울창한 공원으로 독립운동가 도산 안창호를 기리는 기념관과 그의 동상이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5244813,
+        "lng": 127.0353667,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJYfNQzIKifDURMkFeEUrf-QE",
+        "name": "서대문형무소역사관",
+        "desc": "1908년에 문을 열어 식민지 시대에 한국인 애국열사를 투옥했던 감옥으로 현재는 박물관으로 사용되고 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5743012,
+        "lng": 126.9561212,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJnwNS1oKifDURA3ZlINZqXew",
+        "name": "서대문독립공원",
+        "desc": "관광 안내소, 옛 감옥에 자리 잡은 박물관, 유서 깊은 성문 유적이 있는 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.575285799999996,
+        "lng": 126.95501919999998,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ__YNUnOifDURpWT6lUaWBqM",
+        "name": "효창공원",
+        "desc": "옛 왕릉의 자리에 들어선 도심 속 녹지로 넓은 운동장, 놀이터, 카페가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.545048200000004,
+        "lng": 126.96031420000001,
+        "tags": [
+            "졸업여행",
+            "문화체험",
+            "역사탐방",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ2UoKdCejfDURVSRgr-ult6E",
+        "name": "아라리오뮤지엄 인 스페이스",
+        "desc": "1970년대 벽돌 건축물로 유명한 미로 같은 건물에 독특한 현대 예술 작품이 전시되어 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.577686799999995,
+        "lng": 126.98833690000001,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJBRo_lcGifDURcqbefriFY6U",
+        "name": "경복궁 경회루",
+        "desc": "넓은 궁궐 단지의 일부인 이 화려한 2층 누각은 조용한 인공 연못 옆에 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5797094,
+        "lng": 126.9759903,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJyxQJSya9fDUR2zKrIoliW20",
+        "name": "대한불교조계종 길상사",
+        "desc": "1997년에 문을 연 불교 사원으로 투어, 명상, 문화 강좌, 다도를 체험할 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.598854800000005,
+        "lng": 126.99435109999999,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJn6buHI2ifDURw28h3P238AQ",
+        "name": "국립현대미술관 덕수궁",
+        "desc": "국립현대미술관의 두 번째 미술관으로 국내외 예술가들의 작품을 전시합니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5658959,
+        "lng": 126.97369219999997,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJDWWmGJSjfDURjYXJW2oGlZ0",
+        "name": "갤러리아백화",
+        "desc": "Luxury goods are sold at this upmarket mall with a modern light-covered exterior.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.528470999999996,
+        "lng": 127.04007899999999,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJXdp4Zd-IbzURHOcLVTAczg4",
+        "name": "롯데아울렛 서울역점",
+        "desc": "남성, 여성, 아동용 의류, 대형 슈퍼마켓, 푸드 코트가 있는 다층 쇼핑몰입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.554477399999996,
+        "lng": 126.97066720000001,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJAXid2MNFezURi1vxqxxXg3g",
+        "name": "티파니앤코 더현대서울점",
+        "desc": "고급 보석, 자기, 은 제품으로 유명한 미국의 고급 소매점으로 결혼 선물을 구입하기에도 좋습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.526056,
+        "lng": 126.9283112,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJGbaypHuhfDURz1l1EGOj7fs",
+        "name": "센트럴시티",
+        "desc": "고급스러운 대형 복합 쇼핑몰로 유명 브랜드 매장, 많은 레스토랑, 영화관이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.504486799999995,
+        "lng": 127.0044952,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJBWpCTAOifDURAJu1ETycTOA",
+        "name": "H&M 용산아이파크몰점",
+        "desc": "유행하는 의류, 수영복, 액세서리, 신발을 판매하는 소매 체인점입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.528966,
+        "lng": 126.964629,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJw8UIcGCifDURB0MtY-xAUqM",
+        "name": "서울로7017",
+        "desc": "1970년대부터 사용되던 고가도로를 보수하여 2017년 공원으로 개장한 곳으로 길이는 약 1km입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.556713699999996,
+        "lng": 126.96957529999999,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ6RPSci2jfDURXTSdf7JjYp8",
+        "name": "낙산공원",
+        "desc": "산책로가 있는 언덕 위의 녹지 공간으로, 밤낮의 서울 전경을 감상할 수 있는 전망대가 몇 개 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.580657099999996,
+        "lng": 127.00748349999999,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJn_UiGDyffDURWfZBRKwb5YE",
+        "name": "63빌딩",
+        "desc": "IMAX 영화관, 수족관, 도시 전망을 볼 수 있는 전망대가 있는 현대적인 63층 타워입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.519833,
+        "lng": 126.940072,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJP_jRlleifDUR5h_KAraBtAc",
+        "name": "남산 케이블카",
+        "desc": "유리로 된 이 공중 케이블카를 타면 3분이면 정상에 오를 수 있으며 탁 트인 도시 풍경을 볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.556590799999995,
+        "lng": 126.9839744,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ77fEAzuffDURLEWNv56G2KQ",
+        "name": "여의도한강공원",
+        "desc": "강가에 위치한 대형 공원으로 아름다운 경치와 조깅 코스, 수영장 등이 있어 많은 사람들의 사랑을 받고 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5267106,
+        "lng": 126.9347112,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJmylq-vyifDUR_r3t4Ve-w3k",
+        "name": "남산골한옥마을",
+        "desc": "1392~1910년에 지은 한옥 5채를 복원하여 재탄생한 한옥 마을로 투어 및 문화 프로그램이 진행됩니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.559315,
+        "lng": 126.99447699999997,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJeVnK5X-hfDURv2fEEK-332M",
+        "name": "반포대교 달빛무지개분수",
+        "desc": "대교를 따라 조성된 1,140m 길이 분수로 봄과 여름에는 정해진 시간마다 화려한 조명의 분수 쇼를 볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5126335,
+        "lng": 126.99847829999999,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJwdG3fCKffDURTqwXKg_qbBA",
+        "name": "여의도공원",
+        "desc": "1971년에 개장했으며 벚나무, 아름다운 연못, 산책로가 있는 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5262751,
+        "lng": 126.9228132,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJM6GP-jGjfDURIQIUGOqWA6Y",
+        "name": "낙산 성곽길",
+        "desc": "14세기 성곽 옆을 따라 공원, 전망대, 유명 건축물을 지나며 이어지는 보행자 전용 길입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5779633,
+        "lng": 127.0084459,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJz38h3XqYfDUR8E4RaJc3zuk",
+        "name": "안산",
+        "desc": "숲이 우거진 산봉우리까지 산책로를 따라 올라갈 수 있으며 서울이 내려다보이는 전망대가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.576808299999996,
+        "lng": 126.9445555,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJbV4Kqi6jfDUReu01VjRdw2c",
+        "name": "마로니에 공원",
+        "desc": "현대 조각이 있고 가로수가 늘어선 광장으로, 야외 콘서트와 축제로 인기 있는 장소입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5802039,
+        "lng": 127.0027912,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJIZL_3yqifDURjaBdLUllDOo",
+        "name": "반포대교",
+        "desc": "380개의 분수가 설치된 2층 교량으로, 야간에는 화려한 조명이 켜집니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5157477,
+        "lng": 126.99603379999998,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJyTgAjPKifDURQO2hRmq-LqE",
+        "name": "서울광장",
+        "desc": "타원형의 도심 광장에서 계절별 축제와 콘서트가 열리며 산책로와 분수가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5655675,
+        "lng": 126.978014,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJM2CUqWaYfDURHlG_i6w_5dE",
+        "name": "서대문자연사박물관",
+        "desc": "공룡의 뼈, 나비, 화석 전시실이 있는 현대 자연사 박물관입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.57667300000001,
+        "lng": 126.9374741,
+        "tags": [
+            "액티비티",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJQyoEXiaifDURTA2CNaCIUA4",
+        "name": "용산가족공원",
+        "desc": "작은 호수, 탑, 벚꽃길 산책로가 있어 가족 나들이에 좋은 레크리에이션 공간입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5211389,
+        "lng": 126.98393779999999,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ1e9Cos-efDURl3SMnOVdwos",
+        "name": "양화한강공원",
+        "desc": "한강 전망이 아름답고 자전거 도로를 따라 장미가 피어 있는 좁은 잔디 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5383005,
+        "lng": 126.902265,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJJQkg85a8fDURMOO8HzXol9Q",
+        "name": "개운산공원",
+        "desc": "고즈넉한 산속 공원으로 아름다운 산책로와 운동 시설, 정원, 놀이터가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5961852,
+        "lng": 127.02584669999999,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJV1e83WO7fDUR7BWXNJohgg4",
+        "name": "홍릉시험림(홍릉숲)",
+        "desc": "1922년에 설립한 이 아름다운 수목원에는 토착 식물과 외래 식물 사이로 산책로가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.593096599999996,
+        "lng": 127.04365630000001,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJOY4n3RVFezURFvaFVfFmrO0",
+        "name": "반포한강공원",
+        "desc": "강변 산책과 자전거 타기, 스포츠를 즐기고 조명이 켜진 다리 분수를 감상할 수 있는 편안한 분위기의 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5103503,
+        "lng": 126.9952372,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJr95DsgqlfDURbvysOkgfQKk",
+        "name": "석촌호수",
+        "desc": "산책로, 인공섬, 카페, 계절별 꽃이 피는 정원이 있으며 2개의 구역으로 나뉜 활기 넘치는 호수입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5105378,
+        "lng": 127.1040625,
+        "tags": [
+            "힐링",
+            "자연",
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJgZn6QWmkfDURaU3kwlecaEU",
+        "name": "대한불교조계종 봉은사",
+        "desc": "전통적인 한국 불교 사찰로서 23m 높이의 미륵불이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.514852,
+        "lng": 127.0573766,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ1RLn36alfDURrDCQqLyTA-4",
+        "name": "롯데월드민속박물관",
+        "desc": "모형과 선사 시대 디오라마가 있는 한국 문화 및 역사 박물관으로 라이브 공연을 볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5112348,
+        "lng": 127.09802739999998,
+        "tags": [
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJIRVdC6pFezUR02aa2I7i57A",
+        "name": "스타필드 코엑스몰",
+        "desc": "극장, 수족관, 레스토랑 등이 있는 거대한 지하 쇼핑몰 및 컨벤션 센터입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5118346,
+        "lng": 127.05978710000001,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJW78cpWqkfDURPKK-mJ6-d1Q",
+        "name": "파르나스몰",
+        "desc": "Modern mall home to high-end global brands & 20+ coffee bars, restaurants & ice cream shops.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.509171599999995,
+        "lng": 127.06084639999999,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ2RUieZexfDURTSfPZWxrT9s",
+        "name": "코스트코 하남점",
+        "desc": "회원제로 운영되며 대용량 식료품, 전자제품 등 다양한 상품을 판매하는 창고형 매장입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5503149,
+        "lng": 127.19375249999999,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJu5Gg2hWkfDURl7NN7FpFnis",
+        "name": "별마당 도서관",
+        "desc": "미래적인 느낌의 도서관 겸 이벤트 공간으로 쇼핑몰 2개 층에 걸쳐 바닥부터 천장까지 이어진 책장이 특징입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5100586,
+        "lng": 127.0601188,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJW2ZfkQqlfDUR4vz9Xs0Q66s",
+        "name": "롯데월드타워",
+        "desc": "123층 높이의 대규모 초고층 건물에 고급 호텔과 멋진 전망을 볼 수 있는 전망대가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.512464099999995,
+        "lng": 127.10254300000001,
+        "tags": [
+            "야경투어",
+            "졸업여행",
+            "쇼핑",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJX4Jk8aalfDURAAgqAbtSof8",
+        "name": "키자니아 서울",
+        "desc": "어린이가 비행기 조종사, 응급구조대 등 다양한 직업을 체험할 수 있는 도시 경관 테마파크입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5108688,
+        "lng": 127.0964664,
+        "tags": [
+            "졸업여행",
+            "쇼핑",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJgf4OJaelfDURmDvA_sHyPUM",
+        "name": "롯데월드",
+        "desc": "놀이기구, 물미끄럼틀, 해양생물 전시관을 한 곳에서 즐길 수 있는 가족형 어드벤처 파크입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5111158,
+        "lng": 127.09816699999999,
+        "tags": [
+            "졸업여행",
+            "야경투어",
+            "액티비티",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJEzjZYKGlfDURzLkDglpa074",
+        "name": "석촌호수공원",
+        "desc": "넓고 아름다운 호수가 있는 유명 공원으로 이벤트 공간, 조깅 코스, 테마파크가 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5113096,
+        "lng": 127.10515249999999,
+        "tags": [
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ8UOyX2OlfDURLiXPyO-5vhs",
+        "name": "한성백제박물관",
+        "desc": "고대 백제 왕조의 유물이 보존되어 있으며 4D 극장과 선사시대 유적지를 둘러볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.515397899999996,
+        "lng": 127.12085959999997,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJf0yZqOy6fDURhv2X_ZFCMog",
+        "name": "아차산",
+        "desc": "인공 등산로와 계단을 따라 정상으로 올라가면 도심과 강의 전망이 펼쳐지는 산봉우리입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.571508699999995,
+        "lng": 127.10376269999998,
+        "tags": [
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJd2CFE9ekfDURzCHysZT1nRY",
+        "name": "어린이대공원",
+        "desc": "대관람차 같은 놀이기구뿐 아니라 동물원, 놀이터, 앉아서 쉴 수 있는 잔디가 있는 큰 규모의 공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5493605,
+        "lng": 127.08181499999998,
+        "tags": [
+            "힐링",
+            "자연",
+            "졸업여행",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ8RLTNNakfDUR5IER601Rgi4",
+        "name": "서울상상나라",
+        "desc": "과학, 문화, 예술 전시가 있는 체험 위주의 어린이 박물관입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.550430999999996,
+        "lng": 127.07749450000001,
+        "tags": [
+            "액티비티",
+            "졸업여행"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJg_TYDmGlfDURb6IVCHwVOF4",
+        "name": "올림픽공원",
+        "desc": "1988년 서울 올림픽이 개최된 곳으로 1제곱마일 규모의 녹지에 조각상, 스포츠 경기장 등이 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5206868,
+        "lng": 127.12149409999998,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJT9igZWWkfDUR72RIIbRG4r8",
+        "name": "청담근린공원",
+        "desc": "숲이 우거진 지역을 가로지르는 포장된 산책로와 운동 구역이 있는 근린공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.5212917,
+        "lng": 127.05260240000001,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJn6zC5mSlfDURtHuCGmnqUcs",
+        "name": "소마미술관",
+        "desc": "1988년 올림픽을 위해 지어진 미술관과 조각 공원으로 현대 미술작품을 순환 전시하고 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.517088,
+        "lng": 127.11823690000001,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJMwTmMG-FfDUR_4jSEIp-v_c",
+        "name": "원마운트",
+        "desc": "일 년 내내 워터슬라이드와 파도 풀, 눈썰매를 즐길 수 있는 거대한 놀이공원입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6644581,
+        "lng": 126.7544832,
+        "tags": [
+            "졸업여행",
+            "문화체험",
+            "역사탐방",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJuYDw1WiFfDURVn-J2P2cv50",
+        "name": "아쿠아플라넷일산",
+        "desc": "다양한 해양 생물을 전시하는 다채로운 수족관으로 동물 먹이주기 및 다이빙 쇼를 즐길 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6635195,
+        "lng": 126.75545550000001,
+        "tags": [
+            "졸업여행",
+            "문화체험",
+            "역사탐방",
+            "액티비티"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ0URvckGFfDUR7R6yo-PKp-I",
+        "name": "일산호수공원",
+        "desc": "산책로, 놀이터, 조각상, 작은 동물원이 있으며 야외 축제를 즐길 수 있는 호숫가 휴양지입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6567441,
+        "lng": 126.7662508,
+        "tags": [
+            "힐링",
+            "자연",
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJ6c_z8gOafDURgVJjqzGlJgc",
+        "name": "이케아 고양점",
+        "desc": "조립식 가구와 섬유 제품, 조명, 장식품을 판매하는 스칸디나비아풍 체인점입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.630096,
+        "lng": 126.8629846,
+        "tags": [
+            "졸업여행",
+            "쇼핑",
+            "문화체험",
+            "역사탐방"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJBdE2Tje9fDURgq8eqLuDmdg",
+        "name": "북악팔각정",
+        "desc": "산 정상에 있어 서울의 풍경이 한눈에 들어오고 야생화 정원과 둘레길이 있는 다채로운 색상의 팔각정입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6015529,
+        "lng": 126.98066460000001,
+        "tags": [
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJcQ3u64m7fDURRqDmlLjfnRw",
+        "name": "북서울 꿈의숲",
+        "desc": "벚꽃, 단풍나무, 연못, 폭포, 아트 센터가 있는 도심 공원으로 나무가 우거져 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6214313,
+        "lng": 127.0406246,
+        "tags": [
+            "문화체험",
+            "역사탐방",
+            "힐링",
+            "자연",
+            "야경투어",
+            "인스타감성"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJN2x0fu2ifDURheJ4-U3YaAA",
+        "name": "북한산국립공원",
+        "desc": "산책로가 십자 모양으로 가로지르는 산악 공원으로, 오래된 절과 요새를 다양하게 찾아볼 수 있습니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6190261,
+        "lng": 126.99695839999998,
+        "tags": [
+            "자연",
+            "힐링"
+        ],
+        "duration_mins": 90
+    },
+    {
+        "id": "ChIJeR7SLti7fDURkFha3fQH60I",
+        "name": "샤넬 롯데백화점 노원점",
+        "desc": "고급스러운 샤넬 제품을 판매하는 유명 브랜드입니다.",
+        "country": "대한민국",
+        "destination": "서울",
+        "lat": 37.6552207,
+        "lng": 127.0612826,
+        "tags": [
+            "쇼핑",
+            "졸업여행"
+        ],
+        "duration_mins": 90
     }
 ]
