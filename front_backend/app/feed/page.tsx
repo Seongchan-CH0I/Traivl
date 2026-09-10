@@ -192,7 +192,7 @@ export default function FeedPage() {
     return (
         <>
             {/* 상단 통합 헤더 */}
-            <header className="feed-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
+            <header className="feed-header" style={{ flexDirection: 'column', alignItems: 'stretch', paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
                 {!hasActiveJourney && (
                     <div style={{
                         background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
