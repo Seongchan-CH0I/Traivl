@@ -51,7 +51,9 @@ class GCSService:
                 print(f"⚡ [로컬 캐시 사용] 파일이 이미 로컬에 존재합니다: {local_path}")
                 return True
 
-            os.makedirs(os.path.dirname(local_path), exist_ok=True)
+            dirname = os.path.dirname(local_path)
+            if dirname:
+                os.makedirs(dirname, exist_ok=True)
             bucket = self.client.bucket(self.bucket_name)
             blob = bucket.blob(gcs_path)
             blob.download_to_filename(local_path)

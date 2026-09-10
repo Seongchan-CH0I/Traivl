@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # 1. Database: pgvector (여행 데이터 저장 및 벡터 검색)
+  database:
+    image: ankane/pgvector:latest
+    container_name: traivl-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: traivldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - travel-network
+
+  # 2. Cache: Redis
+  redis:
+    image: redis:latest
+    container_name: travel_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - travel-network
+
+  # 3. Route Engine: OSRM Backend (길찾기)
+  osrm-backend:
+    image: osrm/osrm-backend:latest
+    container_name: traivl-osrm
+    restart: always
+    command: "osrm-routed --algorithm mld /data/kanto-latest.osrm"
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./osrm-data:/data
+    networks:
+      - travel-network
+
+  # 4. AI Layer: FastAPI (AI 엔진)
+  ai-server:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: fastapi_server
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@database:5432/traivldb
+      - REDIS_HOST=redis
+      - OSRM_URL=http://osrm-backend:5000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - osrm-backend
+      - database
+    volumes:
+      - huggingface_data:/root/.cache/huggingface
+    networks:
+      - travel-network
+
+networks:
+  travel-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  huggingface_data:
