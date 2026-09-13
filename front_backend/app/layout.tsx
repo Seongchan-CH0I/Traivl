@@ -826,65 +826,164 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                         </>
                     )}
                     {translationState === 'audio_result' && (
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-                            {isLoadingVoice ? (
-                                <div className="vision-loading-container" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', background: 'radial-gradient(circle at center, #7e22ce 0%, #6b21a8 100%)', color: 'white' }}>
-                                    <div className="vision-loading-spinner-wrapper" style={{ marginBottom: '24px' }}>
-                                        <div className="vision-loading-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                                        <Loader2 size={32} className="vision-loading-icon" style={{ color: 'white' }} />
+                        <div style={{ position: 'absolute', inset: 0, backgroundColor: '#f8fafc', zIndex: 10, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                            {/* 상단 고정 헤더 */}
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '16px 20px',
+                                paddingTop: 'max(16px, env(safe-area-inset-top))',
+                                backgroundColor: '#ffffff',
+                                borderBottom: '1px solid #f1f5f9',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '18px' }}>🎙️</span>
+                                    <div>
+                                        <h2 style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: 0 }}>AI 실시간 음성 통역</h2>
+                                        <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>현지 음성 인식 & 문화 맥락 분석</p>
                                     </div>
-                                    <h3 className="vision-loading-title" style={{ color: 'white', fontSize: '19px', fontWeight: '800' }}>AI 음성 분석 및 통역 중</h3>
-                                    <p className="vision-loading-desc" style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13.5px', maxWidth: '260px' }}>음성을 인식하여 상황 분석 및 추천 대답을 매핑하고 있습니다...</p>
+                                </div>
+                                <button onClick={closeOverlay} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748b' }} title="닫기">
+                                    <X size={22} />
+                                </button>
+                            </div>
+
+                            {/* 로딩 / 에러 / 결과 상태 */}
+                            {isLoadingVoice ? (
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
+                                    <div className="vision-loading-spinner-wrapper" style={{ marginBottom: '20px' }}>
+                                        <div className="vision-loading-pulse" style={{ backgroundColor: 'rgba(140, 82, 255, 0.15)' }} />
+                                        <Loader2 size={36} className="vision-loading-icon" style={{ color: '#8c52ff' }} />
+                                    </div>
+                                    <h3 style={{ color: '#0f172a', fontSize: '18px', fontWeight: '800', margin: '0 0 8px' }}>AI 음성 분석 및 통역 중</h3>
+                                    <p style={{ color: '#64748b', fontSize: '13px', margin: 0, maxWidth: '260px', lineHeight: '1.5' }}>음성을 인식하여 상황 분석 및 추천 대답을 매핑하고 있습니다...</p>
                                 </div>
                             ) : voiceError ? (
-                                <div className="vision-error-container" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', color: 'white' }}>
-                                    <X size={48} color="#ef4444" />
-                                    <h3 className="vision-error-title" style={{ color: 'white', fontSize: '19px', fontWeight: '800', marginTop: '16px' }}>분석 오류</h3>
-                                    <p className="vision-error-desc" style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13.5px', marginBottom: '24px' }}>{voiceError}</p>
-                                    <button className="vision-retry-btn" style={{ backgroundColor: 'white', color: '#7e22ce' }} onClick={() => {
-                                        if (audioBlob) sendVoiceRequest(audioBlob);
-                                    }}>다시 시도</button>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center', backgroundColor: '#f8fafc' }}>
+                                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                                        <X size={32} color="#ef4444" />
+                                    </div>
+                                    <h3 style={{ color: '#0f172a', fontSize: '18px', fontWeight: '800', margin: '0 0 8px' }}>통역 오류</h3>
+                                    <p style={{ color: '#64748b', fontSize: '13px', margin: '0 0 24px', maxWidth: '280px' }}>{voiceError}</p>
+                                    <button
+                                        style={{ backgroundColor: '#8c52ff', color: 'white', padding: '12px 24px', borderRadius: '12px', fontWeight: 700, border: 'none', cursor: 'pointer' }}
+                                        onClick={() => { if (audioBlob) sendVoiceRequest(audioBlob); }}
+                                    >
+                                        다시 시도
+                                    </button>
                                 </div>
                             ) : voiceResult ? (
-                                <div className="audio-result-wrapper">
-                                    <div className="audio-result-card">
-                                        <div className="audio-alert-badge">
-                                            <div className="audio-alert-icon">💡</div>
-                                            <div className="audio-alert-text">실시간 번역 및 분석</div>
-                                        </div>
+                                <>
+                                    {/* 스크롤 본문: 화면 전체 폭을 활용하여 자연스럽게 스크롤 */}
+                                    <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', WebkitOverflowScrolling: 'touch' }}>
                                         
-                                        <div className="audio-result-section">
-                                            <span className="audio-result-label">상황/의도 분석</span>
-                                            <p className="audio-result-desc" style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b', margin: 0 }}>{voiceResult.intent_analysis}</p>
+                                        {/* 1. 상황/의도 분석 카드 */}
+                                        <div style={{ backgroundColor: '#ffffff', borderRadius: '18px', padding: '18px 20px', border: '1px solid #f1f5f9', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '13px' }}>💡</span>
+                                                <span style={{ fontSize: '12px', fontWeight: '800', color: '#6366f1', letterSpacing: '0.3px' }}>상황 및 의도 분석</span>
+                                            </div>
+                                            <p style={{ fontSize: '14.5px', fontWeight: '600', color: '#1e293b', margin: 0, lineHeight: '1.6', wordBreak: 'keep-all' }}>
+                                                {voiceResult.intent_analysis}
+                                            </p>
                                         </div>
 
-                                        <div className="audio-result-section">
-                                            <span className="audio-result-label">번역 결과</span>
-                                            <span className="audio-result-translated" style={{ color: '#8c52ff' }}>{voiceResult.translated_text}</span>
-                                        </div>
-
-                                        <div className="audio-result-section">
-                                            <span className="audio-result-label">문화 팁 & 에티켓</span>
-                                            <p className="audio-result-desc" style={{ margin: 0, fontSize: '13px', lineHeight: '1.5' }}>{voiceResult.cultural_context}</p>
-                                        </div>
-
-                                        <div className="audio-result-section">
-                                            <span className="audio-result-label" style={{ marginBottom: '6px' }}>추천 대답 (현지 표현)</span>
-                                            <div className="audio-response-list">
-                                                <div className="audio-response-btn" style={{ cursor: 'default' }}>
-                                                    <span className="audio-response-primary" style={{ color: '#8c52ff' }}>{voiceResult.suggested_reply_ko}</span>
-                                                    <span className="audio-response-secondary">상황에 맞게 이 문장으로 답변해 보세요!</span>
-                                                </div>
+                                        {/* 2. 한국어 번역 결과 카드 (핵심 하이라이트) */}
+                                        <div style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)', borderRadius: '18px', padding: '20px', border: '1.5px solid #e9d5ff', boxShadow: '0 4px 14px rgba(140, 82, 255, 0.08)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '13px' }}>🗣️</span>
+                                                <span style={{ fontSize: '12px', fontWeight: '800', color: '#8c52ff', letterSpacing: '0.3px' }}>번역 결과</span>
+                                            </div>
+                                            <div style={{ fontSize: '20px', fontWeight: '800', color: '#6b21a8', lineHeight: '1.4', wordBreak: 'keep-all' }}>
+                                                {voiceResult.translated_text}
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            ) : null}
 
-                            <div className="audio-bottom-actions" style={{ position: 'relative', bottom: 'auto', left: 'auto', right: 'auto', padding: '20px', display: 'flex', gap: '10px' }}>
-                                <button className="audio-action-btn audio-btn-primary" style={{ flex: 1 }} onClick={() => setTranslationState('audio_idle')}>다시 사용하기</button>
-                                <button className="audio-action-btn audio-btn-secondary" style={{ flex: 1 }} onClick={closeOverlay}>닫기</button>
-                            </div>
+                                        {/* 3. 현지 문화 팁 & 에티켓 카드 */}
+                                        {voiceResult.cultural_context && (
+                                            <div style={{ backgroundColor: '#ffffff', borderRadius: '18px', padding: '18px 20px', border: '1px solid #f1f5f9', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                                                    <span style={{ fontSize: '13px' }}>🎎</span>
+                                                    <span style={{ fontSize: '12px', fontWeight: '800', color: '#059669', letterSpacing: '0.3px' }}>문화 팁 & 에티켓</span>
+                                                </div>
+                                                <p style={{ fontSize: '13.5px', color: '#334155', margin: 0, lineHeight: '1.65', wordBreak: 'keep-all' }}>
+                                                    {voiceResult.cultural_context}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* 4. 추천 대답 (현지 표현) */}
+                                        {voiceResult.suggested_reply_ko && (
+                                            <div style={{ backgroundColor: '#ffffff', borderRadius: '18px', padding: '18px 20px', border: '1px solid #f1f5f9', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                                                    <span style={{ fontSize: '13px' }}>💬</span>
+                                                    <span style={{ fontSize: '12px', fontWeight: '800', color: '#d97706', letterSpacing: '0.3px' }}>추천 대답 (현지 표현)</span>
+                                                </div>
+                                                <div style={{ backgroundColor: '#fefce8', border: '1px solid #fef08a', borderRadius: '14px', padding: '14px 16px' }}>
+                                                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#854d0e', marginBottom: '4px', wordBreak: 'keep-all' }}>
+                                                        {voiceResult.suggested_reply_ko}
+                                                    </div>
+                                                    <div style={{ fontSize: '12px', color: '#a16207' }}>
+                                                        상황에 맞게 이 문장으로 답변해 보세요!
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 하단 고정 액션 버튼 바: 본문 스크롤과 완전히 분리되어 하단에 단단히 고정 */}
+                                    <div style={{
+                                        backgroundColor: '#ffffff',
+                                        borderTop: '1px solid #f1f5f9',
+                                        padding: '14px 20px',
+                                        paddingBottom: 'max(14px, env(safe-area-inset-bottom))',
+                                        display: 'flex',
+                                        gap: '12px',
+                                        boxShadow: '0 -4px 12px rgba(0,0,0,0.03)'
+                                    }}>
+                                        <button
+                                            onClick={() => setTranslationState('audio_idle')}
+                                            style={{
+                                                flex: 1,
+                                                padding: '14px 0',
+                                                borderRadius: '14px',
+                                                fontSize: '15px',
+                                                fontWeight: '700',
+                                                color: '#475569',
+                                                backgroundColor: '#f1f5f9',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '6px'
+                                            }}
+                                        >
+                                            <Mic size={17} color="#64748b" />
+                                            다시 사용하기
+                                        </button>
+                                        <button
+                                            onClick={closeOverlay}
+                                            style={{
+                                                flex: 1,
+                                                padding: '14px 0',
+                                                borderRadius: '14px',
+                                                fontSize: '15px',
+                                                fontWeight: '700',
+                                                color: '#ffffff',
+                                                background: 'linear-gradient(135deg, #8c52ff, #7c3aed)',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                boxShadow: '0 4px 14px rgba(140, 82, 255, 0.25)'
+                                            }}
+                                        >
+                                            닫기
+                                        </button>
+                                    </div>
+                                </>
+                            ) : null}
                         </div>
                     )}
                 </div>

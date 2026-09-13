@@ -200,9 +200,9 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             case 1:
                 return (
                     <>
-                        <div className="rc-title-area text-center" style={{ paddingTop: '20px' }}>
-                            <div style={{ color: '#b0b0b0', fontSize: 13, marginBottom: 8 }}>떠나고 싶은 대륙을 선택하세요</div>
-                            <h2 style={{ color: 'var(--primary-color)', fontSize: 20, fontWeight: 700 }}>Choose Your Destination</h2>
+                        <div className="rc-title-area text-center" style={{ paddingTop: '8px', paddingBottom: '12px' }}>
+                            <div style={{ color: '#888888', fontSize: 13.5, fontWeight: 500, marginBottom: 6 }}>떠나고 싶은 대륙을 선택하세요</div>
+                            <h2 style={{ color: 'var(--primary-color)', fontSize: 21, fontWeight: 800 }}>Choose Your Destination</h2>
                         </div>
                         <div className="rc-map-area">
                             <WorldMapSelection 
@@ -549,7 +549,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
 
     return (
         <div className="rc-modal">
-            <div className={`rc-header ${step === 6 ? '' : 'border'}`}>
+            <div className="rc-header">
                 {step === 6 ? (
                     <button className="rc-back-btn" onClick={() => handleBackFromResult()}>
                         <ChevronLeft />

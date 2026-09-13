@@ -30,6 +30,15 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        /* 모바일 네이티브 앱 환경 최적화: 투박한 OS 스크롤바 숨김 (터치 및 휠 스크롤은 유지) */
+        scrollbar-width: none; /* Firefox, W3C 모바일 표준 */
+        -ms-overflow-style: none; /* IE, Edge */
+    }
+
+    *::-webkit-scrollbar {
+        display: none !important; /* Chrome, Safari, Android/iOS WebView */
+        width: 0 !important;
+        height: 0 !important;
     }
 
     body {
@@ -906,13 +915,16 @@
         align-items: center;
         justify-content: space-between;
         padding: 16px 20px;
-        border-bottom: 1px solid transparent;
+        border: none !important;
+        border-bottom: none !important;
         min-height: 56px;
         flex-shrink: 0;
+        background-color: white;
     }
 
     .rc-header.border {
-        border-bottom-color: #f0f0f0;
+        border: none !important;
+        border-bottom: none !important;
     }
 
     .rc-back-btn {
@@ -927,14 +939,23 @@
         flex: 1;
         overflow-y: auto;
         padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .rc-content::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
     }
 
     .rc-content-centered {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding-bottom: 40px;
-        /* Adjust for bottom bar balance */
+        justify-content: flex-start;
+        padding-top: 6px;
+        padding-bottom: 30px;
     }
 
     .rc-title-area {
