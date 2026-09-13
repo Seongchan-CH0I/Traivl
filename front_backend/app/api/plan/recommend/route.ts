@@ -42,7 +42,17 @@ export async function POST(request: Request) {
         });
 
         if (!aiResponse.ok) {
-            throw new Error("AI 서버로부터 응답을 받지 못했습니다.");
+            // AI 서버가 원인별로 상태 코드를 구분해서 주므로(404: 데이터 없음, 503: 일시 장애)
+            // 뭉뚱그려 500으로 덮지 않고 그대로 전달한다.
+            const detail = await aiResponse
+                .json()
+                .then((body) => body?.detail)
+                .catch(() => null);
+
+            return NextResponse.json(
+                { success: false, message: detail || "AI 서버로부터 응답을 받지 못했습니다." },
+                { status: aiResponse.status }
+            );
         }
 
         const aiData = await aiResponse.json();

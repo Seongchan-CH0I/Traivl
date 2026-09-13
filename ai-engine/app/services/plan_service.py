@@ -11,6 +11,7 @@ from app.models.plan_model import PlanRequest, PlanResponse, PlanData, DayItiner
 from app.models.route_model import RouteOptimizeRequest, PlaceVisitItem, Location
 from app.services.route_service import route_service
 from app.core.config import settings
+from app.core.exceptions import NoPlacesFoundError, VectorSearchError
 
 # LangChain DB 관련 임포트 
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -24,35 +25,6 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
-
-# 🏡 DB가 없거나 통신이 실패할 때 사용할 로컬 백업 장소 데이터 (Mock Fallback)
-MOCK_PLACES = {
-    "교토": [
-        {"place_id": "mock_kyoto_1", "title": "기요미즈데라", "description": "교토의 상징적인 절벽 사찰입니다.", "lat": 34.994, "lng": 135.785},
-        {"place_id": "mock_kyoto_2", "title": "금각사", "description": "황금빛 누각이 아름다운 사찰입니다.", "lat": 35.039, "lng": 135.729},
-        {"place_id": "mock_kyoto_3", "title": "은각사", "description": "고즈넉한 모래 정원이 있는 사찰입니다.", "lat": 35.026, "lng": 135.798},
-        {"place_id": "mock_kyoto_4", "title": "아라시야마", "description": "대나무 숲길이 우거진 자연명소입니다.", "lat": 35.009, "lng": 135.667},
-        {"place_id": "mock_kyoto_5", "title": "이나리대샤", "description": "붉은 도리이 터널로 유명한 신사입니다.", "lat": 34.967, "lng": 135.772},
-    ],
-    "오키나와": [
-        {"place_id": "mock_okinawa_1", "title": "츄라우미 수족관", "description": "거대한 고래상어가 있는 아쿠아리움입니다.", "lat": 26.694, "lng": 127.877},
-        {"place_id": "mock_okinawa_2", "title": "만좌모", "description": "코끼리 모양의 기암절벽 해안 명소입니다.", "lat": 26.504, "lng": 127.858},
-        {"place_id": "mock_okinawa_3", "title": "아메리칸 빌리지", "description": "미국풍 거리와 관람차가 있는 쇼핑몰입니다.", "lat": 26.315, "lng": 127.755},
-        {"place_id": "mock_okinawa_4", "title": "국제거리", "description": "나하시 중심가의 쇼핑과 미식 거리입니다.", "lat": 26.215, "lng": 127.685},
-    ],
-    "속초": [
-        {"place_id": "mock_sokcho_1", "title": "설악산 국립공원", "description": "웅장한 암반과 케이블카가 있는 명산입니다.", "lat": 38.161, "lng": 128.465},
-        {"place_id": "mock_sokcho_2", "title": "속초 관광수산시장", "description": "닭강정과 해산물이 맛있는 전통시장입니다.", "lat": 38.204, "lng": 128.590},
-        {"place_id": "mock_sokcho_3", "title": "영금정", "description": "파도 소리가 거문고 소리처럼 들리는 정자입니다.", "lat": 38.212, "lng": 128.601},
-        {"place_id": "mock_sokcho_4", "title": "아바이마을", "description": "갯배를 타고 갈 수 있는 전통 순대 마을입니다.", "lat": 38.202, "lng": 128.593},
-    ],
-    "도쿄": [
-        {"place_id": "mock_tokyo_1", "title": "도쿄 타워", "description": "도쿄의 상징적인 붉은 전망 타워입니다.", "lat": 35.658, "lng": 139.745},
-        {"place_id": "mock_tokyo_2", "title": "센소지", "description": "아사쿠사에 위치한 도쿄에서 가장 오래된 절입니다.", "lat": 35.714, "lng": 139.796},
-        {"place_id": "mock_tokyo_3", "title": "시부야 스카이", "description": "시부야 교차로를 한눈에 내려다보는 전망대입니다.", "lat": 35.658, "lng": 139.701},
-        {"place_id": "mock_tokyo_4", "title": "신주쿠 교엔", "description": "도심 속 드넓은 정원과 온실 공원입니다.", "lat": 35.685, "lng": 139.709},
-    ]
-}
 
 class PlanService:
     def __init__(self):
@@ -72,10 +44,19 @@ class PlanService:
 
         embeddings_model = HuggingFaceEmbeddings(model_name="jhgan/ko-sbert-nli")
         
+        # Supabase 풀러는 유휴 커넥션을 끊는데 이 컨테이너는 장시간 떠 있으므로,
+        # 죽은 커넥션을 미리 감지(pool_pre_ping)하고 주기적으로 갱신(pool_recycle)해야
+        # 오래 방치된 뒤 첫 요청에서 검색이 실패하는 일을 막을 수 있다.
         self.vector_db = PGVector(
             collection_name="travel_places",
             connection_string=db_url,
-            embedding_function=embeddings_model
+            embedding_function=embeddings_model,
+            engine_args={
+                "pool_pre_ping": True,
+                "pool_recycle": 300,
+                "pool_size": 3,
+                "max_overflow": 2,
+            },
         )
 
     async def get_recommended_plan(self, request: PlanRequest) -> PlanResponse:
@@ -90,57 +71,42 @@ class PlanService:
         dynamic_k = max(35, travel_days * 10)
 
         print(f"🔍 [벡터 DB 검색] 쿼리: {search_query} | 여행일수: {travel_days}일 -> RAG 넓은 모수 당김: {dynamic_k}개")
-        # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색 (DB가 완전히 오프라인 상태여도 성공하도록 폴백 처리)
-        candidates = []
+        # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색
+        # 검색이 실패하거나 결과가 비면 예외로 올린다. 다른 도시의 대체 장소를 끼워 넣으면
+        # 잘못된 일정이 "성공"으로 응답되어 장애를 아무도 눈치채지 못한다.
         try:
             results = self.vector_db.similarity_search(
                 query=search_query,                         # 유저가 선택한 여행 스타일
                 k=dynamic_k,                                # 35개 이상 넉넉한 모수 당김
                 filter={"destination": request.destination} # 유저가 선택한 도시
             )
-            for doc in results:
-                meta = doc.metadata
-                candidates.append(
-                    PlaceCandidate(
-                        place_id=meta['place_id'],
-                        title=meta['name'],
-                        description=doc.page_content, # 해당 장소 설명
-                        tags=[],
-                        category=meta.get('category', '명소'),
-                        lat=meta['lat'],
-                        lng=meta['lng'],
-                        stay_duration_mins=meta.get('duration_mins', 90)
-                    )
-                )
         except Exception as db_err:
-            print(f"❌ [벡터 DB 검색 실패]: {db_err}. 로컬 백업 데이터로 대체를 시작합니다.")
+            print(f"❌ [벡터 DB 검색 실패] destination={request.destination}: {db_err}")
+            raise VectorSearchError(
+                f"벡터 DB 검색에 실패했습니다 (destination={request.destination}): {db_err}"
+            ) from db_err
 
-        # RAG 검색 결과가 없거나 DB 오류 시 로컬 Mock 데이터로 채워서 실패 예방
+        candidates = [
+            PlaceCandidate(
+                place_id=doc.metadata['place_id'],
+                title=doc.metadata['name'],
+                description=doc.page_content, # 해당 장소 설명
+                tags=[],
+                category=doc.metadata.get('category', '명소'),
+                lat=doc.metadata['lat'],
+                lng=doc.metadata['lng'],
+                stay_duration_mins=doc.metadata.get('duration_mins', 90)
+            )
+            for doc in results
+        ]
+
         if not candidates:
-            print("⚠️ [Plan] 사용 가능한 검색 결과가 없어 백업 장소 데이터를 로드합니다.")
-            city_key = request.destination.replace("JP_", "").replace("KR_", "")
-            
-            mock_list = []
-            for k, v in MOCK_PLACES.items():
-                if k in request.destination or request.destination in k:
-                    mock_list = v
-                    break
-            if not mock_list:
-                mock_list = MOCK_PLACES["도쿄"]
-                
-            for mock_item in mock_list:
-                candidates.append(
-                    PlaceCandidate(
-                        place_id=mock_item['place_id'],
-                        title=mock_item['title'],
-                        description=mock_item['description'],
-                        tags=[],
-                        category="명소",
-                        lat=mock_item['lat'],
-                        lng=mock_item['lng'],
-                        stay_duration_mins=90
-                    )
-                )
+            print(f"⚠️ [Plan] '{request.destination}'에 적재된 장소가 없습니다. 데이터 적재 상태를 확인하세요.")
+            raise NoPlacesFoundError(
+                f"'{request.destination}'에 대해 추천할 수 있는 장소 데이터가 아직 없습니다."
+            )
+
+        print(f"✅ [벡터 DB 검색] '{request.destination}' 후보 {len(candidates)}개 확보")
 
         # [2단계] Gemini를 이용한 지능형 장소 선정 (거리에 따라 하루 2~5개 유동 할당을 위해 모수를 넉넉히 선별)
         target_count = travel_days * 4 # 하루 평균 4군데까지 유동적으로 넉넉히 선별
