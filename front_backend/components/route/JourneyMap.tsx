@@ -275,8 +275,8 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             attributionControl: false 
         });
 
-        // Voyager 지도 타일 레이어 적용
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        // 기존의 화사한 CARTO Voyager 지도 타일 (정식 API 키 적용으로 워터마크 완벽 제거)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3jpx_1_4e56a2c210bc03d6684caf07', {
             maxZoom: 19
         }).addTo(map);
 
