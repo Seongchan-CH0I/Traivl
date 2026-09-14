@@ -422,13 +422,20 @@ export default function CalendarPage() {
   const handleShareToFeed = async () => {
     if (!activeSchedule) return;
     setIsSharingLoading(true);
+
+    // 미입력 시 placeholder에 표시된 기본 예시 한줄평 자동 적용
+    const defaultContent = activeSchedule.city 
+      ? `맛집 위주로 짠 실속 가득한 ${activeSchedule.city} 힐링 코스입니다! 😊`
+      : "맛집 위주로 짠 실속 가득한 힐링 여행 코스입니다! 😊";
+    const finalContent = shareContent.trim() || defaultContent;
+
     try {
       const res = await fetch(`/api/schedules/${activeSchedule.id}/share`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           isShared: true,
-          shareContent: shareContent.trim()
+          shareContent: finalContent
         })
       });
 
@@ -446,7 +453,7 @@ export default function CalendarPage() {
         setActiveSchedule({
           ...activeSchedule,
           isShared: true,
-          shareContent: shareContent.trim()
+          shareContent: finalContent
         });
       } else {
         alert("일정 공유에 실패했습니다: " + result.message);
@@ -815,15 +822,21 @@ export default function CalendarPage() {
             <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1e293b', marginBottom: '8px', textAlign: 'center' }}>
               {activeSchedule.isShared ? "공유 한줄평 수정" : "피드에 일정 공유하기"}
             </h3>
-            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px', textAlign: 'center', lineHeight: '1.4' }}>
-              나의 소중한 여행 경로를 다른 트래블러에게 자랑해보세요!<br />
-              한줄평을 작성하면 공유 게시판에 업로드됩니다.
+            <p style={{ 
+              fontSize: '13px', 
+              color: '#64748b', 
+              marginBottom: '20px', 
+              textAlign: 'center', 
+              lineHeight: '1.5',
+              wordBreak: 'keep-all'
+            }}>
+              나의 소중한 여행 경로를 다른 트래블러에게 자랑해보세요!
             </p>
             
             <textarea
               value={shareContent}
               onChange={(e) => setShareContent(e.target.value)}
-              placeholder="예: 맛집 위주로 짠 실속 가득한 도쿄 2박 3일 힐링 코스입니다! 😊"
+              placeholder={`예: 맛집 위주로 짠 실속 가득한 ${activeSchedule?.city || '여행'} 힐링 코스입니다! 😊`}
               style={{
                 width: '100%',
                 height: '100px',
@@ -834,7 +847,8 @@ export default function CalendarPage() {
                 outline: 'none',
                 resize: 'none',
                 fontFamily: 'inherit',
-                marginBottom: '20px'
+                marginBottom: '20px',
+                lineHeight: '1.4'
               }}
             />
 
@@ -857,7 +871,7 @@ export default function CalendarPage() {
               </button>
               <button
                 onClick={handleShareToFeed}
-                disabled={isSharingLoading || !shareContent.trim()}
+                disabled={isSharingLoading}
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -867,8 +881,8 @@ export default function CalendarPage() {
                   color: '#ffffff',
                   fontSize: '14px',
                   fontWeight: '600',
-                  cursor: 'pointer',
-                  opacity: (!shareContent.trim() || isSharingLoading) ? 0.6 : 1
+                  cursor: isSharingLoading ? 'not-allowed' : 'pointer',
+                  opacity: isSharingLoading ? 0.6 : 1
                 }}
               >
                 {isSharingLoading ? "공유 중..." : "공유하기"}
