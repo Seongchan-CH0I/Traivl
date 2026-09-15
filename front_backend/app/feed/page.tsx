@@ -74,7 +74,9 @@ export default function FeedPage() {
                         id: place.id.toString(),
                         title: place.name,
                         desc: place.description,
-                        img: place.imageUrl || '/images/placeholder.jpg',
+                        img: (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) 
+                            ? '/images/tetsugakunomichi_spring_1.jpg' 
+                            : (place.imageUrl || '/images/placeholder.jpg'),
                         badge: place.category || '명소',
                         rating: place.rating ? place.rating.toFixed(1) : (4.0 + Math.random() * 1.0).toFixed(1),
                         category: categorizePlace(place.name, place.description),
@@ -335,7 +337,19 @@ export default function FeedPage() {
                                     onClick={() => item.rawPlace && setSelectedPlace(item.rawPlace)}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <img src={item.img} alt={item.title} className="feed-img" />
+                                    <img 
+                                        src={item.img} 
+                                        alt={item.title} 
+                                        className="feed-img"
+                                        onError={(e) => {
+                                            const target = e.currentTarget as HTMLImageElement;
+                                            if (item.title?.includes('철학의 길') || item.img?.includes('tetsugakunomichi')) {
+                                                target.src = '/images/tetsugakunomichi_spring_1.jpg';
+                                            } else {
+                                                target.src = '/images/placeholder.jpg';
+                                            }
+                                        }} 
+                                    />
                                     <div className="feed-overlay" />
                                     <div className="feed-badge-top-left">
                                         <div className="feed-status-badge">

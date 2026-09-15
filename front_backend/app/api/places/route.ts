@@ -28,7 +28,15 @@ export async function GET(request: Request) {
             ...(limit ? { take: limit } : {}),
         });
 
-        return NextResponse.json({ success: true, data: places });
+        // 💡 외부 비보안/깨지는 이미지 로컬 정적 에셋으로 안전 매핑
+        const sanitizedPlaces = places.map((place) => {
+            if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
+                return { ...place, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
+            }
+            return place;
+        });
+
+        return NextResponse.json({ success: true, data: sanitizedPlaces });
 
     } catch (error: any) {
         console.error('[API] /api/places 오류:', error);
