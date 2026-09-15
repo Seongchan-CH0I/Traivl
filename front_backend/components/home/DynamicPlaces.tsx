@@ -23,7 +23,15 @@ export default function DynamicPlaces({ destinationId, cityName }: DynamicPlaces
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
-                    setPlaces(res.data);
+                    // 💡 팁(rank 11)과 이벤트(rank 12)를 제외한 순수 관광지/명소만 노출
+                    const purePlaces = res.data.filter((p: Place) => 
+                        (!p.rank || p.rank <= 10) && 
+                        p.category !== '팁' && 
+                        p.category !== '이벤트' &&
+                        !p.name.includes('꿀팁') &&
+                        !p.name.includes('팁')
+                    );
+                    setPlaces(purePlaces);
                 }
             })
             .catch(err => console.error("Failed to fetch places", err))

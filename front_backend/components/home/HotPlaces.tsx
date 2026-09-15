@@ -20,7 +20,14 @@ export default function HotPlaces({ isExpanded, onToggle }: HotPlacesProps) {
             .then(res => {
                 if (res.success) {
                     console.log("Fetched places:", res.data); // Debugging
-                    setPlaces(res.data);
+                    const pureHotPlaces = res.data.filter((p: Place) => 
+                        (!p.rank || p.rank <= 10) && 
+                        p.category !== '팁' && 
+                        p.category !== '이벤트' &&
+                        !p.name.includes('꿀팁') &&
+                        !p.name.includes('팁')
+                    );
+                    setPlaces(pureHotPlaces);
                 }
             })
             .catch(err => console.error("Failed to fetch hot places", err))
