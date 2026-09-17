@@ -554,11 +554,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             <div className={`ai-options-container ${isJourneyMapMode ? 'on-map' : ''}`}>
                 <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`} onClick={handlePhotoTranslateClick} style={{ cursor: 'pointer' }}>
                     <button className="ai-circle-btn"><Camera color="#8c52ff" /></button>
-                    <span className="ai-option-label">사진 번역</span>
+                    <span className="ai-option-label">사진 분석</span>
                 </div>
                 <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`} onClick={handleAudioTranslateClick} style={{ cursor: 'pointer' }}>
                     <button className="ai-circle-btn"><Mic color="#8c52ff" /></button>
-                    <span className="ai-option-label">음성 번역</span>
+                    <span className="ai-option-label">음성 소통</span>
                 </div>
                 <div className={`ai-option-item ${isAiMenuOpen ? 'show' : ''}`} onClick={handleAiChatClick} style={{ cursor: 'pointer' }}>
                     <button className="ai-circle-btn"><MessageSquare color="#8c52ff" /></button>
@@ -654,7 +654,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                         </div>
                                     </div>
                                 </div>
-                                <p className="camera-instructions" style={{ color: 'white', fontSize: '14px', fontWeight: 500, marginTop: '24px', marginBottom: '16px', letterSpacing: '-0.02em' }}>번역하고 싶은 내용을 비춰주세요</p>
+                                <p className="camera-instructions" style={{ color: 'white', fontSize: '14px', fontWeight: 500, marginTop: '24px', marginBottom: '16px', letterSpacing: '-0.02em' }}>분석하고 싶은 대상(메뉴/간판/명소)을 비춰주세요</p>
                             </div>
                             <input
                                 type="file"
@@ -841,8 +841,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <span style={{ fontSize: '18px' }}>🎙️</span>
                                     <div>
-                                        <h2 style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: 0 }}>AI 실시간 음성 통역</h2>
-                                        <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>현지 음성 인식 & 문화 맥락 분석</p>
+                                        <h2 style={{ fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: 0 }}>AI 실시간 음성 소통</h2>
+                                        <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>현지 대화 분석 & 문화 에티켓 코칭</p>
                                     </div>
                                 </div>
                                 <button onClick={closeOverlay} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748b' }} title="닫기">
@@ -857,7 +857,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                                         <div className="vision-loading-pulse" style={{ backgroundColor: 'rgba(140, 82, 255, 0.15)' }} />
                                         <Loader2 size={36} className="vision-loading-icon" style={{ color: '#8c52ff' }} />
                                     </div>
-                                    <h3 style={{ color: '#0f172a', fontSize: '18px', fontWeight: '800', margin: '0 0 8px' }}>AI 음성 분석 및 통역 중</h3>
+                                    <h3 style={{ color: '#0f172a', fontSize: '18px', fontWeight: '800', margin: '0 0 8px' }}>AI 음성 소통 분석 중</h3>
                                     <p style={{ color: '#64748b', fontSize: '13px', margin: 0, maxWidth: '260px', lineHeight: '1.5' }}>음성을 인식하여 상황 분석 및 추천 대답을 매핑하고 있습니다...</p>
                                 </div>
                             ) : voiceError ? (
