@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAi } from '../../context/AiContext';
-import { Dna, Plus, Download, Map as MapIcon, Share2, Trash2, Loader2, LogOut, X, Sparkles, BookOpen } from 'lucide-react';
+import { Dna, Plus, Download, Map as MapIcon, Share2, Trash2, Loader2, LogOut, X, Sparkles, BookOpen, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import CustomAlertModal from '../../components/ui/CustomAlertModal';
 import MemoryRecallModal from '../../components/profile/MemoryRecallModal';
@@ -678,7 +678,7 @@ export default function ProfilePage() {
               whiteSpace: 'nowrap'
             }}
           >
-            <Trash2 size={13} style={{ color: '#64748b' }} />
+            <RotateCcw size={13} style={{ color: '#8c52ff' }} />
             DNA 재검사
           </button>
           <button
