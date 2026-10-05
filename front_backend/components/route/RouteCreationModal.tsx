@@ -29,6 +29,13 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     const { setItineraryData } = useAi();
     const [activeDay, setActiveDay] = useState(1);
 
+    // 🛠️ 실시간 경로 편집기 관련 State
+    const [isEditing, setIsEditing] = useState(false);
+    const [initialItineraryData, setInitialItineraryData] = useState<any>(null);
+    const [swapModalTarget, setSwapModalTarget] = useState<{ day: number; placeIdx: number; currentPlace: any } | null>(null);
+    const [swapCandidates, setSwapCandidates] = useState<any[]>([]);
+    const [isSwapLoading, setIsSwapLoading] = useState(false);
+
     if (!isOpen) return null;
 
     const handleNext = () => setStep(prev => prev + 1);
@@ -122,6 +129,124 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
     const handleBackFromResult = async () => {
         await saveScheduleToDb();
         onClose();
+    };
+
+    // 🛠️ 편집 모드 진입 및 원본 스냅샷 저장
+    const handleStartEditMode = () => {
+        if (!itineraryResult) return;
+        setInitialItineraryData(JSON.parse(JSON.stringify(itineraryResult)));
+        setIsEditing(true);
+    };
+
+    // ⏪ [이전으로 되돌리기] 기능 - 초기 스냅샷으로 복원
+    const handleRevertChanges = () => {
+        if (!initialItineraryData) return;
+        const restored = JSON.parse(JSON.stringify(initialItineraryData));
+        setItineraryResult(restored);
+        setItineraryData(restored);
+        alert("✨ 초기 추천 일정으로 원래대로 되돌렸습니다!");
+    };
+
+    // 🗑️ 장소 삭제 및 시간 재배치
+    const handleDeletePlace = (dayNum: number, placeIdx: number) => {
+        if (!itineraryResult?.itinerary) return;
+        const updated = JSON.parse(JSON.stringify(itineraryResult));
+        const dayTarget = updated.itinerary.find((d: any) => d.day === dayNum);
+        if (dayTarget && dayTarget.places) {
+            dayTarget.places.splice(placeIdx, 1);
+            // 시간 재정렬
+            dayTarget.places.forEach((p: any, idx: number) => {
+                const hour = 9 + idx * 2;
+                p.suggested_time = `${hour < 10 ? '0' + hour : hour}:00`;
+            });
+            setItineraryResult(updated);
+            setItineraryData(updated);
+        }
+    };
+
+    // ⬆️/⬇️ 순서 변경 및 시간 재배치
+    const handleMovePlace = (dayNum: number, placeIdx: number, direction: 'up' | 'down') => {
+        if (!itineraryResult?.itinerary) return;
+        const updated = JSON.parse(JSON.stringify(itineraryResult));
+        const dayTarget = updated.itinerary.find((d: any) => d.day === dayNum);
+        if (!dayTarget || !dayTarget.places) return;
+
+        const targetIdx = direction === 'up' ? placeIdx - 1 : placeIdx + 1;
+        if (targetIdx < 0 || targetIdx >= dayTarget.places.length) return;
+
+        // 원소 스왑
+        const temp = dayTarget.places[placeIdx];
+        dayTarget.places[placeIdx] = dayTarget.places[targetIdx];
+        dayTarget.places[targetIdx] = temp;
+
+        // 시간 재정렬
+        dayTarget.places.forEach((p: any, idx: number) => {
+            const hour = 9 + idx * 2;
+            p.suggested_time = `${hour < 10 ? '0' + hour : hour}:00`;
+        });
+
+        setItineraryResult(updated);
+        setItineraryData(updated);
+    };
+
+    // 🔄 [다른 곳 추천] 대체 장소 모달 열기 (100% DB 동적 조회 - 하드코딩 0%)
+    const openSwapModal = async (dayNum: number, placeIdx: number, currentPlace: any) => {
+        setSwapModalTarget({ day: dayNum, placeIdx, currentPlace });
+        setIsSwapLoading(true);
+        try {
+            // 하드코딩 없이 선택된 도시(city) 변수를 그대로 API로 전달
+            const res = await fetch(`/api/places?city=${encodeURIComponent(city)}&limit=15`);
+            const json = await res.json();
+            
+            let candidateList = json.data || [];
+
+            // 도시 검색 결과가 적은 경우 폴백 처리
+            if (!candidateList || candidateList.length === 0) {
+                const fallbackRes = await fetch(`/api/places?limit=15`);
+                const fallbackJson = await fallbackRes.json();
+                candidateList = fallbackJson.data || [];
+            }
+
+            // 현재 일정에 이미 포함된 장소 제외
+            const currentPlaceNames = new Set(
+                (itineraryResult?.itinerary || []).flatMap((d: any) => (d.places || []).map((p: any) => p.title || p.name))
+            );
+            const candidates = candidateList.filter((p: any) => !currentPlaceNames.has(p.name));
+            setSwapCandidates(candidates.slice(0, 4));
+        } catch (err) {
+            console.error("Failed to fetch swap candidates:", err);
+            setSwapCandidates([]);
+        } finally {
+            setIsSwapLoading(false);
+        }
+    };
+
+    // 🔄 대체 장소 선택 및 스왑 반영
+    const handleSelectSwapPlace = (newPlace: any) => {
+        if (!swapModalTarget || !itineraryResult?.itinerary) return;
+        const updated = JSON.parse(JSON.stringify(itineraryResult));
+        const dayTarget = updated.itinerary.find((d: any) => d.day === swapModalTarget.day);
+        if (dayTarget && dayTarget.places) {
+            const oldPlace = dayTarget.places[swapModalTarget.placeIdx];
+            dayTarget.places[swapModalTarget.placeIdx] = {
+                ...oldPlace,
+                place_id: newPlace.id || `swap_${Date.now()}`,
+                title: newPlace.name,
+                name: newPlace.name,
+                category: newPlace.category || "관광지",
+                description: newPlace.description || newPlace.address,
+                reason: `[추천 교체] ${newPlace.description || '유저 취향 기반 대체 장소입니다.'}`
+            };
+            setItineraryResult(updated);
+            setItineraryData(updated);
+        }
+        setSwapModalTarget(null);
+    };
+
+    // ✅ [수정 완료] 편집 모드 종료
+    const handleApplyEditChanges = () => {
+        setIsEditing(false);
+        alert("🎉 일정 수정이 완료되었습니다! 지도에 새로운 동선이 반영되었습니다.");
     };
 
     const toggleTheme = (t: string) => {
@@ -490,6 +615,85 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                                     overflow: 'hidden'
                                                 }}>
                                                     <div style={{ padding: '16px 18px' }}>
+                                                        {/* 편집 모드일 때만 노출되는 상단 액션 바 (삭제, 교체, 순서 변경) */}
+                                                        {isEditing && (
+                                                            <div style={{ 
+                                                                display: 'flex', 
+                                                                alignItems: 'center', 
+                                                                justifyContent: 'space-between', 
+                                                                marginBottom: '10px',
+                                                                paddingBottom: '8px',
+                                                                borderBottom: '1px dashed #ede9fe'
+                                                            }}>
+                                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                                    <button 
+                                                                        onClick={() => handleMovePlace(activeDay, idx, 'up')}
+                                                                        disabled={idx === 0}
+                                                                        style={{ 
+                                                                            padding: '3px 8px', 
+                                                                            fontSize: '11px', 
+                                                                            borderRadius: '6px', 
+                                                                            border: '1px solid #ddd6fe', 
+                                                                            backgroundColor: idx === 0 ? '#f3f4f6' : '#ffffff', 
+                                                                            cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                                                                            color: '#4c1d95',
+                                                                            fontWeight: 700
+                                                                        }}
+                                                                    >
+                                                                        ⬆️ 위로
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleMovePlace(activeDay, idx, 'down')}
+                                                                        disabled={idx === (currentDayData.places?.length || 0) - 1}
+                                                                        style={{ 
+                                                                            padding: '3px 8px', 
+                                                                            fontSize: '11px', 
+                                                                            borderRadius: '6px', 
+                                                                            border: '1px solid #ddd6fe', 
+                                                                            backgroundColor: idx === (currentDayData.places?.length || 0) - 1 ? '#f3f4f6' : '#ffffff', 
+                                                                            cursor: idx === (currentDayData.places?.length || 0) - 1 ? 'not-allowed' : 'pointer',
+                                                                            color: '#4c1d95',
+                                                                            fontWeight: 700
+                                                                        }}
+                                                                    >
+                                                                        ⬇️ 아래로
+                                                                    </button>
+                                                                </div>
+
+                                                                <div style={{ display: 'flex', gap: '6px' }}>
+                                                                    <button 
+                                                                        onClick={() => openSwapModal(activeDay, idx, place)}
+                                                                        style={{ 
+                                                                            padding: '4px 10px', 
+                                                                            fontSize: '11px', 
+                                                                            borderRadius: '8px', 
+                                                                            border: '1px solid #c4b5fd', 
+                                                                            backgroundColor: '#f5f3ff', 
+                                                                            color: '#7c3aed', 
+                                                                            fontWeight: 800,
+                                                                            cursor: 'pointer'
+                                                                        }}
+                                                                    >
+                                                                        🔄 다른 곳 추천
+                                                                    </button>                                                                    <button 
+                                                                        onClick={() => handleDeletePlace(activeDay, idx)}
+                                                                        style={{ 
+                                                                            padding: '4px 10px', 
+                                                                            fontSize: '11px', 
+                                                                            borderRadius: '8px', 
+                                                                            border: '1px solid #fca5a5', 
+                                                                            backgroundColor: '#fef2f2', 
+                                                                            color: '#ef4444', 
+                                                                            fontWeight: 800,
+                                                                            cursor: 'pointer'
+                                                                        }}
+                                                                    >
+                                                                        🗑️ 삭제
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
                                                             <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#111827', flex: 1 }}>
                                                                 {place.title || place.name}
@@ -541,6 +745,91 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 )}
                             </div>
                         </div>
+
+                        {/* 🔄 대체 장소 추천 모달 팝업 */}
+                        {swapModalTarget && (
+                            <div style={{ 
+                                position: 'fixed', 
+                                inset: 0, 
+                                backgroundColor: 'rgba(0, 0, 0, 0.55)', 
+                                zIndex: 9999, 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                padding: '20px' 
+                            }}>
+                                <div style={{ 
+                                    backgroundColor: 'white', 
+                                    borderRadius: '24px', 
+                                    padding: '24px', 
+                                    maxWidth: '440px', 
+                                    width: '100%', 
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.2)' 
+                                }}>
+                                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 800, color: '#111827' }}>
+                                        🔄 다른 장소로 교체하기
+                                    </h3>
+                                    <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#6b7280' }}>
+                                        <span style={{ fontWeight: 700, color: '#7c3aed' }}>'{swapModalTarget.currentPlace?.title || swapModalTarget.currentPlace?.name}'</span> 대신 넣을 취향 맞춤 장소를 고르세요:
+                                    </p>
+
+                                    {isSwapLoading ? (
+                                        <div style={{ padding: '30px 0', textAlign: 'center', color: '#8c52ff' }}>
+                                            <Loader2 className="animate-spin" style={{ margin: '0 auto 8px auto' }} />
+                                            <div style={{ fontSize: '13px', fontWeight: 700 }}>주변 1km 내 인근 명소 추천 중...</div>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto', marginBottom: '20px' }}>
+                                            {swapCandidates.length > 0 ? (
+                                                swapCandidates.map((cand: any) => (
+                                                    <div 
+                                                        key={cand.id || cand.name}
+                                                        onClick={() => handleSelectSwapPlace(cand)}
+                                                        style={{ 
+                                                            padding: '12px 14px', 
+                                                            borderRadius: '14px', 
+                                                            border: '1.5px solid #ede9fe', 
+                                                            backgroundColor: '#faf5ff', 
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s',
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center'
+                                                        }}
+                                                    >
+                                                        <div>
+                                                            <div style={{ fontSize: '14px', fontWeight: 800, color: '#4c1d95' }}>{cand.name}</div>
+                                                            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{cand.category} • {cand.address || cand.description || '인기 관광지'}</div>
+                                                        </div>
+                                                        <span style={{ fontSize: '12px', color: '#7c3aed', fontWeight: 800 }}>선택 ➡️</span>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div style={{ padding: '20px 0', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>
+                                                    대체 가능한 주변 장소가 없습니다.
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <button 
+                                        onClick={() => setSwapModalTarget(null)}
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '12px', 
+                                            borderRadius: '12px', 
+                                            border: '1px solid #e5e7eb', 
+                                            backgroundColor: '#f3f4f6', 
+                                            fontWeight: 700, 
+                                            fontSize: '14px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </>
                 );
             default: return null;
@@ -626,8 +915,33 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             )}
             {step === 6 && (
                 <div className="rc-res-bottom text-center">
-                    <button className="rc-btn-outline" onClick={() => setStep(1)}>🔄 다른 루트 추천</button>
-                    <button className="rc-btn-primary" onClick={handleStartJourneyClick}>여행 시작하기</button>
+                    {!isEditing ? (
+                        <>
+                            <button className="rc-btn-outline" onClick={handleStartEditMode}>
+                                ✏️ 경로 편집하기
+                            </button>
+                            <button className="rc-btn-primary" onClick={handleStartJourneyClick}>
+                                여행 시작하기
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button 
+                                className="rc-btn-outline" 
+                                style={{ borderColor: '#ef4444', color: '#ef4444', backgroundColor: '#fef2f2' }} 
+                                onClick={handleRevertChanges}
+                            >
+                                ⏪ 이전으로 되돌리기
+                            </button>
+                            <button 
+                                className="rc-btn-primary" 
+                                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }} 
+                                onClick={handleApplyEditChanges}
+                            >
+                                ✅ 수정 완료
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
         </div>

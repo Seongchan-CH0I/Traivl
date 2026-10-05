@@ -17,13 +17,18 @@ class GCSService:
             try:
                 self.client = storage.Client.from_service_account_json(key_path)
                 self.bucket_name = bucket_name
-                print(f"✅ [GCS] 구글 클라우드 스토리지 연결 완료 (버킷: {self.bucket_name})")
+                print(f"✅ [GCS] 서비스 계정 키로 구글 클라우드 스토리지 연결 완료 (버킷: {self.bucket_name})")
             except Exception as e:
                 self.client = None
                 print(f"⚠️ [GCS] 인증 키 파일 로드 실패: {e}")
         else:
-            self.client = None
-            print(f"⚠️ [GCS] 서비스 계정 키 파일({key_path})을 찾을 수 없습니다. (키 발급 필요)")
+            try:
+                self.client = storage.Client()
+                self.bucket_name = bucket_name
+                print(f"✅ [GCS] GCP 환경 기본 계정으로 구글 클라우드 스토리지 연결 완료 (버킷: {self.bucket_name})")
+            except Exception as e:
+                self.client = None
+                print(f"⚠️ [GCS] 서비스 계정 키 파일({key_path})이 없어 기본 인증 시도했으나 실패: {e}")
 
     def upload_file(self, local_path: str, gcs_path: str) -> bool:
         """로컬 파일을 GCS 버킷으로 업로드"""

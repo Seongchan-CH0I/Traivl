@@ -3,28 +3,42 @@ import { prisma } from '../../../lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
+// GET /api/places?city=교토
 // GET /api/places?destinationId=JP_KYOTO
 // GET /api/places?destinationId=JP_KYOTO&category=관광지
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const destinationId = searchParams.get('destinationId');
+        const city = searchParams.get('city');
         const category = searchParams.get('category');
         const name = searchParams.get('name');
         const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
 
         const isPurePlaceOrFood = category === '관광지' || category === '맛집';
 
+        // 하드코딩 0% - DB 동적 조건 구성
+        const whereClause: any = {
+            ...(destinationId ? { destinationId } : {}),
+            ...(category ? { category } : {}),
+            ...(name ? { name } : {}),
+            ...(isPurePlaceOrFood ? { rank: { lte: 10 } } : {}),
+        };
+
+        if (city && !destinationId) {
+            whereClause.OR = [
+                { destination: { name: { contains: city } } },
+                { destination: { country: { contains: city } } },
+                { destinationId: { contains: city } },
+                { address: { contains: city } }
+            ];
+        }
+
         const places = await prisma.place.findMany({
-            where: {
-                ...(destinationId ? { destinationId } : {}),
-                ...(category ? { category } : {}),
-                ...(name ? { name } : {}),
-                ...(isPurePlaceOrFood ? { rank: { lte: 10 } } : {}),
-            },
+            where: whereClause,
             include: {
                 destination: {
-                    select: { name: true }
+                    select: { name: true, country: true }
                 }
             },
             orderBy: { rank: 'asc' },

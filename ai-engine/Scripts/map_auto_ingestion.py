@@ -19,7 +19,8 @@ MAP_URLS = {
     # 아시아 (Asia)
     "kanto": "https://download.geofabrik.de/asia/japan/kanto-latest.osm.pbf",
     "kansai": "https://download.geofabrik.de/asia/japan/kansai-latest.osm.pbf",
-    "kyushu": "https://download.geofabrik.de/asia/japan/kyushu-latest.osm.pbf",
+    "okinawa": "https://download.geofabrik.de/asia/japan/kyushu-latest.osm.pbf",
+    "fukuoka": "https://download.geofabrik.de/asia/japan/kyushu-latest.osm.pbf",
     "seoul": "https://download.geofabrik.de/asia/south-korea-latest.osm.pbf",
     "bangkok": "https://download.geofabrik.de/asia/thailand-latest.osm.pbf",
     "singapore": "https://download.geofabrik.de/asia/malaysia-singapore-brunei-latest.osm.pbf",
@@ -41,7 +42,10 @@ MAP_URLS = {
     "hawaii": "https://download.geofabrik.de/north-america/us/hawaii-latest.osm.pbf",
 
     # 오세아니아 (Oceania)
-    "sydney": "https://download.geofabrik.de/australia-oceania/australia/new-south-wales-latest.osm.pbf"
+    "sydney": "https://download.geofabrik.de/australia-oceania/australia/new-south-wales-latest.osm.pbf",
+
+    # 아프리카 (Africa)
+    "cairo": "https://download.geofabrik.de/africa/egypt-latest.osm.pbf"
 }
 
 def resolve_global_city_url(city: str) -> str:
@@ -50,7 +54,6 @@ def resolve_global_city_url(city: str) -> str:
     if city_key in MAP_URLS:
         return MAP_URLS[city_key]
     
-    # 딕셔너리에 없는 도시도 Geofabrik 글로벌 기본 규격으로 자동 추론
     return f"https://download.geofabrik.de/asia/{city_key}-latest.osm.pbf"
 
 def run_cmd(cmd, cwd=None):
@@ -61,15 +64,20 @@ def run_cmd(cmd, cwd=None):
         return False
     return True
 
-def auto_ingest_map(city_name: str):
+def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     city = city_name.lower().strip()
     url = resolve_global_city_url(city)
+    progress_pct = round((current_idx / total_count) * 100, 1)
+
+    print(f"\n=======================================================")
+    print(f"📊 [글로벌 구축 진행 현황: {current_idx}/{total_count} ({progress_pct}%)] - 대상 도시: [{city}]")
+    print(f"=======================================================")
 
     # 0. GCS에 이미 완성된 20개 이상 파일이 있는지 확인 (이미 있으면 1초 만에 스킵!)
     try:
         existing_blobs = list(gcs_service.client.list_blobs(gcs_service.bucket_name, prefix=f"maps/{city}/"))
         if len(existing_blobs) >= 20:
-            print(f"✨ [GCS 보관 확인] [{city}] 지도는 이미 구글 클라우드에 100% 보관되어 있습니다. (스킵)")
+            print(f"✨ [GCS 보관 확인 완료] [{city}] 지도는 이미 구글 클라우드에 100% 보관되어 있습니다. (자동 스킵 ✅)")
             return
     except Exception as e:
         pass
@@ -81,20 +89,20 @@ def auto_ingest_map(city_name: str):
     pbf_path = work_dir / pbf_filename
 
     # 1. curl -C - 로 끊긴 지점부터 100% 완전한 크기까지 완벽 이어받기
-    print(f"⚡ [1/3 Step] 🌍 글로벌 도시 [{city}] 10배 고속 멀티 스트리밍 다운로드 (완전성 검증)... ({url})")
+    print(f"⚡ [1/3 Step] 🌍 글로벌 도시 [{city}] 고속 다운로드 시작... ({url})")
     curl_cmd = f"curl -C - -L --retry 3 --retry-delay 2 -o \"{pbf_path}\" \"{url}\""
     download_success = run_cmd(curl_cmd)
     if not download_success or not pbf_path.exists() or pbf_path.stat().st_size < 1000000:
         print(f"❌ [{city}] URL 다운로드 실패 또는 파일 불완전")
         return
-    print(f"⚡ [고속 다운로드 100% 완결] {pbf_path} (크기: {round(pbf_path.stat().st_size / 1024 / 1024, 1)} MB)")
+    print(f"⚡ [다운로드 완료] {pbf_path} (크기: {round(pbf_path.stat().st_size / 1024 / 1024, 1)} MB)")
 
     # 2. Docker OSRM 전처리 자동 빌드 (1분 만에 전처리)
     print(f"⚙️ [2/3 Step] OSRM 엔진으로 [{city}] 지도 1분 자동 전처리 빌드 중...")
     build_success = run_cmd(
-        f"docker run --rm -t -v \"{work_dir}:/data\" osrm/osrm-backend osrm-extract -p /opt/car.lua /data/{pbf_filename} && "
-        f"docker run --rm -t -v \"{work_dir}:/data\" osrm/osrm-backend osrm-partition /data/{city}-latest.osrm && "
-        f"docker run --rm -t -v \"{work_dir}:/data\" osrm/osrm-backend osrm-customize /data/{city}-latest.osrm"
+        f"docker run --rm -v \"{work_dir}:/data\" osrm/osrm-backend osrm-extract -p /opt/car.lua /data/{pbf_filename} && "
+        f"docker run --rm -v \"{work_dir}:/data\" osrm/osrm-backend osrm-partition /data/{city}-latest.osrm && "
+        f"docker run --rm -v \"{work_dir}:/data\" osrm/osrm-backend osrm-customize /data/{city}-latest.osrm"
     )
 
     if not build_success:
@@ -102,7 +110,7 @@ def auto_ingest_map(city_name: str):
         if pbf_path.exists(): pbf_path.unlink()
         return
 
-    print(f"🎉 [2/3 Step] [{city}] OSRM 지도 26개 파일 자동 빌드 완료!")
+    print(f"🎉 [2/3 Step] [{city}] OSRM 지도 파일 자동 빌드 완료!")
 
     # 3. GCS 클라우드 버킷으로 100% 자동 업로드
     print(f"☁️ [3/3 Step] 완성된 [{city}] 지도를 구글 클라우드(GCS) 버킷으로 100% 자동 업로드 중...")
@@ -125,13 +133,15 @@ def auto_ingest_map(city_name: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Global Auto Map Ingestion CI/CD Pipeline")
-    parser.add_argument("--city", type=str, default="kanto", help="자동 구축할 도시 이름 (paris, london, new_york, bangkok, seoul 등)")
-    parser.add_argument("--global-all", action="store_true", help="전 세계 주요 글로벌 도시 50개 일괄 자동 구축")
+    parser.add_argument("--city", type=str, default="kanto", help="자동 구축할 도시 이름")
+    parser.add_argument("--global-all", action="store_true", help="21개 글로벌 도시 순차 일괄 자동 구축")
     args = parser.parse_args()
     
     if args.global_all:
-        print(f"🌐 [글로벌 배치] 전 세계 주요 {len(MAP_URLS)}개 글로벌 도시 지도를 일괄 자동 구축합니다...")
-        for city_name in MAP_URLS.keys():
-            auto_ingest_map(city_name)
+        city_list = list(MAP_URLS.keys())
+        total = len(city_list)
+        print(f"🌐 [글로벌 일괄 구축 시작] 총 {total}개 도시 순차 파이프라인 가동...")
+        for idx, city_name in enumerate(city_list, 1):
+            auto_ingest_map(city_name, current_idx=idx, total_count=total)
     else:
-        auto_ingest_map(args.city)
+        auto_ingest_map(args.city, 1, 1)
