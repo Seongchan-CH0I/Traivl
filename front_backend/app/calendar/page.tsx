@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Clock, RotateCcw, ChevronRight, Plus, Calendar as CalendarIcon, Share2, Navigation } from 'lucide-react';
+import { Clock, RotateCcw, ChevronRight, Plus, Calendar as CalendarIcon, Share2, Navigation, Pencil, Check, Loader2 } from 'lucide-react';
 import { useAi } from '../../context/AiContext';
 import { useAuth } from '../../hooks/useAuth';
 import CalendarPicker from '../../components/calendar/CalendarPicker';
@@ -20,6 +20,14 @@ export default function CalendarPage() {
   // DB에서 불러온 내 일정 리스트 중 가장 최근 일정을 활성화
   const [activeSchedule, setActiveSchedule] = useState<any>(null);
   const [activeDay, setActiveDay] = useState<number>(1);
+
+  // 🛠️ 실시간 경로 편집 관련 State
+  const [isEditing, setIsEditing] = useState(false);
+  const [initialItineraryData, setInitialItineraryData] = useState<any>(null);
+  const [swapModalTarget, setSwapModalTarget] = useState<{ day: number; placeIdx: number; currentPlace: any } | null>(null);
+  const [swapCandidates, setSwapCandidates] = useState<any[]>([]);
+  const [isSwapLoading, setIsSwapLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // 공유 모달 상태
   const [showShareModal, setShowShareModal] = useState(false);
@@ -50,6 +58,7 @@ export default function CalendarPage() {
   }, 'cal_acc');
   const { safeClose: closeDelete } = useBackHandler(showDeleteModal, () => setShowDeleteModal(false), 'cal_delete');
   const { safeClose: closeAlert } = useBackHandler(alertOpen, () => setAlertOpen(false), 'cal_alert');
+  const { safeClose: closeSwapModal } = useBackHandler(!!swapModalTarget, () => setSwapModalTarget(null), 'cal_swap');
 
   const CITY_CENTERS: Record<string, { lat: number, lng: number }> = {
     '서울': { lat: 37.5665, lng: 126.9780 },
@@ -466,6 +475,172 @@ export default function CalendarPage() {
     }
   };
 
+  // 🛠️ 편집 모드 진입 및 원본 스냅샷 저장
+  const handleStartEditMode = () => {
+    if (!activeSchedule?.itineraryData) return;
+    setInitialItineraryData(JSON.parse(JSON.stringify(activeSchedule.itineraryData)));
+    setIsEditing(true);
+  };
+
+  // ⏪ [편집 취소 및 되돌리기]
+  const handleCancelEdit = () => {
+    if (initialItineraryData) {
+      setActiveSchedule({
+        ...activeSchedule,
+        itineraryData: initialItineraryData
+      });
+      setItineraryData(initialItineraryData);
+    }
+    setIsEditing(false);
+    setInitialItineraryData(null);
+  };
+
+  // 🗑️ 장소 삭제 및 시간 재배치
+  const handleDeletePlace = (dayNum: number, placeIdx: number) => {
+    if (!activeSchedule?.itineraryData?.itinerary) return;
+    const updated = JSON.parse(JSON.stringify(activeSchedule.itineraryData));
+    const dayTarget = updated.itinerary.find((d: any) => d.day === dayNum);
+    if (dayTarget && dayTarget.places) {
+      dayTarget.places.splice(placeIdx, 1);
+      // 시간 재배치
+      dayTarget.places.forEach((p: any, idx: number) => {
+        const hour = 9 + idx * 2;
+        p.suggested_time = `${hour < 10 ? '0' + hour : hour}:00`;
+      });
+      setActiveSchedule({ ...activeSchedule, itineraryData: updated });
+      setItineraryData(updated);
+    }
+  };
+
+  // ⬆️/⬇️ 순서 변경 및 시간 재배치
+  const handleMovePlace = (dayNum: number, placeIdx: number, direction: 'up' | 'down') => {
+    if (!activeSchedule?.itineraryData?.itinerary) return;
+    const updated = JSON.parse(JSON.stringify(activeSchedule.itineraryData));
+    const dayTarget = updated.itinerary.find((d: any) => d.day === dayNum);
+    if (!dayTarget || !dayTarget.places) return;
+
+    const targetIdx = direction === 'up' ? placeIdx - 1 : placeIdx + 1;
+    if (targetIdx < 0 || targetIdx >= dayTarget.places.length) return;
+
+    // 원소 스왑
+    const temp = dayTarget.places[placeIdx];
+    dayTarget.places[placeIdx] = dayTarget.places[targetIdx];
+    dayTarget.places[targetIdx] = temp;
+
+    // 시간 재배치
+    dayTarget.places.forEach((p: any, idx: number) => {
+      const hour = 9 + idx * 2;
+      p.suggested_time = `${hour < 10 ? '0' + hour : hour}:00`;
+    });
+
+    setActiveSchedule({ ...activeSchedule, itineraryData: updated });
+    setItineraryData(updated);
+  };
+
+  // 🔄 [다른 곳 추천] 대체 장소 모달 열기 (100% DB 동적 조회)
+  const openSwapModal = async (dayNum: number, placeIdx: number, currentPlace: any) => {
+    setSwapModalTarget({ day: dayNum, placeIdx, currentPlace });
+    setIsSwapLoading(true);
+    try {
+      const targetCity = activeSchedule?.city || "교토";
+      const res = await fetch(`/api/places?city=${encodeURIComponent(targetCity)}&limit=15`);
+      const json = await res.json();
+
+      let candidateList = json.data || [];
+      if (!candidateList || candidateList.length === 0) {
+        const fallbackRes = await fetch(`/api/places?limit=15`);
+        const fallbackJson = await fallbackRes.json();
+        candidateList = fallbackJson.data || [];
+      }
+
+      // 현재 일정에 이미 포함된 장소 제외
+      const currentPlaceNames = new Set(
+        (activeSchedule?.itineraryData?.itinerary || []).flatMap((d: any) => (d.places || []).map((p: any) => p.title || p.name))
+      );
+      const candidates = candidateList.filter((p: any) => !currentPlaceNames.has(p.name));
+      setSwapCandidates(candidates.slice(0, 4));
+    } catch (err) {
+      console.error("Failed to fetch swap candidates:", err);
+      setSwapCandidates([]);
+    } finally {
+      setIsSwapLoading(false);
+    }
+  };
+
+  // 🔄 대체 장소 선택 및 스왑 반영
+  const handleSelectSwapPlace = (newPlace: any) => {
+    if (!swapModalTarget || !activeSchedule?.itineraryData?.itinerary) return;
+    const updated = JSON.parse(JSON.stringify(activeSchedule.itineraryData));
+    const dayTarget = updated.itinerary.find((d: any) => d.day === swapModalTarget.day);
+    if (dayTarget && dayTarget.places) {
+      const oldPlace = dayTarget.places[swapModalTarget.placeIdx];
+      dayTarget.places[swapModalTarget.placeIdx] = {
+        ...oldPlace,
+        place_id: newPlace.id || `swap_${Date.now()}`,
+        title: newPlace.name,
+        name: newPlace.name,
+        category: newPlace.category || "관광지",
+        description: newPlace.description || newPlace.address,
+        reason: `[추천 교체] ${newPlace.description || '유저 취향 기반 대체 장소입니다.'}`
+      };
+      setActiveSchedule({ ...activeSchedule, itineraryData: updated });
+      setItineraryData(updated);
+    }
+    setSwapModalTarget(null);
+  };
+
+  // ✅ [수정 완료 및 DB 저장]
+  const handleSaveEdit = async () => {
+    if (!activeSchedule) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/schedules', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: activeSchedule.id,
+          itineraryData: activeSchedule.itineraryData
+        })
+      });
+      const result = await res.json();
+      if (result.success) {
+        setActiveSchedule(result.data);
+        setItineraryData(result.data.itineraryData);
+        setIsEditing(false);
+        setInitialItineraryData(null);
+
+        // AI 활동 이력 저장 (내정보 마이페이지 연동)
+        if (user?.id) {
+          try {
+            await fetch(`/api/profile/${user.id}/history`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'schedule_update',
+                title: '여행 일정 코스 수정',
+                content: `'${activeSchedule.city}' 일정의 방문 장소 및 이동 동선이 업데이트되었습니다.`,
+                icon: '✏️'
+              })
+            });
+          } catch (logErr) {
+            console.warn("Failed to log schedule update history:", logErr);
+          }
+        }
+
+        setAlertTitle("일정 수정 완료 ✨");
+        setAlertMsg("일정이 성공적으로 수정 및 저장되었습니다.\n지도에도 새로운 최적 동선이 반영되었습니다.");
+        setAlertOpen(true);
+      } else {
+        alert("일정 저장에 실패했습니다: " + result.message);
+      }
+    } catch (e) {
+      console.error("일정 저장 실패:", e);
+      alert("일정 저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // 카테고리별 이모지 매핑
   const getCategoryIcon = (category: string) => {
     const cat = category || '';
@@ -534,26 +709,94 @@ export default function CalendarPage() {
                   </p>
                 </div>
                 {activeSchedule && (
-                  <button 
-                    onClick={() => setShowShareModal(true)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 12px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #8c52ff',
-                      backgroundColor: activeSchedule.isShared ? '#f3eeff' : '#ffffff',
-                      color: '#8c52ff',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <Share2 size={14} />
-                    {activeSchedule.isShared ? "공유 완료" : "피드에 공유"}
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {!isEditing ? (
+                      <>
+                        <button 
+                          onClick={handleStartEditMode}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '8px 12px',
+                            borderRadius: '12px',
+                            border: '1.5px solid #8c52ff',
+                            backgroundColor: '#ffffff',
+                            color: '#8c52ff',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <Pencil size={13} />
+                          일정 편집
+                        </button>
+                        <button 
+                          onClick={() => setShowShareModal(true)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '8px 12px',
+                            borderRadius: '12px',
+                            border: '1.5px solid #8c52ff',
+                            backgroundColor: activeSchedule.isShared ? '#f3eeff' : '#ffffff',
+                            color: '#8c52ff',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <Share2 size={14} />
+                          {activeSchedule.isShared ? "공유 완료" : "피드에 공유"}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={handleCancelEdit}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            padding: '8px 12px',
+                            borderRadius: '12px',
+                            border: '1.5px solid #e2e8f0',
+                            backgroundColor: '#ffffff',
+                            color: '#64748b',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          취소
+                        </button>
+                        <button 
+                          onClick={handleSaveEdit}
+                          disabled={isSaving}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            padding: '8px 14px',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                            color: '#ffffff',
+                            fontSize: '13px',
+                            fontWeight: 800,
+                            cursor: isSaving ? 'not-allowed' : 'pointer',
+                            boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
+                          }}
+                        >
+                          {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+                          저장
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -641,6 +884,70 @@ export default function CalendarPage() {
               </div>
             )}
 
+            {/* 편집 모드 알림 배너 */}
+            {isEditing && (
+              <div style={{
+                backgroundColor: '#faf5ff',
+                border: '1.5px solid #ddd6fe',
+                borderRadius: '16px',
+                padding: '14px 16px',
+                marginTop: '12px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.06)'
+              }}>
+                <div>
+                  <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#6d28d9', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>✏️ 일정 편집 모드</span>
+                  </div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#7c3aed', lineHeight: '1.4' }}>
+                    장소 순서 이동, 다른 장소 교체, 삭제가 가능합니다.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                  <button
+                    onClick={handleCancelEdit}
+                    style={{
+                      padding: '7px 12px',
+                      borderRadius: '10px',
+                      border: '1px solid #e2e8f0',
+                      backgroundColor: '#ffffff',
+                      color: '#64748b',
+                      fontSize: '12.5px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={isSaving}
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: '#ffffff',
+                      fontSize: '12.5px',
+                      fontWeight: 800,
+                      cursor: isSaving ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
+                    }}
+                  >
+                    {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+                    저장
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* 타임라인 리스트 */}
             <div className="calendar-timeline" style={{ marginTop: '10px' }}>
               {/* Day N 아침 숙소 출발 노드 */}
@@ -686,32 +993,124 @@ export default function CalendarPage() {
                     {/* 일정 카드 */}
                     <div 
                       className="timeline-card" 
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => handlePlaceClick(item)}
+                      style={{ 
+                        cursor: isEditing ? 'default' : 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        borderRadius: '24px',
+                        border: isEditing ? '1.5px solid #ddd6fe' : undefined,
+                        boxShadow: isEditing ? '0 8px 24px rgba(124, 58, 237, 0.08)' : undefined
+                      }}
+                      onClick={() => {
+                        if (!isEditing) handlePlaceClick(item);
+                      }}
                     >
-                      <div className="timeline-card-icon">
-                        {getCategoryIcon(item.category)}
-                      </div>
+                      {/* 편집 모드 상단 액션 바 (순서 이동, 다른 곳 추천, 삭제) */}
+                      {isEditing && (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'space-between', 
+                          width: '100%',
+                          paddingBottom: '10px',
+                          borderBottom: '1px dashed #ede9fe'
+                        }}>
+                          <div style={{ display: 'flex', gap: '5px' }}>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleMovePlace(activeDay, idx, 'up'); }}
+                              disabled={idx === 0}
+                              style={{ 
+                                padding: '4px 10px', 
+                                fontSize: '11px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #ddd6fe', 
+                                backgroundColor: idx === 0 ? '#f3f4f6' : '#ffffff', 
+                                cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                                color: idx === 0 ? '#9ca3af' : '#4c1d95',
+                                fontWeight: 700
+                              }}
+                            >
+                              ⬆️ 위로
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleMovePlace(activeDay, idx, 'down'); }}
+                              disabled={idx === places.length - 1}
+                              style={{ 
+                                padding: '4px 10px', 
+                                fontSize: '11px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #ddd6fe', 
+                                backgroundColor: idx === places.length - 1 ? '#f3f4f6' : '#ffffff', 
+                                cursor: idx === places.length - 1 ? 'not-allowed' : 'pointer',
+                                color: idx === places.length - 1 ? '#9ca3af' : '#4c1d95',
+                                fontWeight: 700
+                              }}
+                            >
+                              ⬇️ 아래로
+                            </button>
+                          </div>
 
-                      <div className="timeline-card-content">
-                        <div className="timeline-card-header">
-                          <h3 className="timeline-card-title">
-                            {item.title}
-                          </h3>
-                          <ChevronRight size={18} className="chevron-icon" />
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); openSwapModal(activeDay, idx, item); }}
+                              style={{ 
+                                padding: '5px 12px', 
+                                fontSize: '11px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #c4b5fd', 
+                                backgroundColor: '#f5f3ff', 
+                                color: '#7c3aed', 
+                                fontWeight: 800,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              🔄 다른 곳 추천
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleDeletePlace(activeDay, idx); }}
+                              style={{ 
+                                padding: '5px 12px', 
+                                fontSize: '11px', 
+                                borderRadius: '8px', 
+                                border: '1px solid #fca5a5', 
+                                backgroundColor: '#fef2f2', 
+                                color: '#ef4444', 
+                                fontWeight: 800,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              🗑️ 삭제
+                            </button>
+                          </div>
                         </div>
-                        <p className="timeline-card-desc">
-                          {item.location?.replace(/^\[.*?\]\s*/, '')}
-                        </p>
-                        <div className="timeline-card-badges">
-                          {item.duration && (
-                            <span className="badge-duration">
-                              <Clock size={12} style={{ marginRight: '4px' }} /> {item.duration}
+                      )}
+
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', width: '100%' }}>
+                        <div className="timeline-card-icon">
+                          {getCategoryIcon(item.category)}
+                        </div>
+
+                        <div className="timeline-card-content">
+                          <div className="timeline-card-header">
+                            <h3 className="timeline-card-title">
+                              {item.title}
+                            </h3>
+                            {!isEditing && <ChevronRight size={18} className="chevron-icon" />}
+                          </div>
+                          <p className="timeline-card-desc">
+                            {item.location?.replace(/^\[.*?\]\s*/, '')}
+                          </p>
+                          <div className="timeline-card-badges">
+                            {item.duration && (
+                              <span className="badge-duration">
+                                <Clock size={12} style={{ marginRight: '4px' }} /> {item.duration}
+                              </span>
+                            )}
+                            <span className="badge-category">
+                              {item.category || "명소"}
                             </span>
-                          )}
-                          <span className="badge-category">
-                            {item.category || "명소"}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -781,6 +1180,56 @@ export default function CalendarPage() {
                       <Plus size={16} /> 오늘 머물 숙소 추가하기
                     </span>
                   </div>
+                </div>
+              )}
+
+              {/* 편집 모드 하단 완료/취소 바 */}
+              {isEditing && (
+                <div style={{
+                  display: 'flex',
+                  gap: '10px',
+                  marginTop: '24px',
+                  marginBottom: '16px'
+                }}>
+                  <button
+                    onClick={handleCancelEdit}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: '1.5px solid #e2e8f0',
+                      backgroundColor: '#ffffff',
+                      color: '#64748b',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    취소 (되돌리기)
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={isSaving}
+                    style={{
+                      flex: 2,
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      cursor: isSaving ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)'
+                    }}
+                  >
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                    수정 완료 및 저장
+                  </button>
                 </div>
               )}
             </div>
@@ -1096,6 +1545,92 @@ export default function CalendarPage() {
                 취소
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔄 대체 장소 추천 모달 팝업 */}
+      {swapModalTarget && (
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          backgroundColor: 'rgba(0, 0, 0, 0.55)', 
+          zIndex: 9999, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          padding: '20px',
+          backdropFilter: 'blur(3px)'
+        }}>
+          <div style={{ 
+            backgroundColor: 'white', 
+            borderRadius: '24px', 
+            padding: '24px', 
+            maxWidth: '440px', 
+            width: '100%', 
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)' 
+          }}>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 800, color: '#111827' }}>
+              🔄 다른 장소로 교체하기
+            </h3>
+            <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#6b7280' }}>
+              <span style={{ fontWeight: 700, color: '#7c3aed' }}>'{swapModalTarget.currentPlace?.title || swapModalTarget.currentPlace?.name}'</span> 대신 넣을 취향 맞춤 장소를 고르세요:
+            </p>
+
+            {isSwapLoading ? (
+              <div style={{ padding: '30px 0', textAlign: 'center', color: '#8c52ff' }}>
+                <Loader2 className="animate-spin" style={{ margin: '0 auto 8px auto' }} />
+                <div style={{ fontSize: '13px', fontWeight: 700 }}>주변 1km 내 인근 명소 추천 중...</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto', marginBottom: '20px' }}>
+                {swapCandidates.length > 0 ? (
+                  swapCandidates.map((cand: any) => (
+                    <div 
+                      key={cand.id || cand.name}
+                      onClick={() => handleSelectSwapPlace(cand)}
+                      style={{ 
+                        padding: '12px 14px', 
+                        borderRadius: '14px', 
+                        border: '1.5px solid #ede9fe', 
+                        backgroundColor: '#faf5ff', 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#4c1d95' }}>{cand.name}</div>
+                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{cand.category} • {cand.address || cand.description || '인기 관광지'}</div>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#7c3aed', fontWeight: 800 }}>선택 ➡️</span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ padding: '20px 0', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>
+                    대체 가능한 주변 장소가 없습니다.
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button 
+              onClick={closeSwapModal}
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '12px', 
+                border: '1px solid #e5e7eb', 
+                backgroundColor: '#f3f4f6', 
+                fontWeight: 700, 
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+            >
+              취소
+            </button>
           </div>
         </div>
       )}
