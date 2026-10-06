@@ -81,17 +81,27 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1); // -1: 출발지 -> 1번째 방문지
     const [isAirportMode, setIsAirportMode] = useState<boolean>(false);   // 공항 안내 모드 여부
 
+    // 설명(description/reason/location) 추출 헬퍼 함수
+    const getPlaceDescription = (p: any, defaultText: string = "여행의 설레는 출발지입니다.") => {
+        if (!p) return defaultText;
+        const text = p.description || p.reason || p.location;
+        if (text && typeof text === 'string') {
+            return text.replace(/^\[.*?\]\s*/, '').trim();
+        }
+        return defaultText;
+    };
+
     // 전역 AI 일정 데이터 파싱
     const daysList = itineraryData?.itinerary || [];
     const currentDay = daysList[currentDayIndex];
     const placesList = currentDay?.places || [];
     
-    // Day별 Fallback 계산용 좌표
+    // Day별 Fallback 계산용 좌표 및 설명
     const firstPlace = placesList[0];
-    const destinationTitle = firstPlace?.title || "간사이 공항";
-    const recommendedReason = firstPlace?.location?.replace(/^\[.*?\]\s*/, '') || "여행의 설레는 첫 출발지입니다.";
-    const destLat = firstPlace?.lat || firstPlace?.latitude || 35.0394;
-    const destLng = firstPlace?.lng || firstPlace?.longitude || 135.7292;
+    const destinationTitle = firstPlace?.title || firstPlace?.name || "간사이 공항";
+    const recommendedReason = getPlaceDescription(firstPlace, "여행의 설레는 첫 출발지입니다.");
+    const destLat = Number(firstPlace?.lat ?? firstPlace?.latitude ?? 35.0394);
+    const destLng = Number(firstPlace?.lng ?? firstPlace?.longitude ?? 135.7292);
 
     // 1. Leaflet CDN (CSS & JS) 동적 로드
     useEffect(() => {
@@ -127,12 +137,14 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
         }
     }, []);
 
+    // 신규 도시/국가 동적 감지 (하드코딩 0%)
+    const detectedCity = selectedCity || (itineraryData as any)?.city || "교토";
+
     // 2. 현재 위치 (GPS 또는 가상 시작점) 획득
     useEffect(() => {
         setIsJourneyMapMode(true);
         
-        const cityKey = selectedCity || "교토";
-        const virtualCenter = CITY_CENTERS[cityKey] || { lat: destLat - 0.007, lng: destLng - 0.007 };
+        const virtualCenter = CITY_CENTERS[detectedCity] || { lat: destLat - 0.007, lng: destLng - 0.007 };
 
         if (typeof window !== 'undefined' && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -161,26 +173,26 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
         }
 
         return () => setIsJourneyMapMode(false);
-    }, [setIsJourneyMapMode, destLat, destLng, selectedCity]);
+    }, [setIsJourneyMapMode, destLat, destLng, detectedCity]);
 
-    // 3. 현재 위치 정보에 기반한 출발지 이름 설정
+    // 3. 현재 위치 정보에 기반한 출발지 이름 설정 (신규 도시도 유연하게 역/중심지 생성)
     const startPlaceName = userLocation?.isVirtual
-        ? (CITY_START_NAMES[selectedCity || "교토"] || `${selectedCity || "교토"}역`)
+        ? (CITY_START_NAMES[detectedCity] || `${detectedCity}역`)
         : "현재 위치";
 
     // 4. 현재 여정 단계에 맞는 출발지(startPoint)와 목적지(destPoint) 결정
-    const cityKey = selectedCity || "교토";
+    const cityKey = detectedCity;
     
     // 기본 출발지 (이전 날 숙소가 있다면 거기서 시작, 없으면 현재 위치/역)
     const prevDay = daysList[currentDayIndex - 1];
     let defaultStartName = startPlaceName;
-    let defaultStartLat = userLocation?.lat || 35.0116;
-    let defaultStartLng = userLocation?.lng || 135.7681;
+    let defaultStartLat = userLocation?.lat || (destLat - 0.007);
+    let defaultStartLng = userLocation?.lng || (destLng - 0.007);
 
     if (currentDayIndex > 0 && prevDay && prevDay.accommodation) {
         defaultStartName = `[출발] ${prevDay.accommodation.name}`;
-        defaultStartLat = prevDay.accommodation.lat || prevDay.accommodation.latitude;
-        defaultStartLng = prevDay.accommodation.lng || prevDay.accommodation.longitude;
+        defaultStartLat = Number(prevDay.accommodation.lat || prevDay.accommodation.latitude);
+        defaultStartLng = Number(prevDay.accommodation.lng || prevDay.accommodation.longitude);
     }
 
     let startPoint: { name: string, lat: number, lng: number } = {
@@ -198,13 +210,13 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
 
     if (isAirportMode) {
         // 공항 안내 모드
-        const airport = CITY_AIRPORTS[cityKey] || { name: '공항', lat: destLat, lng: destLng };
+        const airport = CITY_AIRPORTS[cityKey] || { name: `${cityKey} 공항`, lat: destLat + 0.05, lng: destLng + 0.05 };
         if (currentStepIndex >= 0 && currentStepIndex < placesList.length) {
             const currentPlace = placesList[currentStepIndex];
             startPoint = {
-                name: currentPlace.title,
-                lat: currentPlace.lat || currentPlace.latitude || destLat,
-                lng: currentPlace.longitude || currentPlace.lng || destLng
+                name: currentPlace.title || currentPlace.name,
+                lat: Number(currentPlace.lat || currentPlace.latitude || destLat),
+                lng: Number(currentPlace.longitude || currentPlace.lng || destLng)
             };
         }
         destPoint = {
@@ -219,15 +231,15 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             if (currentStepIndex >= 0 && currentStepIndex < placesList.length) {
                 const currentPlace = placesList[currentStepIndex];
                 startPoint = {
-                    name: currentPlace.title,
-                    lat: currentPlace.lat || currentPlace.latitude || destLat,
-                    lng: currentPlace.longitude || currentPlace.lng || destLng
+                    name: currentPlace.title || currentPlace.name,
+                    lat: Number(currentPlace.lat || currentPlace.latitude || destLat),
+                    lng: Number(currentPlace.longitude || currentPlace.lng || destLng)
                 };
             }
             destPoint = {
                 name: `[숙소] ${currentDay.accommodation.name}`,
-                lat: currentDay.accommodation.lat || currentDay.accommodation.latitude,
-                lng: currentDay.accommodation.lng || currentDay.accommodation.longitude,
+                lat: Number(currentDay.accommodation.lat || currentDay.accommodation.latitude),
+                lng: Number(currentDay.accommodation.lng || currentDay.accommodation.longitude),
                 reason: `현재 위치 혹은 마지막 장소에서 오늘 예약하신 숙소(${currentDay.accommodation.name})로 이동하는 경로입니다. 편안한 휴식을 위해 안전하게 이동하세요!`
             };
         }
@@ -237,24 +249,24 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
         const nextPlace = placesList[currentStepIndex + 1];
         
         startPoint = {
-            name: currentPlace.title,
-            lat: currentPlace.lat || currentPlace.latitude || destLat,
-            lng: currentPlace.lng || currentPlace.longitude || destLng
+            name: currentPlace.title || currentPlace.name,
+            lat: Number(currentPlace.lat || currentPlace.latitude || defaultStartLat),
+            lng: Number(currentPlace.lng || currentPlace.longitude || defaultStartLng)
         };
         
         if (currentStepIndex === placesList.length - 1 && currentDay?.accommodation) {
             destPoint = {
                 name: `[숙소] ${currentDay.accommodation.name}`,
-                lat: currentDay.accommodation.lat || currentDay.accommodation.latitude,
-                lng: currentDay.accommodation.lng || currentDay.accommodation.longitude,
+                lat: Number(currentDay.accommodation.lat || currentDay.accommodation.latitude),
+                lng: Number(currentDay.accommodation.lng || currentDay.accommodation.longitude),
                 reason: `${currentDay.accommodation.name} 숙소로 안전하게 이동하여 오늘의 피로를 풀어보세요.`
             };
         } else if (nextPlace) {
             destPoint = {
-                name: nextPlace.title,
-                lat: nextPlace.lat || nextPlace.latitude || destLat,
-                lng: nextPlace.lng || nextPlace.longitude || destLng,
-                reason: nextPlace.location?.replace(/^\[.*?\]\s*/, '') || "다음 목적지로 안전하게 안내합니다."
+                name: nextPlace.title || nextPlace.name,
+                lat: Number(nextPlace.lat || nextPlace.latitude || destLat),
+                lng: Number(nextPlace.lng || nextPlace.longitude || destLng),
+                reason: getPlaceDescription(nextPlace, "다음 목적지로 안전하게 안내합니다.")
             };
         }
     }
@@ -288,29 +300,29 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
             className: 'custom-map-marker-current',
             html: `
                 <div class="map-marker-wrapper">
-                    <div class="map-marker-label label-current">${startPoint.name}</div>
+                    <div class="map-marker-label label-current" title="${startPoint.name}">${startPoint.name}</div>
                     <div class="map-marker-outer-current">
                         <div class="map-marker-inner-current"></div>
                     </div>
                 </div>
             `,
-            iconSize: [80, 50],
-            iconAnchor: [40, 45]
+            iconSize: [220, 60],
+            iconAnchor: [110, 52]
         });
 
-        // 커스텀 목적지 마커 (Label + pulsing red dot)
+        // 커스텀 목적지 마커 (Label + pulsing red dot) - 글자 잘림 완전 방지 (풀네임 노출)
         const destIcon = L.divIcon({
             className: 'custom-map-marker-dest',
             html: `
                 <div class="map-marker-wrapper">
-                    <div class="map-marker-label label-dest">${destPoint.name.slice(0, 10)}</div>
+                    <div class="map-marker-label label-dest" title="${destPoint.name}">${destPoint.name}</div>
                     <div class="map-marker-outer-dest">
                         <div class="map-marker-inner-dest"></div>
                     </div>
                 </div>
             `,
-            iconSize: [80, 50],
-            iconAnchor: [40, 45]
+            iconSize: [220, 60],
+            iconAnchor: [110, 52]
         });
 
         const shouldDrawStartMarker = !startPoint.name.startsWith('[출발]');
@@ -334,38 +346,40 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
         let prevHotelMarker: any = null;
 
         if (currentDay?.accommodation) {
+            const hotelName = currentDay.accommodation.name;
             const hIcon = L.divIcon({
                 className: 'custom-map-marker-hotel',
                 html: `
                     <div class="map-marker-wrapper">
-                        <div class="map-marker-label" style="background: #8c52ff;">🏨 ${currentDay.accommodation.name.slice(0, 10)}</div>
+                        <div class="map-marker-label" style="background: #8c52ff;" title="${hotelName}">🏨 ${hotelName}</div>
                         <div class="map-marker-outer-hotel" style="width: 20px; height: 20px; background: rgba(140, 82, 255, 0.2); border: 1.5px solid rgba(140, 82, 255, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                             <div style="width: 10px; height: 10px; background: #8c52ff; border: 2px solid white; border-radius: 50%;"></div>
                         </div>
                     </div>
                 `,
-                iconSize: [80, 50],
-                iconAnchor: [40, 45]
+                iconSize: [220, 60],
+                iconAnchor: [110, 52]
             });
-            todayHotelMarker = L.marker([currentDay.accommodation.lat || currentDay.accommodation.latitude, currentDay.accommodation.lng || currentDay.accommodation.longitude], { icon: hIcon }).addTo(map);
+            todayHotelMarker = L.marker([Number(currentDay.accommodation.lat || currentDay.accommodation.latitude), Number(currentDay.accommodation.lng || currentDay.accommodation.longitude)], { icon: hIcon }).addTo(map);
         }
 
         const prevDayObj = daysList[currentDayIndex - 1];
         if (prevDayObj?.accommodation) {
+            const prevHotelName = prevDayObj.accommodation.name;
             const pIcon = L.divIcon({
                 className: 'custom-map-marker-hotel-prev',
                 html: `
                     <div class="map-marker-wrapper">
-                        <div class="map-marker-label" style="background: #10b981;">🏠 ${prevDayObj.accommodation.name.slice(0, 10)}</div>
+                        <div class="map-marker-label" style="background: #10b981;" title="${prevHotelName}">🏠 ${prevHotelName}</div>
                         <div class="map-marker-outer-hotel" style="width: 20px; height: 20px; background: rgba(16, 185, 129, 0.2); border: 1.5px solid rgba(16, 185, 129, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                             <div style="width: 10px; height: 10px; background: #10b981; border: 2px solid white; border-radius: 50%;"></div>
                         </div>
                     </div>
                 `,
-                iconSize: [80, 50],
-                iconAnchor: [40, 45]
+                iconSize: [220, 60],
+                iconAnchor: [110, 52]
             });
-            prevHotelMarker = L.marker([prevDayObj.accommodation.lat || prevDayObj.accommodation.latitude, prevDayObj.accommodation.lng || prevDayObj.accommodation.longitude], { icon: pIcon }).addTo(map);
+            prevHotelMarker = L.marker([Number(prevDayObj.accommodation.lat || prevDayObj.accommodation.latitude), Number(prevDayObj.accommodation.lng || prevDayObj.accommodation.longitude)], { icon: pIcon }).addTo(map);
         }
 
         // 경로 그리기
@@ -449,9 +463,10 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
         <div className="journey-container">
             {/* 스타일 태그 주입: Leaflet의 동적 커스텀 디자인 처리 */}
             <style>{`
-                .custom-map-marker-current, .custom-map-marker-dest {
+                .custom-map-marker-current, .custom-map-marker-dest, .custom-map-marker-hotel, .custom-map-marker-hotel-prev {
                     background: none !important;
                     border: none !important;
+                    overflow: visible !important;
                 }
                 
                 .map-marker-wrapper {
@@ -460,20 +475,25 @@ export default function JourneyMap({ onBack }: { onBack: () => void }) {
                     align-items: center;
                     justify-content: flex-end;
                     position: relative;
-                    width: 80px;
-                    height: 50px;
+                    width: 220px;
+                    height: 60px;
                 }
                 
                 .map-marker-label {
                     white-space: nowrap;
-                    padding: 4px 10px;
-                    border-radius: 12px;
-                    font-size: 11px;
+                    padding: 5px 12px;
+                    border-radius: 14px;
+                    font-size: 11.5px;
                     font-weight: 700;
                     color: white;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.22);
                     margin-bottom: 6px;
                     position: relative;
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    letter-spacing: -0.2px;
+                    text-align: center;
                 }
                 
                 .label-current {

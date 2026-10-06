@@ -52,12 +52,15 @@ export default function FeedPage() {
     const { safeClose: closePlaceDetail } = useBackHandler(!!selectedPlace, () => setSelectedPlace(null), 'place_detail');
     const { safeClose: closeAlert } = useBackHandler(alertOpen, () => setAlertOpen(false), 'alert');
 
-    // DB 플레이스 카테고리별로 분류하는 로직
-    const categorizePlace = (name: string, description: string) => {
-        const text = (name + (description || '')).toLowerCase();
-        if (text.includes('맛집') || text.includes('카페') || text.includes('레스토랑') || text.includes('음식') || text.includes('디저트') || text.includes('먹거리')) return '리뷰';
-        if (text.includes('팁') || text.includes('코스') || text.includes('교통') || text.includes('방법') || text.includes('할인') || text.includes('이용료') || text.includes('가이드')) return '팁';
-        if (text.includes('축제') || text.includes('행사') || text.includes('이벤트') || text.includes('시즌') || text.includes('개막') || text.includes('분수') || text.includes('공연') || text.includes('전시') || text.includes('마켓') || text.includes('벚꽃') || text.includes('불꽃') || text.includes('단풍') || text.includes('팝업') || text.includes('야간')) return '이벤트';
+    // DB 플레이스 카테고리별로 분류하는 로직 (DB의 category 필드 100% 최우선 존중)
+    const categorizePlace = (place: any) => {
+        if (place.category === '팁' || place.rank === 11) return '팁';
+        if (place.category === '이벤트' || place.rank === 12) return '이벤트';
+        if (place.category === '맛집' || place.category === '카페') return '리뷰';
+
+        // 그 외 맛집 텍스트 보조 감지
+        const text = ((place.name || '') + (place.description || '')).toLowerCase();
+        if (text.includes('맛집') || text.includes('카페') || text.includes('디저트') || text.includes('먹거리')) return '리뷰';
         return '인기';
     };
 
@@ -79,7 +82,7 @@ export default function FeedPage() {
                             : (place.imageUrl || '/images/placeholder.jpg'),
                         badge: place.category || '명소',
                         rating: place.rating ? place.rating.toFixed(1) : (4.0 + Math.random() * 1.0).toFixed(1),
-                        category: categorizePlace(place.name, place.description),
+                        category: categorizePlace(place),
                         city: place.destination?.name.split(',')[0].trim() || '',
                         destinationId: place.destinationId,
                         rank: place.rank,

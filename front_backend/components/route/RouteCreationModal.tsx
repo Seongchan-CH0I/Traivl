@@ -194,8 +194,9 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         setSwapModalTarget({ day: dayNum, placeIdx, currentPlace });
         setIsSwapLoading(true);
         try {
-            // 하드코딩 없이 선택된 도시(city) 변수를 그대로 API로 전달
-            const res = await fetch(`/api/places?city=${encodeURIComponent(city)}&limit=15`);
+            // 하드코딩 없이 선택된 도시(city) 변수를 그대로 API로 전달 (없으면 여정 정보에서 자동 감지)
+            const targetCity = city || itineraryResult?.city || "교토";
+            const res = await fetch(`/api/places?city=${encodeURIComponent(targetCity)}&excludeTips=true&limit=15`);
             const json = await res.json();
             
             let candidateList = json.data || [];
@@ -207,11 +208,17 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 candidateList = fallbackJson.data || [];
             }
 
-            // 현재 일정에 이미 포함된 장소 제외
+            // 현재 일정에 이미 포함된 장소 및 '팁'/'이벤트' 제외 (순수 방문 명소/맛집만 추천)
             const currentPlaceNames = new Set(
                 (itineraryResult?.itinerary || []).flatMap((d: any) => (d.places || []).map((p: any) => p.title || p.name))
             );
-            const candidates = candidateList.filter((p: any) => !currentPlaceNames.has(p.name));
+            const candidates = candidateList.filter((p: any) => 
+                p.category !== '팁' && 
+                p.category !== '이벤트' && 
+                p.rank !== 11 && 
+                p.rank !== 12 && 
+                !currentPlaceNames.has(p.name)
+            );
             setSwapCandidates(candidates.slice(0, 4));
         } catch (err) {
             console.error("Failed to fetch swap candidates:", err);
@@ -221,21 +228,42 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         }
     };
 
-    // 🔄 대체 장소 선택 및 스왑 반영
+    // 🔄 대체 장소 선택 및 스왑 반영 (좌표, 설명, 지도 경로 완벽 동기화)
     const handleSelectSwapPlace = (newPlace: any) => {
         if (!swapModalTarget || !itineraryResult?.itinerary) return;
         const updated = JSON.parse(JSON.stringify(itineraryResult));
         const dayTarget = updated.itinerary.find((d: any) => d.day === swapModalTarget.day);
         if (dayTarget && dayTarget.places) {
             const oldPlace = dayTarget.places[swapModalTarget.placeIdx];
+
+            // 신규 장소 좌표 추출 (DB의 latitude/longitude 또는 lat/lng)
+            const rawLat = newPlace.latitude ?? newPlace.lat;
+            const rawLng = newPlace.longitude ?? newPlace.lng;
+            const parsedLat = rawLat !== undefined && rawLat !== null && !isNaN(Number(rawLat)) ? Number(rawLat) : (oldPlace.lat || oldPlace.latitude);
+            const parsedLng = rawLng !== undefined && rawLng !== null && !isNaN(Number(rawLng)) ? Number(rawLng) : (oldPlace.lng || oldPlace.longitude);
+
+            // 신규 장소 상세 설명 추출 (DB description 우선 사용)
+            const placeDesc = newPlace.description 
+                ? (newPlace.description.length > 8 ? newPlace.description : `${newPlace.description}로 유명한 ${newPlace.name}입니다.`)
+                : (newPlace.address ? `${newPlace.address}에 위치한 추천 명소입니다.` : `${newPlace.name} 방문 코스입니다.`);
+
             dayTarget.places[swapModalTarget.placeIdx] = {
                 ...oldPlace,
-                place_id: newPlace.id || `swap_${Date.now()}`,
+                place_id: newPlace.id ? String(newPlace.id) : `swap_${Date.now()}`,
                 title: newPlace.name,
                 name: newPlace.name,
-                category: newPlace.category || "관광지",
-                description: newPlace.description || newPlace.address,
-                reason: `[추천 교체] ${newPlace.description || '유저 취향 기반 대체 장소입니다.'}`
+                lat: parsedLat,
+                lng: parsedLng,
+                latitude: parsedLat,
+                longitude: parsedLng,
+                category: newPlace.category || oldPlace.category || "관광지",
+                location: placeDesc,
+                description: placeDesc,
+                reason: placeDesc,
+                address: newPlace.address || oldPlace.address || "",
+                imageUrl: newPlace.imageUrl || oldPlace.imageUrl || "",
+                rating: newPlace.rating ?? oldPlace.rating,
+                tags: newPlace.tags || oldPlace.tags || []
             };
             setItineraryResult(updated);
             setItineraryData(updated);

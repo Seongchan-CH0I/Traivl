@@ -279,3 +279,8 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('ES_BARCELONA', '몬주익 마법의 분수 쇼', '이벤트', '빛과 음악, 물줄기가 조화를 이루는 바르셀로나의 상징적인 무료 분수 공연', 'http://holaspain.co.kr/data/editor/1909/9f0f8febd0931c10397e0b2715dcccbb_1568612818_2473.jpg', 12, 'Barcelona, Spain', 41.371, 2.151, '시즌별 상이', '', ARRAY['#분수','#공연'], 0, 4.7),
 ('IT_ROME', '바티칸 박물관 (야간 개장)', '이벤트', '복잡한 낮을 피해 달빛 아래 고요하게 명작들을 감상하는 특별한 전시 이벤트', 'https://cdn.tripstore.kr/external-images/ad4af1e02d878d7ab3275b51a46913c4.jpg?q=85&w=1440', 12, 'Rome, Italy', 41.906, 12.453, '19:00-22:30', '', ARRAY['#전시','#야간'], 30000, 4.9),
 ('DE_BERLIN', '베를린 빛의 축제 (Lights)', '이벤트', '매년 가을 도시 전체의 랜드마크들이 거대한 캔버스가 되는 화려한 조명 예술 전시', 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201310/11/htm_201310118201340104011.jpg', 12, 'Berlin, Germany', 52.516, 13.377, '시즌별 상이', '', ARRAY['#전시','#축제'], 0, 4.8);
+
+-- [6] 팁(rank 11) 및 이벤트(rank 12) 카테고리 확정 보장 (관광지와 철저히 분리)
+UPDATE "Place" SET "category" = '팁' WHERE rank = 11;
+UPDATE "Place" SET "category" = '이벤트' WHERE rank = 12;
+

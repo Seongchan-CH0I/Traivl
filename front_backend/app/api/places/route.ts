@@ -15,14 +15,18 @@ export async function GET(request: Request) {
         const name = searchParams.get('name');
         const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
 
-        const isPurePlaceOrFood = category === '관광지' || category === '맛집';
+        const excludeTips = searchParams.get('excludeTips') === 'true' || searchParams.get('forCourse') === 'true';
+        const isPurePlaceOrFood = category === '관광지' || category === '맛집' || excludeTips;
 
         // 하드코딩 0% - DB 동적 조건 구성
         const whereClause: any = {
             ...(destinationId ? { destinationId } : {}),
             ...(category ? { category } : {}),
             ...(name ? { name } : {}),
-            ...(isPurePlaceOrFood ? { rank: { lte: 10 } } : {}),
+            ...(isPurePlaceOrFood ? { 
+                rank: { lte: 10 },
+                category: category || { notIn: ['팁', '이벤트'] }
+            } : {}),
         };
 
         if (city && !destinationId) {
@@ -45,9 +49,9 @@ export async function GET(request: Request) {
             ...(limit ? { take: limit } : {}),
         });
 
-        // 💡 외부 비보안/깨지는 이미지 로컬 정적 에셋으로 안전 매핑
+        // 💡 외부 비보안/깨지는 이미지 로컬 정적 에셋으로 안전 매핑 및 팁/이벤트 최종 안전 필터링
         const sanitizedPlaces = places
-            .filter((place) => !isPurePlaceOrFood || (place.rank && place.rank <= 10))
+            .filter((place) => !isPurePlaceOrFood || (place.rank && place.rank <= 10 && place.category !== '팁' && place.category !== '이벤트'))
             .map((place) => {
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...place, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
