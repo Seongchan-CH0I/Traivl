@@ -11,6 +11,7 @@ import { useBackHandler } from '../hooks/useBackHandler';
 import LandingPage from '../components/ui/LandingPage';
 import LoginScreen from '../components/ui/LoginScreen';
 import AudioWaveform from '../components/ui/AudioWaveform';
+import ServiceWorkerRegistrar from '../components/ui/ServiceWorkerRegistrar';
 
 const renderMessageText = (text: string) => {
     if (!text) return null;
@@ -1075,9 +1076,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                 <meta name="apple-mobile-web-app-title" content="Traivl" />
+                <meta name="theme-color" content="#8c52ff" />
+                <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+                <link rel="icon" href="/images/icon-192.png" type="image/png" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
             </head>
             <body suppressHydrationWarning>
+                <ServiceWorkerRegistrar />
                 <AuthProvider>
                     <AiProvider>
                         <LayoutContent>
