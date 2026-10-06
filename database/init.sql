@@ -125,7 +125,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 
 -- [CITY: SOKCHO] - 실시간 인기 도시 사용 //이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
-('KR_SOKCHO', '설악산', '관광지', '국립공원', 'https://gangwon.to/upload/board/BDMAIN03/9871e05e-9475-444a-862a-3aa117333054.jpg', 1, '속초시 설악산로', 38.156, 128.465, '09:00-18:00', '', ARRAY['#등산','#케이블카'], 4500, 4.8),
+('KR_SOKCHO', '설악산', '관광지', '국립공원', 'https://cdn.ardentnews.co.kr/news/photo/202511/8491_39982_2329.jpg', 1, '속초시 설악산로', 38.156, 128.465, '09:00-18:00', '', ARRAY['#등산','#케이블카'], 4500, 4.8),
 ('KR_SOKCHO', '속초중앙시장', '관광지', '속초 시장', 'https://cdn.imweb.me/upload/S20200306ae10b10180d43/591b040bbbd79.jpg', 2, '속초시 중앙로', 38.204, 128.591, '09:00-21:00', '', ARRAY['#닭강정','#시장'], 0, 4.6),
 ('KR_SOKCHO', '아바이마을', '관광지', '갯배 마을', 'https://cdn.hkbs.co.kr/news/photo/202405/757663_493126_4616.jpg', 3, '속초시 청호로', 38.200, 128.594, '00:00-24:00', '', ARRAY['#갯배','#순대'], 0, 4.5),
 ('KR_SOKCHO', '청초호', '관광지', '도심 호수', 'https://www.telltrip.com/wp-content/uploads/2026/01/sokcho-cheongchoho-lake-sunrise-walking-trail4.webp', 4, '속초시 엑스포로', 38.201, 128.585, '00:00-24:00', '', ARRAY['#산책','#호수'], 0, 4.6),
@@ -204,7 +204,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: PARIS] - 검색 및 추천 결과 호출 전용 //이미지 변경 완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('FR_PARIS', '에펠탑', '관광지', '파리의 상징', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/500px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg', 1, 'Paris, France', 48.858, 2.294, '09:30-23:45', '', ARRAY['#낭만','#필수코스'], 25000, 4.7),
-('FR_PARIS', '루브르 박물관', '관광지', '세계 최대 박물관', 'https://lh3.googleusercontent.com/gps-cs-s/APNQkAHjs53gMxKFO-TE5BrqGnLbrGc6u5yglzf1MuCWTfiOwGFex8t78xPMS9ngzQtosPLSmMbGzmQBoA8SGDkHR3OG_oAZr9vzhTXZsfCmYLeC99DESBzfuB9dKSQI0UVbY7codYVXhw=w270-h312-n-k-no', 2, 'Paris, France', 48.860, 2.337, '09:00-18:00', '', ARRAY['#예술','#모나리자'], 17000, 4.8),
+('FR_PARIS', '루브르 박물관', '관광지', '세계 최대 박물관', 'https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/cg79lzqlojzwcshghlo6.webp', 2, 'Paris, France', 48.860, 2.337, '09:00-18:00', '', ARRAY['#예술','#모나리자'], 17000, 4.8),
 ('FR_PARIS', '몽마르트르 언덕', '관광지', '예술가 언덕', 'https://d3b39vpyptsv01.cloudfront.net/photo/1/2/7005e19b43ee335eefeddcc1eea0d051.jpg', 3, 'Paris, France', 48.886, 2.343, '00:00-24:00', '', ARRAY['#화가','#야경'], 0, 4.6),
 ('FR_PARIS', '개선문', '관광지', '승리의 상징', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Arc_Triomphe.jpg/500px-Arc_Triomphe.jpg', 4, 'Paris, France', 48.873, 2.295, '10:00-23:00', '', ARRAY['#역사','#전망'], 13000, 4.7),
 ('FR_PARIS', '베르사유 궁전', '관광지', '화려한 궁전', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Versailles_Palace.jpg/960px-Versailles_Palace.jpg', 5, 'Versailles, France', 48.804, 2.120, '09:00-18:30', '', ARRAY['#거울의방','#궁전'], 18000, 4.8),
