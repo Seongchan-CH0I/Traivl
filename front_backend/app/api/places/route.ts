@@ -53,6 +53,15 @@ export async function GET(request: Request) {
         const sanitizedPlaces = places
             .filter((place) => !isPurePlaceOrFood || (place.rank && place.rank <= 10 && place.category !== '팁' && place.category !== '이벤트'))
             .map((place) => {
+                if (place.name === '설악산' || (place.imageUrl && (place.imageUrl.includes('gangwon.to') || place.imageUrl.includes('ardentnews')))) {
+                    return { ...place, imageUrl: '/images/places/seoraksan.jpg' };
+                }
+                if (place.name === '루브르 박물관' || (place.imageUrl && (place.imageUrl.includes('googleusercontent') || place.imageUrl.includes('klook')))) {
+                    return { ...place, imageUrl: '/images/places/louvre.webp' };
+                }
+                if (place.name === '키시모토' || (place.imageUrl && place.imageUrl.includes('cdninstagram'))) {
+                    return { ...place, imageUrl: '/images/places/kishimoto.jpg' };
+                }
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...place, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
                 }
