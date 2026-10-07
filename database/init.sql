@@ -147,7 +147,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('JP_OSAKA', '쿠로몬시장', '맛집', '오사카 부엌', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/20/00/a2000290/img/ko/a2000290_parts_5dd33dcd27cb0.jpg?20210126181209&q=80', 7, 'Osaka, Chuo Ward', 34.665, 135.506, '09:00-18:00', '', ARRAY['#시장','#해산물'], 20000, 4.3),
 ('JP_OSAKA', '치보', '맛집', '오코노미야키', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/01/a0001543/img/basic/a0001543_main.jpg?20200619172348&q=80', 8, '1 Chome Dotonbori', 34.668, 135.503, '11:00-23:00', '', ARRAY['#철판','#오코노미'], 20000, 4.5),
 ('JP_OSAKA', '모토무라', '맛집', '규카츠', 'https://image.theminda.com/data/travel/image/middle/201609/1473397479_1.jpg', 9, '3 Chome Namba', 34.667, 135.501, '11:00-22:00', '', ARRAY['#규카츠','#웨이팅'], 20000, 4.7),
-('JP_OSAKA', '하나마루켄', '맛집', '통갈비 라멘', '/images/places/hanamaluken.jpg', 10, '1 Chome Namba', 34.667, 135.502, '00:00-24:00', '', ARRAY['#라멘','#심야'], 1000, 4.6);
+('JP_OSAKA', '하나마루켄', '맛집', '통갈비 라멘', '/images/places/hanamaluken.jpg', 10, '1 Chome Namba', 34.667, 135.502, '00:00-24:00', '', ARRAY['#라멘','#심야'], 10000, 4.6);
 
 -- [CITY: KYOTO] - 실시간 인기 도시 사용 //이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
@@ -164,13 +164,13 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 
 -- [CITY: TOKYO] - 실시간 인기 도시 사용//이미지변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
-('JP_TOKYO', '시부야스카이', '관광지', '시부야 전망', 'https://www.datocms-assets.com/101439/1702617733-shibuya-sky.webp?fit=crop&h=800&w=1200&fm=avif', 1, 'Tokyo, Shibuya', 35.658, 139.702, '10:00-22:00', '', ARRAY['#야경','#명소'], 2000, 4.8),
+('JP_TOKYO', '시부야스카이', '관광지', '시부야 전망', 'https://www.datocms-assets.com/101439/1702617733-shibuya-sky.webp?fit=crop&h=800&w=1200&fm=avif', 1, 'Tokyo, Shibuya', 35.658, 139.702, '10:00-22:00', '', ARRAY['#야경','#명소'], 20000, 4.8),
 ('JP_TOKYO', '센소지', '관광지', '아사쿠사 사찰', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Sensoji_Temple_%2840909716384%29.jpg/500px-Sensoji_Temple_%2840909716384%29.jpg', 2, 'Asakusa, Taito', 35.714, 139.796, '06:00-17:00', '', ARRAY['#전통','#아사쿠사'], 0, 4.6),
 ('JP_TOKYO', '도쿄타워', '관광지', '상징적 랜드마크', 'https://att-japan.net/wp-content/uploads/2025/07/shibakoen33010004_m.jpg', 3, 'Minato, Tokyo', 35.658, 139.745, '09:00-23:00', '', ARRAY['#랜드마크','#야경'], 12000, 4.5),
 ('JP_TOKYO', '하라주쿠', '관광지', '패션의 거리', 'https://travel.rakuten.com/contents/sites/contents/files/styles/max_1300x1300/public/2024-09/things-to-do-harajuku_5.jpg?itok=SkcS5Lkm', 4, 'Shibuya, Tokyo', 35.670, 139.702, '10:00-20:00', '', ARRAY['#쇼핑','#청춘'], 0, 4.4),
-('JP_TOKYO', '신주쿠교엔', '관광지', '도심 속 공원', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/03/a0003755/img/basic/a0003755_main.jpg?20230824105400&q=80', 5, 'Shinjuku, Tokyo', 35.685, 139.710, '09:00-16:00', '', ARRAY['#힐링','#벚꽃'], 500, 4.7),
+('JP_TOKYO', '신주쿠교엔', '관광지', '도심 속 공원', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/03/a0003755/img/basic/a0003755_main.jpg?20230824105400&q=80', 5, 'Shinjuku, Tokyo', 35.685, 139.710, '09:00-16:00', '', ARRAY['#힐링','#벚꽃'], 5000, 4.7),
 ('JP_TOKYO', '아후리라멘', '맛집', '유자 라멘', 'https://ak-d.tripcdn.com/images/10070v000000kfzg77064_C_760_506_R5.jpg?proc=autoorient', 6, 'Ebisu, Tokyo', 35.644, 139.712, '11:00-05:00', '', ARRAY['#라멘','#유자'], 12000, 4.6),
-('JP_TOKYO', '우오베이', '맛집', '가성비 초밥', '/images/places/uobei.jpg', 7, 'Shibuya, Tokyo', 35.659, 139.698, '11:00-23:00', '', ARRAY['#스시','#기차스시'], 1500, 4.4),
+('JP_TOKYO', '우오베이', '맛집', '가성비 초밥', '/images/places/uobei.jpg', 7, 'Shibuya, Tokyo', 35.659, 139.698, '11:00-23:00', '', ARRAY['#스시','#기차스시'], 15000, 4.4),
 ('JP_TOKYO', '미도리스시', '맛집', '인기 초밥', 'https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/qbb7awpcts1xqyilhqs1.webp', 8, 'Ginza, Tokyo', 35.671, 139.759, '11:00-22:00', '', ARRAY['#스시','#웨이팅'], 30000, 4.7),
 ('JP_TOKYO', '긴자바이린', '맛집', '돈카츠 명가', 'https://dry7pvlp22cox.cloudfront.net/mrt-images-prod/2023/05/25/Jxar/nZPySQQ7un.jpeg?quality=70.0&width=1080', 9, 'Ginza, Tokyo', 35.670, 139.764, '11:30-21:00', '', ARRAY['#돈카츠','#노포'], 25000, 4.5),
 ('JP_TOKYO', '츠키지시장', '맛집', '참치 전문', 'https://ichef.bbci.co.uk/ace/ws/800/cpsprodpb/22C6/production/_103720980_bigtunaauction.jpg.webp', 10, 'Chuo, Tokyo', 35.665, 139.770, '05:00-14:00', '', ARRAY['#시장','#회'], 25000, 4.4);
@@ -178,7 +178,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: FUKUOKA] - 실시간 인기 도시 사용// 이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_FUKUOKA', '오호리공원', '관광지', '호수 산책', 'https://www.crossroadfukuoka.jp/storage/tourism_attractions/12492/responsive_images/gjVstaSGN1fW8vhgx7AyahpdYwsMeizTKzk7pVd0__1673_1115.jpg', 1, 'Fukuoka, Chuo Ward', 33.584, 130.376, '00:00-24:00', '', ARRAY['#산책','#힐링'], 0, 4.5),
-('JP_FUKUOKA', '후쿠오카타워', '관광지', '야경 전망', 'https://www.crossroadfukuoka.jp/storage/tourism_attractions/12343/responsive_images/bQgs9Vj3xIQ1SbXXzR0gny0wRdjJrUnUQWnvANZ8__1053_866.jpg', 2, 'Fukuoka, Sawara Ward', 33.593, 130.351, '09:00-22:00', '', ARRAY['#전망','#야경'], 800, 4.4),
+('JP_FUKUOKA', '후쿠오카타워', '관광지', '야경 전망', 'https://www.crossroadfukuoka.jp/storage/tourism_attractions/12343/responsive_images/bQgs9Vj3xIQ1SbXXzR0gny0wRdjJrUnUQWnvANZ8__1053_866.jpg', 2, 'Fukuoka, Sawara Ward', 33.593, 130.351, '09:00-22:00', '', ARRAY['#전망','#야경'], 8000, 4.4),
 ('JP_FUKUOKA', '다자이후', '관광지', '학문의 신사', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/20100719_Dazaifu_Tenmangu_Shrine_3328.jpg/960px-20100719_Dazaifu_Tenmangu_Shrine_3328.jpg', 3, 'Dazaifu, Fukuoka', 33.521, 130.524, '06:00-19:00', '', ARRAY['#합격','#매화'], 0, 4.6),
 ('JP_FUKUOKA', '캐널시티', '관광지', '복합 쇼핑몰', 'https://gofukuoka.jp/files/Spots/995ca4a3-b406-42fc-b219-73d3ad05c27b/image/f05d4849d9483a2d2ad606acecf9ef00.jpg', 4, 'Fukuoka, Hakata Ward', 33.589, 130.411, '10:00-21:00', '', ARRAY['#쇼핑','#분수쇼'], 0, 4.3),
 ('JP_FUKUOKA', '나카스야시장', '관광지', '강변 포차', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FVmudz%2FbtrScbCcm47%2FAAAAAAAAAAAAAAAAAAAAANmL_9mn7VgYr6gSrR9yBvnJ7TKf38_Z5BMh90Fz6hro%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3DDBgAyLIG%252FwjConNaxXGIg%252Fx%252FUf0%253D', 5, 'Fukuoka, Nakasu', 33.591, 130.404, '18:00-02:00', '', ARRAY['#포차','#야경'], 0, 4.7),
@@ -198,7 +198,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('JP_OKINAWA', '잭스스테이크', '맛집', '오키나와 고기', 'https://kr.gogo-tour.com/info/wp-content/uploads/2025/03/%E1%84%8B%E1%85%A9%E1%84%8F%E1%85%B5%E1%84%82%E1%85%A1%E1%84%8B%E1%85%AA-%E1%84%86%E1%85%A1%E1%86%BA%E1%84%8C%E1%85%B5%E1%86%B8-%E1%84%8C%E1%85%A2%E1%86%A8%E1%84%89%E1%85%B3-%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%B3-%E1%84%92%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%89%E1%85%B3-24-860x573.jpg', 6, 'Naha, Okinawa', 26.212, 127.674, '11:00-23:00', '', ARRAY['#고기','#가성비'], 2500, 4.6),
 ('JP_OKINAWA', '키시모토', '맛집', '오키나와 소바', '/images/places/kishimoto.jpg', 7, 'Okinawa, Motobu', 26.662, 127.898, '11:00-17:00', '', ARRAY['#소바','#노포'], 800, 4.5),
 ('JP_OKINAWA', '쿠라스시', '맛집', '회전 초밥', 'https://article-image.travel.navitime.jp/img/NTJnews0303-ko/1-12.JPG', 8, 'Okinawa, Chatan', 26.315, 127.755, '11:00-23:00', '', ARRAY['#초밥','#가족'], 15000, 4.3),
-('JP_OKINAWA', '포크타마고', '맛집', '스팸 주먹밥', 'https://ohh.okinawa/wpdir/wp-content/uploads/2019/10/b835d70fcb0f7cb8a28b5c9db10a7548.jpg', 9, 'Naha, Okinawa', 26.213, 127.682, '07:00-21:00', '', ARRAY['#주먹밥','#간식'], 5000, 4.6),
+('JP_OKINAWA', '포크타마고', '맛집', '스팸 주먹밥', 'https://ohh.okinawa/wpdir/wp-content/uploads/2019/10/b835d70fcb0f7cb8a28b5c9db10a7548.jpg', 9, 'Naha, Okinawa', 26.213, 127.682, '07:00-21:00', '', ARRAY['#주먹밥','#간식'], 10000, 4.6),
 ('JP_OKINAWA', '우후야', '맛집', '백년가옥 맛집', 'https://www.okitour.co.kr/uploads/contents/restaurant/S1AHZ7Qpf', 10, 'Okinawa, Nago', 26.621, 127.962, '11:00-22:00', '', ARRAY['#분위기','#가옥'], 50000, 4.7);
 
 -- [CITY: PARIS] - 검색 및 추천 결과 호출 전용 //이미지 변경 완료
