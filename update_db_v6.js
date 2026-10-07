@@ -10,7 +10,11 @@ async function main() {
   const updates = [
     { name: '설악산', url: '/images/places/seoraksan.jpg' },
     { name: '루브르 박물관', url: '/images/places/louvre.webp' },
-    { name: '키시모토', url: '/images/places/kishimoto.jpg' }
+    { name: '키시모토', url: '/images/places/kishimoto.jpg' },
+    { name: '청초수물회', url: '/images/places/cheongchosu.webp' },
+    { name: '하나마루켄', url: '/images/places/hanamaluken.jpg' },
+    { name: '우오베이', url: '/images/places/uobei.jpg' },
+    { name: '봉포머구리', url: '/images/places/bongpomuguri.jpg' }
   ];
 
   for (const item of updates) {

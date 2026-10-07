@@ -131,9 +131,9 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('KR_SOKCHO', '청초호', '관광지', '도심 호수', 'https://www.telltrip.com/wp-content/uploads/2026/01/sokcho-cheongchoho-lake-sunrise-walking-trail4.webp', 4, '속초시 엑스포로', 38.201, 128.585, '00:00-24:00', '', ARRAY['#산책','#호수'], 0, 4.6),
 ('KR_SOKCHO', '영금정', '관광지', '파도 소리', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/38/1d/14/pavilion-along-the-coast.jpg?w=1200&h=-1&s=1', 5, '속초시 영금정로', 38.212, 128.601, '00:00-24:00', '', ARRAY['#바다','#일출'], 0, 4.7),
 ('KR_SOKCHO', '만석닭강정', '맛집', '속초 대표', 'https://www.mansuk.kr/skin/img/sub/menu-detail-02.jpg', 6, '속초시 중앙로', 38.205, 128.592, '10:00-20:00', '', ARRAY['#닭강정','#필수'], 18000, 4.5),
-('KR_SOKCHO', '봉포머구리', '맛집', '물회 맛집', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F9b9IN%2FbtsInwP7Ghw%2FAAAAAAAAAAAAAAAAAAAAAK6Y70lMOCVUvqzeNFBM42MkduaUqWzUU0mZwBxAy1bI%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1780239599%26allow_ip%3D%26allow_referer%3D%26signature%3DRO36xltbcsUeXu6eVUOC6taeEY4%253D', 7, '속초시 영랑해안길', 38.215, 128.596, '10:00-21:00', '', ARRAY['#물회','#해산물'], 15000, 4.4),
+('KR_SOKCHO', '봉포머구리', '맛집', '물회 맛집', '/images/places/bongpomuguri.jpg', 7, '속초시 영랑해안길', 38.215, 128.596, '10:00-21:00', '', ARRAY['#물회','#해산물'], 15000, 4.4),
 ('KR_SOKCHO', '단천식당', '맛집', '순대 노포', 'https://cdn.imweb.me/upload/S20200306ae10b10180d43/657fe12e64198.jpg', 8, '속초시 아바이마을길', 38.201, 128.594, '08:30-20:30', '', ARRAY['#순대','#노포'], 12000, 4.5),
-('KR_SOKCHO', '청초수물회', '맛집', '뷰 맛집', 'https://d12zq4w4guyljn.cloudfront.net/20260909061941_photo7_6aa674037ff9.webp', 9, '속초시 엑스포로', 38.196, 128.583, '09:30-21:00', '', ARRAY['#물회','#가족'], 16000, 4.4),
+('KR_SOKCHO', '청초수물회', '맛집', '뷰 맛집', '/images/places/cheongchosu.webp', 9, '속초시 엑스포로', 38.196, 128.583, '09:30-21:00', '', ARRAY['#물회','#가족'], 16000, 4.4),
 ('KR_SOKCHO', '함흥냉면옥', '맛집', '원조 냉면', 'https://minio.nculture.org/amsweb-opt/multimedia_assets/196/85392/86313/c/%ED%95%A8%ED%9D%A5%EB%83%89%EB%A9%B4%EC%98%A5-%289%29-medium-size.jpg', 10, '속초시 청초호반로', 38.205, 128.588, '10:30-20:30', '', ARRAY['#냉면','#원조'], 10000, 4.3);
 
 -- [CITY: OSAKA] - 실시간 인기 도시 사용 //이미지 변경완료
@@ -147,7 +147,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('JP_OSAKA', '쿠로몬시장', '맛집', '오사카 부엌', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/20/00/a2000290/img/ko/a2000290_parts_5dd33dcd27cb0.jpg?20210126181209&q=80', 7, 'Osaka, Chuo Ward', 34.665, 135.506, '09:00-18:00', '', ARRAY['#시장','#해산물'], 2000, 4.3),
 ('JP_OSAKA', '치보', '맛집', '오코노미야키', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/01/a0001543/img/basic/a0001543_main.jpg?20200619172348&q=80', 8, '1 Chome Dotonbori', 34.668, 135.503, '11:00-23:00', '', ARRAY['#철판','#오코노미'], 2000, 4.5),
 ('JP_OSAKA', '모토무라', '맛집', '규카츠', 'https://image.theminda.com/data/travel/image/middle/201609/1473397479_1.jpg', 9, '3 Chome Namba', 34.667, 135.501, '11:00-22:00', '', ARRAY['#규카츠','#웨이팅'], 2000, 4.7),
-('JP_OSAKA', '하나마루켄', '맛집', '통갈비 라멘', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbioBEk%2FbtsHR7WI6Tu%2FAAAAAAAAAAAAAAAAAAAAAANzlMIGqeu38avD0od6GR7tLsBYuCrEYGRQbGui-0FF%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1793458799%26allow_ip%3D%26allow_referer%3D%26signature%3DWUo5OCcNGwTE60SdbUetHSKd5Ow%253D', 10, '1 Chome Namba', 34.667, 135.502, '00:00-24:00', '', ARRAY['#라멘','#심야'], 1000, 4.6);
+('JP_OSAKA', '하나마루켄', '맛집', '통갈비 라멘', '/images/places/hanamaluken.jpg', 10, '1 Chome Namba', 34.667, 135.502, '00:00-24:00', '', ARRAY['#라멘','#심야'], 1000, 4.6);
 
 -- [CITY: KYOTO] - 실시간 인기 도시 사용 //이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
@@ -166,14 +166,14 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_TOKYO', '시부야스카이', '관광지', '시부야 전망', 'https://www.datocms-assets.com/101439/1702617733-shibuya-sky.webp?fit=crop&h=800&w=1200&fm=avif', 1, 'Tokyo, Shibuya', 35.658, 139.702, '10:00-22:00', '', ARRAY['#야경','#명소'], 2000, 4.8),
 ('JP_TOKYO', '센소지', '관광지', '아사쿠사 사찰', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Sensoji_Temple_%2840909716384%29.jpg/500px-Sensoji_Temple_%2840909716384%29.jpg', 2, 'Asakusa, Taito', 35.714, 139.796, '06:00-17:00', '', ARRAY['#전통','#아사쿠사'], 0, 4.6),
-('JP_TOKYO', '도쿄타워', '관광지', '상징적 랜드마크', 'https://att-japan.net/wp-content/uploads/2025/07/shibakoen33010004_m.jpg', 3, 'Minato, Tokyo', 35.658, 139.745, '09:00-23:00', '', ARRAY['#랜드마크','#야경'], 1200, 4.5),
+('JP_TOKYO', '도쿄타워', '관광지', '상징적 랜드마크', 'https://att-japan.net/wp-content/uploads/2025/07/shibakoen33010004_m.jpg', 3, 'Minato, Tokyo', 35.658, 139.745, '09:00-23:00', '', ARRAY['#랜드마크','#야경'], 12000, 4.5),
 ('JP_TOKYO', '하라주쿠', '관광지', '패션의 거리', 'https://travel.rakuten.com/contents/sites/contents/files/styles/max_1300x1300/public/2024-09/things-to-do-harajuku_5.jpg?itok=SkcS5Lkm', 4, 'Shibuya, Tokyo', 35.670, 139.702, '10:00-20:00', '', ARRAY['#쇼핑','#청춘'], 0, 4.4),
 ('JP_TOKYO', '신주쿠교엔', '관광지', '도심 속 공원', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/03/a0003755/img/basic/a0003755_main.jpg?20230824105400&q=80', 5, 'Shinjuku, Tokyo', 35.685, 139.710, '09:00-16:00', '', ARRAY['#힐링','#벚꽃'], 500, 4.7),
-('JP_TOKYO', '아후리라멘', '맛집', '유자 라멘', 'https://ak-d.tripcdn.com/images/10070v000000kfzg77064_C_760_506_R5.jpg?proc=autoorient', 6, 'Ebisu, Tokyo', 35.644, 139.712, '11:00-05:00', '', ARRAY['#라멘','#유자'], 1200, 4.6),
-('JP_TOKYO', '우오베이', '맛집', '가성비 초밥', 'https://postfiles.pstatic.net/MjAyNDAxMzFfMjgx/MDAxNzA2Njk3NjgyMDI4.hTiX3XIDj7xQDv6WkoOon5kZooJW4GjUtht1SESZaA0g.XQX8rn4sGcY6eus6a6_tQLKShRm0LL5B32sfyzU-cY8g.JPEG.bis6686/20240120%EF%BC%BF182238.jpg?type=w966', 7, 'Shibuya, Tokyo', 35.659, 139.698, '11:00-23:00', '', ARRAY['#스시','#기차스시'], 1500, 4.4),
-('JP_TOKYO', '미도리스시', '맛집', '인기 초밥', 'https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/qbb7awpcts1xqyilhqs1.webp', 8, 'Ginza, Tokyo', 35.671, 139.759, '11:00-22:00', '', ARRAY['#스시','#웨이팅'], 3000, 4.7),
-('JP_TOKYO', '긴자바이린', '맛집', '돈카츠 명가', 'https://dry7pvlp22cox.cloudfront.net/mrt-images-prod/2023/05/25/Jxar/nZPySQQ7un.jpeg?quality=70.0&width=1080', 9, 'Ginza, Tokyo', 35.670, 139.764, '11:30-21:00', '', ARRAY['#돈카츠','#노포'], 2500, 4.5),
-('JP_TOKYO', '츠키지시장', '맛집', '참치 전문', 'https://ichef.bbci.co.uk/ace/ws/800/cpsprodpb/22C6/production/_103720980_bigtunaauction.jpg.webp', 10, 'Chuo, Tokyo', 35.665, 139.770, '05:00-14:00', '', ARRAY['#시장','#회'], 2500, 4.4);
+('JP_TOKYO', '아후리라멘', '맛집', '유자 라멘', 'https://ak-d.tripcdn.com/images/10070v000000kfzg77064_C_760_506_R5.jpg?proc=autoorient', 6, 'Ebisu, Tokyo', 35.644, 139.712, '11:00-05:00', '', ARRAY['#라멘','#유자'], 12000, 4.6),
+('JP_TOKYO', '우오베이', '맛집', '가성비 초밥', '/images/places/uobei.jpg', 7, 'Shibuya, Tokyo', 35.659, 139.698, '11:00-23:00', '', ARRAY['#스시','#기차스시'], 1500, 4.4),
+('JP_TOKYO', '미도리스시', '맛집', '인기 초밥', 'https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/qbb7awpcts1xqyilhqs1.webp', 8, 'Ginza, Tokyo', 35.671, 139.759, '11:00-22:00', '', ARRAY['#스시','#웨이팅'], 30000, 4.7),
+('JP_TOKYO', '긴자바이린', '맛집', '돈카츠 명가', 'https://dry7pvlp22cox.cloudfront.net/mrt-images-prod/2023/05/25/Jxar/nZPySQQ7un.jpeg?quality=70.0&width=1080', 9, 'Ginza, Tokyo', 35.670, 139.764, '11:30-21:00', '', ARRAY['#돈카츠','#노포'], 25000, 4.5),
+('JP_TOKYO', '츠키지시장', '맛집', '참치 전문', 'https://ichef.bbci.co.uk/ace/ws/800/cpsprodpb/22C6/production/_103720980_bigtunaauction.jpg.webp', 10, 'Chuo, Tokyo', 35.665, 139.770, '05:00-14:00', '', ARRAY['#시장','#회'], 25000, 4.4);
 
 -- [CITY: FUKUOKA] - 실시간 인기 도시 사용// 이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES

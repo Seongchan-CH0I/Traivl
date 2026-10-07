@@ -62,6 +62,18 @@ export async function GET(request: Request) {
                 if (place.name === '키시모토' || (place.imageUrl && place.imageUrl.includes('cdninstagram'))) {
                     return { ...place, imageUrl: '/images/places/kishimoto.jpg' };
                 }
+                if (place.name === '청초수물회' || (place.imageUrl && (place.imageUrl.includes('metoo.kr') || place.imageUrl.includes('cloudfront.net')))) {
+                    return { ...place, imageUrl: '/images/places/cheongchosu.webp' };
+                }
+                if (place.name === '하나마루켄' || (place.imageUrl && place.imageUrl.includes('bioBEk'))) {
+                    return { ...place, imageUrl: '/images/places/hanamaluken.jpg' };
+                }
+                if (place.name === '우오베이' || (place.imageUrl && (place.imageUrl.includes('postfiles.pstatic.net') || place.imageUrl.includes('gnst.jp')))) {
+                    return { ...place, imageUrl: '/images/places/uobei.jpg' };
+                }
+                if (place.name === '봉포머구리' || (place.imageUrl && place.imageUrl.includes('9b9IN'))) {
+                    return { ...place, imageUrl: '/images/places/bongpomuguri.jpg' };
+                }
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...place, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
                 }
