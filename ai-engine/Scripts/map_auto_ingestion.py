@@ -24,7 +24,7 @@ MAP_URLS = {
     "fukuoka": "https://download.geofabrik.de/asia/japan/kyushu-latest.osm.pbf",
     "seoul": "https://download.geofabrik.de/asia/south-korea-latest.osm.pbf",
     "bangkok": "https://download.geofabrik.de/asia/thailand-latest.osm.pbf",
-    "singapore": "https://download.geofabrik.de/asia/malaysia-singapore-brunei-latest.osm.pbf",
+    "singapore": "https://download.bbbike.org/osm/bbbike/Singapore/Singapore.osm.pbf",
     "taipei": "https://download.geofabrik.de/asia/taiwan-latest.osm.pbf",
     "hanoi": "https://download.geofabrik.de/asia/vietnam-latest.osm.pbf",
     "bali": "https://download.geofabrik.de/asia/indonesia-latest.osm.pbf",
@@ -39,7 +39,7 @@ MAP_URLS = {
 
     # 북미 & 아메리카 (Americas)
     "new_york": "https://download.geofabrik.de/north-america/us/new-york-latest.osm.pbf",
-    "los_angeles": "https://download.geofabrik.de/north-america/us/california-latest.osm.pbf",
+    "los_angeles": "https://download.bbbike.org/osm/bbbike/LosAngeles/LosAngeles.osm.pbf",
     "hawaii": "https://download.geofabrik.de/north-america/us/hawaii-latest.osm.pbf",
 
     # 오세아니아 (Oceania)
