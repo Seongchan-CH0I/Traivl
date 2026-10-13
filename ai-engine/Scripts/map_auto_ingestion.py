@@ -74,14 +74,25 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     print(f"📊 [글로벌 구축 진행 현황: {current_idx}/{total_count} ({progress_pct}%)] - 대상 도시: [{city}]")
     print(f"=======================================================")
 
-    # 0. GCS에 이미 완성된 10개 이상 파일이 있는지 확인 (이미 있으면 1초 만에 스킵!)
+    # 0. GCS에 OSRM 핵심 바이너리 파일들이 100% 온전하게 존재하는지 정밀 전수 검증
+    # 만약 방콕처럼 타임아웃 등으로 핵심 파일(.osrm, .osrm.cells 등)이 하나라도 누락되었으면 절대 스킵하지 않고 자동 재구축!
+    REQUIRED_EXTS = [".osrm", ".osrm.cells", ".osrm.partition", ".osrm.mldgr", ".osrm.ebg"]
     try:
         existing_blobs = list(gcs_service.client.list_blobs(gcs_service.bucket_name, prefix=f"maps/{city}/"))
-        if len(existing_blobs) >= 10:
-            print(f"✨ [GCS 보관 확인 완료] [{city}] 지도는 이미 구글 클라우드에 100% 보관되어 있습니다. (자동 스킵 ✅)")
+        existing_filenames = [b.name.split("/")[-1] for b in existing_blobs]
+        
+        # 핵심 파일들이 모두 정상 업로드되었는지 확인
+        all_required_present = all(
+            any(f.endswith(ext) for f in existing_filenames) for ext in REQUIRED_EXTS
+        )
+        
+        if all_required_present and len(existing_blobs) >= 12:
+            print(f"✨ [GCS 무결성 검증 통과] [{city}] 필수 바이너리 {len(existing_blobs)}개 파일 100% 보관 확인! (자동 스킵 ✅)")
             return
+        elif len(existing_blobs) > 0:
+            print(f"⚠️ [GCS 파일 누락 감지] [{city}] 일부 파일만 업로드됨({len(existing_blobs)}개). 무결성을 위해 완전 재구축을 진행합니다! 🔄")
     except Exception as e:
-        pass
+        print(f"⚠️ [GCS 검증 예외 발생]: {e}")
 
     work_dir = Path(__file__).resolve().parent.parent / "osrm-data" / city
     work_dir.mkdir(parents=True, exist_ok=True)
