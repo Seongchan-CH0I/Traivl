@@ -24,7 +24,7 @@ MAP_URLS = {
     "fukuoka": "https://download.geofabrik.de/asia/japan/kyushu-latest.osm.pbf",
     "seoul": "https://download.geofabrik.de/asia/south-korea-latest.osm.pbf",
     "bangkok": "https://download.geofabrik.de/asia/thailand-latest.osm.pbf",
-    "singapore": "https://download.bbbike.org/osm/bbbike/Singapore/Singapore.osm.pbf",
+    "singapore": "https://download.geofabrik.de/asia/malaysia-singapore-brunei-latest.osm.pbf",
     "taipei": "https://download.geofabrik.de/asia/taiwan-latest.osm.pbf",
     "hanoi": "https://download.geofabrik.de/asia/vietnam-latest.osm.pbf",
     "bali": "https://download.geofabrik.de/asia/indonesia-latest.osm.pbf",
@@ -39,7 +39,7 @@ MAP_URLS = {
 
     # 북미 & 아메리카 (Americas)
     "new_york": "https://download.geofabrik.de/north-america/us/new-york-latest.osm.pbf",
-    "los_angeles": "https://download.bbbike.org/osm/bbbike/LosAngeles/LosAngeles.osm.pbf",
+    "los_angeles": "https://download.geofabrik.de/north-america/us/california-latest.osm.pbf",
     "hawaii": "https://download.geofabrik.de/north-america/us/hawaii-latest.osm.pbf",
 
     # 오세아니아 (Oceania)
@@ -94,7 +94,8 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     except Exception as e:
         print(f"⚠️ [GCS 검증 예외 발생]: {e}")
 
-    work_dir = Path(__file__).resolve().parent.parent / "osrm-data" / city
+    # 홈 디스크(5GB 제한)를 보호하기 위해 /tmp 대용량 임시 디렉토리를 작업 공간으로 사용
+    work_dir = Path("/tmp/osrm-data") / city
     work_dir.mkdir(parents=True, exist_ok=True)
     
     pbf_filename = f"{city}-latest.osm.pbf"
