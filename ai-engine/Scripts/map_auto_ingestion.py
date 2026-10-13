@@ -74,10 +74,10 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     print(f"📊 [글로벌 구축 진행 현황: {current_idx}/{total_count} ({progress_pct}%)] - 대상 도시: [{city}]")
     print(f"=======================================================")
 
-    # 0. GCS에 이미 완성된 20개 이상 파일이 있는지 확인 (이미 있으면 1초 만에 스킵!)
+    # 0. GCS에 이미 완성된 10개 이상 파일이 있는지 확인 (이미 있으면 1초 만에 스킵!)
     try:
         existing_blobs = list(gcs_service.client.list_blobs(gcs_service.bucket_name, prefix=f"maps/{city}/"))
-        if len(existing_blobs) >= 20:
+        if len(existing_blobs) >= 10:
             print(f"✨ [GCS 보관 확인 완료] [{city}] 지도는 이미 구글 클라우드에 100% 보관되어 있습니다. (자동 스킵 ✅)")
             return
     except Exception as e:
@@ -142,15 +142,26 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Global Auto Map Ingestion CI/CD Pipeline")
-    parser.add_argument("--city", type=str, default="kanto", help="자동 구축할 도시 이름")
+    parser.add_argument("--city", type=str, default=None, help="단일 자동 구축할 도시 이름")
+    parser.add_argument("--start-city", "--from-city", type=str, default=None, dest="start_city", help="지정한 도시부터 이어받아 순차 구축")
     parser.add_argument("--global-all", action="store_true", help="21개 글로벌 도시 순차 일괄 자동 구축")
     args = parser.parse_args()
     
-    if args.global_all:
-        city_list = list(MAP_URLS.keys())
-        total = len(city_list)
-        print(f"🌐 [글로벌 일괄 구축 시작] 총 {total}개 도시 순차 파이프라인 가동...")
-        for idx, city_name in enumerate(city_list, 1):
-            auto_ingest_map(city_name, current_idx=idx, total_count=total)
-    else:
+    city_list = list(MAP_URLS.keys())
+    
+    if args.city:
         auto_ingest_map(args.city, 1, 1)
+    elif args.start_city or args.global_all:
+        start_city = args.start_city.lower().strip() if args.start_city else None
+        
+        if start_city and start_city in city_list:
+            start_idx = city_list.index(start_city)
+            target_cities = city_list[start_idx:]
+            print(f"⏩ [{start_city}] 도시부터 이어받아 총 {len(target_cities)}개 도시 파이프라인 가동 (이전 도시는 아예 건너뜁니다!)")
+        else:
+            target_cities = city_list
+            print(f"🌐 [글로벌 일괄 구축 시작] 총 {len(target_cities)}개 도시 순차 파이프라인 가동...")
+            
+        total = len(target_cities)
+        for idx, city_name in enumerate(target_cities, 1):
+            auto_ingest_map(city_name, current_idx=idx, total_count=total)
