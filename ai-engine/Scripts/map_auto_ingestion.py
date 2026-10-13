@@ -6,6 +6,7 @@
 
 import os
 import sys
+import shutil
 import argparse
 import subprocess
 import urllib.request
@@ -88,12 +89,22 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     pbf_filename = f"{city}-latest.osm.pbf"
     pbf_path = work_dir / pbf_filename
 
+    def cleanup_work_dir():
+        """임시 작업 디렉토리 내 모든 파일 즉시 삭제하여 디스크 용량 100% 확보"""
+        for f in list(work_dir.glob("*")):
+            try:
+                if f.is_file(): f.unlink()
+                elif f.is_dir(): shutil.rmtree(f, ignore_errors=True)
+            except Exception:
+                pass
+
     # 1. curl -C - 로 끊긴 지점부터 100% 완전한 크기까지 완벽 이어받기
     print(f"⚡ [1/3 Step] 🌍 글로벌 도시 [{city}] 고속 다운로드 시작... ({url})")
     curl_cmd = f"curl -C - -L --retry 3 --retry-delay 2 -o \"{pbf_path}\" \"{url}\""
     download_success = run_cmd(curl_cmd)
     if not download_success or not pbf_path.exists() or pbf_path.stat().st_size < 1000000:
-        print(f"❌ [{city}] URL 다운로드 실패 또는 파일 불완전")
+        print(f"❌ [{city}] URL 다운로드 실패 또는 파일 불완전 (임시 파일 청소)")
+        cleanup_work_dir()
         return
     print(f"⚡ [다운로드 완료] {pbf_path} (크기: {round(pbf_path.stat().st_size / 1024 / 1024, 1)} MB)")
 
@@ -106,8 +117,8 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
     )
 
     if not build_success:
-        print(f"❌ [{city}] OSRM 전처리 빌드에 실패했습니다. 깨진 PBF 삭제.")
-        if pbf_path.exists(): pbf_path.unlink()
+        print(f"❌ [{city}] OSRM 전처리 빌드에 실패했습니다. 미완성 잔여 파일 전체 청소.")
+        cleanup_work_dir()
         return
 
     print(f"🎉 [2/3 Step] [{city}] OSRM 지도 파일 자동 빌드 완료!")
@@ -126,10 +137,8 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
 
     print(f"✨ [완료] 글로벌 도시 [{city}] 지도 {uploaded_count}개 파일이 GCS 버킷에 100% 적재되었습니다!")
 
-    # 4. 업로드 완료 후 로컬 디스크 용량 자동 청소 (맥북 디스크 보호!)
-    for f in list(work_dir.glob("*")):
-        try: f.unlink()
-        except: pass
+    # 4. 업로드 완료 후 로컬 디스크 용량 자동 청소 (디스크 보호!)
+    cleanup_work_dir()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Global Auto Map Ingestion CI/CD Pipeline")
