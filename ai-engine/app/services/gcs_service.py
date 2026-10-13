@@ -38,7 +38,7 @@ class GCSService:
         try:
             bucket = self.client.bucket(self.bucket_name)
             blob = bucket.blob(gcs_path)
-            blob.upload_from_filename(local_path)
+            blob.upload_from_filename(local_path, timeout=600)
             print(f"☁️ [GCS 업로드 성공] {local_path} -> gcs://{self.bucket_name}/{gcs_path}")
             return True
         except Exception as e:
