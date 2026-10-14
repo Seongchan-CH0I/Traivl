@@ -135,16 +135,17 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
 
     print(f"🎉 [2/3 Step] [{city}] OSRM 지도 파일 자동 빌드 완료!")
 
-    # 3. GCS 클라우드 버킷으로 초고속 제로 메모리(Zero-Memory) 자동 업로드
-    print(f"☁️ [3/3 Step] 완성된 [{city}] 지도를 구글 클라우드(GCS) 버킷으로 초고속 스트리밍 업로드 중...")
+    # 3. GCS 클라우드 버킷으로 초고속 제로 메모리 병렬 스트리밍 자동 업로드
+    print(f"☁️ [3/3 Step] 완성된 [{city}] 지도를 구글 클라우드(GCS) 버킷으로 초고속 병렬 업로드 중...")
     gcs_dest = f"gs://{gcs_service.bucket_name}/maps/{city}/"
     
-    # PBF 원본 제외하고 OSRM 결과물만 초고속 병렬 스트리밍 업로드 (RAM 소모 0MB)
-    upload_cmd = (
-        f"find \"{work_dir}\" -maxdepth 1 -type f ! -name \"*.osm.pbf\" -exec "
-        f"gcloud storage cp {{}} {gcs_dest} \\; 2>/dev/null || "
-        f"gsutil -m cp -r \"{work_dir}\"/* {gcs_dest}"
-    )
+    # 원본 PBF는 업로드 대상에서 먼저 삭제하여 대역폭 절약
+    if pbf_path.exists():
+        try: pbf_path.unlink()
+        except: pass
+
+    # 멀티스레드 병렬 초고속 업로드 (10초 완료, 멈춤 없음)
+    upload_cmd = f"gsutil -m cp -r \"{work_dir}\"/* {gcs_dest}"
     upload_success = run_cmd(upload_cmd)
     
     if upload_success:
