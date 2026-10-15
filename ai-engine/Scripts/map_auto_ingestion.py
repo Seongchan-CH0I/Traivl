@@ -135,31 +135,23 @@ def auto_ingest_map(city_name: str, current_idx: int = 1, total_count: int = 1):
 
     print(f"🎉 [2/3 Step] [{city}] OSRM 지도 파일 자동 빌드 완료!")
 
-    # 3. GCS 클라우드 버킷으로 초고속 제로 메모리 병렬 스트리밍 자동 업로드
-    print(f"☁️ [3/3 Step] 완성된 [{city}] 지도를 구글 클라우드(GCS) 버킷으로 초고속 병렬 업로드 중...")
-    gcs_dest = f"gs://{gcs_service.bucket_name}/maps/{city}/"
+    # 3. GCS 클라우드 버킷으로 100% 자동 업로드 (원래 코드로 원복)
+    print(f"☁️ [3/3 Step] 완성된 [{city}] 지도를 구글 클라우드(GCS) 버킷으로 100% 자동 업로드 중...")
     
-    # 원본 PBF는 업로드 대상에서 먼저 삭제하여 대역폭 절약
-    if pbf_path.exists():
-        try: pbf_path.unlink()
-        except: pass
+    # 원본 PBF 제외하고 OSRM 빌드 결과물만 실시간 하나씩 업로드
+    uploaded_count = 0
+    for root, _, files in os.walk(work_dir):
+        for f in files:
+            if f.endswith(".osm.pbf"): continue
+            local_file_path = os.path.join(root, f)
+            rel_path = os.path.relpath(local_file_path, work_dir)
+            gcs_destination_path = f"maps/{city}/{rel_path}"
+            if gcs_service.upload_file(local_file_path, gcs_destination_path):
+                uploaded_count += 1
 
-    # 멀티스레드 병렬 초고속 업로드 (10초 완료, 멈춤 없음)
-    upload_cmd = f"gsutil -m cp -r \"{work_dir}\"/* {gcs_dest}"
-    upload_success = run_cmd(upload_cmd)
-    
-    if upload_success:
-        print(f"✨ [완료] 글로벌 도시 [{city}] 지도 파일들이 GCS 버킷에 100% 적재되었습니다!")
-    else:
-        # 폴백: 파이썬 SDK 업로드
-        for root, _, files in os.walk(work_dir):
-            for f in files:
-                if f.endswith(".osm.pbf"): continue
-                local_file_path = os.path.join(root, f)
-                rel_path = os.path.relpath(local_file_path, work_dir)
-                gcs_service.upload_file(local_file_path, f"maps/{city}/{rel_path}")
+    print(f"✨ [완료] 글로벌 도시 [{city}] 지도 {uploaded_count}개 파일이 GCS 버킷에 100% 적재되었습니다!")
 
-    # 4. 업로드 완료 후 로컬 디스크 용량 자동 청소 (디스크 보호!)
+    # 4. 업로드 완료 후 로컬 디스크 용량 자동 청소
     cleanup_work_dir()
 
 if __name__ == "__main__":
