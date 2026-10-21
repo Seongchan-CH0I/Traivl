@@ -292,31 +292,30 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         '아시아': [
             { code: 'KR', name: '한국 (Korea)' },
             { code: 'JP', name: '일본 (Japan)' },
+            { code: 'TH', name: '태국 (Thailand)' },
+            { code: 'VN', name: '베트남 (Vietnam)' },
+            { code: 'SG', name: '싱가포르 (Singapore)' },
+            { code: 'TW', name: '대만 (Taiwan)' },
+            { code: 'ID', name: '인도네시아 (Indonesia)' },
         ],
         '유럽': [
             { code: 'FR', name: '프랑스 (France)' },
+            { code: 'GB', name: '영국 (UK)' },
             { code: 'ES', name: '스페인 (Spain)' },
             { code: 'IT', name: '이탈리아 (Italy)' },
             { code: 'DE', name: '독일 (Germany)' },
+            { code: 'NL', name: '네덜란드 (Netherlands)' },
+            { code: 'CH', name: '스위스 (Switzerland)' },
         ],
         '북미': [
             { code: 'US', name: '미국 (USA)' },
-            { code: 'CA', name: '캐나다 (Canada)' },
-            { code: 'MX', name: '멕시코 (Mexico)' },
         ],
-        '남미': [
-            { code: 'BR', name: '브라질 (Brazil)' },
-            { code: 'AR', name: '아르헨티나 (Argentina)' },
-            { code: 'PE', name: '페루 (Peru)' },
-        ],
+        '남미': [],
         '아프리카': [
             { code: 'EG', name: '이집트 (Egypt)' },
-            { code: 'MA', name: '모로코 (Morocco)' },
-            { code: 'ZA', name: '남아공 (South Africa)' },
         ],
         '오세아니아': [
             { code: 'AU', name: '호주 (Australia)' },
-            { code: 'NZ', name: '뉴질랜드 (New Zealand)' },
         ]
     };
 
@@ -334,8 +333,31 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             { name: '후쿠오카', desc: '가깝고 맛있는 힐링 여행지', img: '/images/JP_FUKUOKA.jpg' },
             { name: '오키나와', desc: '에메랄드빛 바다와 휴양', img: '/images/JP_OKINAWA.jpg' }
         ],
+        'TH 태국 (Thailand)': [
+            { name: '방콕', desc: '화려한 사원과 미식, 활기찬 야시장', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80' },
+            { name: '치앙마이', desc: '고즈넉한 사원과 푸른 자연의 쉼터', img: 'https://images.unsplash.com/photo-1512553353614-82a7370096dc?auto=format&fit=crop&w=600&q=80' },
+            { name: '푸켓', desc: '안다만해의 보석, 에메랄드빛 해변', img: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'VN 베트남 (Vietnam)': [
+            { name: '하노이', desc: '천년 고도의 운치와 베트남의 심장', img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80' },
+            { name: '다낭', desc: '미케 비치와 바나힐의 휴양 천국', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80' },
+            { name: '호치민', desc: '프랑스풍 건축과 역동적인 경제 수도', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'SG 싱가포르 (Singapore)': [
+            { name: '싱가포르', desc: '초현대적 미래 도시와 다문화의 조화', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'TW 대만 (Taiwan)': [
+            { name: '타이베이', desc: '야시장 먹거리와 감성적인 골목 풍경', img: 'https://images.unsplash.com/photo-1508248017020-f3a46336450d?auto=format&fit=crop&w=600&q=80' },
+            { name: '가오슝', desc: '항구 도시의 예술과 여유로운 정취', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'ID 인도네시아 (Indonesia)': [
+            { name: '발리', desc: '신들의 섬, 환상적인 비치와 힐링 리조트', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' }
+        ],
         'FR 프랑스 (France)': [
             { name: '파리', desc: '낭만과 예술, 빛의 도시', img: '/images/FR_PARIS.jpg' }
+        ],
+        'GB 영국 (UK)': [
+            { name: '런던', desc: '역사와 현대가 숨 쉬는 템스강의 도시', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80' }
         ],
         'ES 스페인 (Spain)': [
             { name: '바르셀로나', desc: '가우디의 건축과 지중해의 열정', img: '/images/ES_BARCELONA.jpg' }
@@ -345,6 +367,23 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         ],
         'DE 독일 (Germany)': [
             { name: '베를린', desc: '역사와 힙한 문화의 공존', img: '/images/DE_BERLIN.jpg' }
+        ],
+        'NL 네덜란드 (Netherlands)': [
+            { name: '암스테르담', desc: '아름다운 운하와 자전거의 낭만', img: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'CH 스위스 (Switzerland)': [
+            { name: '취리히', desc: '알프스의 호수와 세련된 금융 문화 도시', img: 'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'US 미국 (USA)': [
+            { name: '뉴욕', desc: '전 세계의 중심, 잠들지 않는 도시', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80' },
+            { name: '로스앤젤레스', desc: '할리우드와 연중 온화한 햇살', img: 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=600&q=80' },
+            { name: '하와이', desc: '태평양의 낙원과 천혜의 휴양지', img: 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'AU 호주 (Australia)': [
+            { name: '시드니', desc: '오페라하우스와 찬란한 하버 뷰', img: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80' }
+        ],
+        'EG 이집트 (Egypt)': [
+            { name: '카이로', desc: '신비로운 피라미드와 나일강의 역사', img: 'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?auto=format&fit=crop&w=600&q=80' }
         ]
     };
 
@@ -461,11 +500,11 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 const percentage = Math.min(Math.max((themes.length / 4) * 100, 5), 100);
                 return (
                     <>
-                        <div className="rc-title-area">
-                            <h2 className="rc-title">{city}에서 무엇을 하고 싶나요?</h2>
+                        <div className="rc-title-area" style={{ padding: '8px 20px 14px' }}>
+                            <h2 className="rc-title" style={{ lineHeight: '1.35', paddingTop: '3px', paddingBottom: '2px' }}>{city}에서 무엇을 하고 싶나요?</h2>
                             <p className="rc-subtitle">원하는 테마를 모두 선택해주세요</p>
                         </div>
-                        <div className="rc-theme-banner">
+                        <div className="rc-theme-banner" style={{ margin: '0 20px 14px', padding: '14px 16px' }}>
                             <div className="header">
                                 <span>✨ 테마 및 취향 설정</span>
                             </div>
@@ -477,7 +516,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                                 <span>취향 분석 {Math.round(percentage)}%</span>
                             </div>
                         </div>
-                        <div className="rc-chip-grid">
+                        <div className="rc-chip-grid" style={{ padding: '0 20px 10px' }}>
                             {themeOptions.map(t => (
                                 <div key={t} className={`rc-chip ${themes.includes(t) ? 'selected' : ''}`} onClick={() => toggleTheme(t)}>
                                     {t}
@@ -485,14 +524,13 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                             ))}
                         </div>
 
-                        {/* 선택된 날짜 및 테마 표시 영역 (옵션) */}
+                        {/* 원래의 선택 일정 박스 디자인 유지 (여백만 살짝 줄여 잘림 방지) */}
                         <div style={{ 
-                            marginTop: '24px', 
-                            padding: '16px', 
                             borderRadius: '16px', 
                             border: '1.5px solid #222', 
                             textAlign: 'center',
-                            margin: '24px 20px 0'
+                            margin: '8px 20px 0',
+                            padding: '12px 16px'
                         }}>
                             <div style={{ fontSize: '13px', color: '#666', marginBottom: '4px', fontWeight: 600 }}>선택하신 일정</div>
                             <div style={{ fontSize: '18px', fontWeight: 800, color: '#222' }}>
@@ -930,13 +968,13 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                 </div>
             )}
             {step === 5 && (
-                <div className="rc-bottom">
-                    <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
-                    <div className="rc-selected-scroll" style={{ marginBottom: 16 }}>
+                <div className="rc-bottom" style={{ padding: '12px 20px 14px' }}>
+                    <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 700 }}>선택된 테마</div>
+                    <div className="rc-selected-scroll" style={{ marginBottom: 10 }}>
                         {themes.map(t => <div key={t} className="rc-selected-chip-small">{t}</div>)}
                         {themes.length === 0 && <span style={{ fontSize: 12, color: '#b0b0b0' }}>테마를 선택해주세요</span>}
                     </div>
-                    <button className="rc-btn-primary" style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)' }} onClick={handleGenerateAIPlan} disabled={isLoading}>
+                    <button className="rc-btn-primary" style={{ background: 'linear-gradient(135deg, #e91e63, #9c27b0)', padding: '14px' }} onClick={handleGenerateAIPlan} disabled={isLoading}>
                         {isLoading ? <Loader2 className="animate-spin" /> : "🪄 AI 일정 생성하기"}
                     </button>
                 </div>

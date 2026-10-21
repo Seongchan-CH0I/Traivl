@@ -967,6 +967,9 @@
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 8px;
+        line-height: 1.35;
+        padding-top: 3px;
+        padding-bottom: 2px;
     }
 
     .rc-subtitle {
