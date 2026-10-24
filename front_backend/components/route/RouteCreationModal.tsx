@@ -310,7 +310,9 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         '북미': [
             { code: 'US', name: '미국 (USA)' },
         ],
-        '남미': [],
+        '남미': [
+            { code: 'PE', name: '페루 (Peru)' },
+        ],
         '아프리카': [
             { code: 'EG', name: '이집트 (Egypt)' },
         ],
@@ -334,30 +336,30 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             { name: '오키나와', desc: '에메랄드빛 바다와 휴양', img: '/images/JP_OKINAWA.jpg' }
         ],
         'TH 태국 (Thailand)': [
-            { name: '방콕', desc: '화려한 사원과 미식, 활기찬 야시장', img: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80' },
-            { name: '치앙마이', desc: '고즈넉한 사원과 푸른 자연의 쉼터', img: 'https://images.unsplash.com/photo-1512553353614-82a7370096dc?auto=format&fit=crop&w=600&q=80' },
-            { name: '푸켓', desc: '안다만해의 보석, 에메랄드빛 해변', img: 'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=600&q=80' }
+            { name: '방콕', desc: '화려한 사원과 미식, 활기찬 야시장', img: '/images/TH_BANGKOK.jpg' },
+            { name: '치앙마이', desc: '고즈넉한 사원과 푸른 자연의 쉼터', img: '/images/TH_CHIANGMAI.jpg' },
+            { name: '푸켓', desc: '안다만해의 보석, 에메랄드빛 해변', img: '/images/TH_PHUKET.jpg' }
         ],
         'VN 베트남 (Vietnam)': [
-            { name: '하노이', desc: '천년 고도의 운치와 베트남의 심장', img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80' },
-            { name: '다낭', desc: '미케 비치와 바나힐의 휴양 천국', img: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80' },
-            { name: '호치민', desc: '프랑스풍 건축과 역동적인 경제 수도', img: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80' }
+            { name: '하노이', desc: '천년 고도의 운치와 베트남의 심장', img: '/images/VN_HANOI.jpg' },
+            { name: '다낭', desc: '미케 비치와 바나힐의 휴양 천국', img: '/images/VN_DANANG.jpg' },
+            { name: '호치민', desc: '프랑스풍 건축과 역동적인 경제 수도', img: '/images/VN_HOCHIMINH.jpg' }
         ],
         'SG 싱가포르 (Singapore)': [
-            { name: '싱가포르', desc: '초현대적 미래 도시와 다문화의 조화', img: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80' }
+            { name: '싱가포르', desc: '초현대적 미래 도시와 다문화의 조화', img: '/images/SG_SINGAPORE.jpg' }
         ],
         'TW 대만 (Taiwan)': [
-            { name: '타이베이', desc: '야시장 먹거리와 감성적인 골목 풍경', img: 'https://images.unsplash.com/photo-1508248017020-f3a46336450d?auto=format&fit=crop&w=600&q=80' },
-            { name: '가오슝', desc: '항구 도시의 예술과 여유로운 정취', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80' }
+            { name: '타이베이', desc: '야시장 먹거리와 감성적인 골목 풍경', img: '/images/TW_TAIPEI.jpg' },
+            { name: '가오슝', desc: '항구 도시의 예술과 여유로운 정취', img: '/images/TW_KAOHSIUNG.jpg' }
         ],
         'ID 인도네시아 (Indonesia)': [
-            { name: '발리', desc: '신들의 섬, 환상적인 비치와 힐링 리조트', img: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80' }
+            { name: '발리', desc: '신들의 섬, 환상적인 비치와 힐링 리조트', img: '/images/ID_BALI.jpg' }
         ],
         'FR 프랑스 (France)': [
             { name: '파리', desc: '낭만과 예술, 빛의 도시', img: '/images/FR_PARIS.jpg' }
         ],
         'GB 영국 (UK)': [
-            { name: '런던', desc: '역사와 현대가 숨 쉬는 템스강의 도시', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80' }
+            { name: '런던', desc: '역사와 현대가 숨 쉬는 템스강의 도시', img: '/images/GB_LONDON.jpg' }
         ],
         'ES 스페인 (Spain)': [
             { name: '바르셀로나', desc: '가우디의 건축과 지중해의 열정', img: '/images/ES_BARCELONA.jpg' }
@@ -369,21 +371,24 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
             { name: '베를린', desc: '역사와 힙한 문화의 공존', img: '/images/DE_BERLIN.jpg' }
         ],
         'NL 네덜란드 (Netherlands)': [
-            { name: '암스테르담', desc: '아름다운 운하와 자전거의 낭만', img: 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=600&q=80' }
+            { name: '암스테르담', desc: '아름다운 운하와 자전거의 낭만', img: '/images/NL_AMSTERDAM.jpg' }
         ],
         'CH 스위스 (Switzerland)': [
-            { name: '취리히', desc: '알프스의 호수와 세련된 금융 문화 도시', img: 'https://images.unsplash.com/photo-1515488764276-beab7607c1e6?auto=format&fit=crop&w=600&q=80' }
+            { name: '취리히', desc: '알프스의 호수와 세련된 금융 문화 도시', img: '/images/CH_ZURICH.jpg' }
         ],
         'US 미국 (USA)': [
-            { name: '뉴욕', desc: '전 세계의 중심, 잠들지 않는 도시', img: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80' },
-            { name: '로스앤젤레스', desc: '할리우드와 연중 온화한 햇살', img: 'https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=600&q=80' },
-            { name: '하와이', desc: '태평양의 낙원과 천혜의 휴양지', img: 'https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&w=600&q=80' }
+            { name: '뉴욕', desc: '전 세계의 중심, 잠들지 않는 도시', img: '/images/US_NEWYORK.jpg' },
+            { name: '로스앤젤레스', desc: '할리우드와 연중 온화한 햇살', img: '/images/US_LA.jpg' },
+            { name: '하와이', desc: '태평양의 낙원과 천혜의 휴양지', img: '/images/US_HAWAII.jpg' }
+        ],
+        'PE 페루 (Peru)': [
+            { name: '쿠스코', desc: '잉카 제국의 신비와 마추픽추의 관문', img: '/images/PE_CUSCO.jpg' }
         ],
         'AU 호주 (Australia)': [
-            { name: '시드니', desc: '오페라하우스와 찬란한 하버 뷰', img: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=600&q=80' }
+            { name: '시드니', desc: '오페라하우스와 찬란한 하버 뷰', img: '/images/AU_SYDNEY.jpg' }
         ],
         'EG 이집트 (Egypt)': [
-            { name: '카이로', desc: '신비로운 피라미드와 나일강의 역사', img: 'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?auto=format&fit=crop&w=600&q=80' }
+            { name: '카이로', desc: '신비로운 피라미드와 나일강의 역사', img: '/images/EG_CAIRO.jpg' }
         ]
     };
 
@@ -423,24 +428,43 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                         </div>
                         <div className="rc-list-y">
                             {currentCountries.length > 0 ? (
-                                currentCountries.map(c => (
-                                    <div key={c.code} className={`rc-country-item ${country === `${c.code} ${c.name}` ? 'selected' : ''}`} onClick={() => {
-                                        setCountry(`${c.code} ${c.name}`);
-                                        // 국가 변경 시 해당 국가의 첫 번째 도시로 초기화 (데이터가 있는 경우)
-                                        const firstCity = citiesByCountry[`${c.code} ${c.name}`]?.[0];
+                                currentCountries.map(c => {
+                                    const fullCountryName = `${c.code} ${c.name}`;
+                                    const handleSelectCountry = () => {
+                                        setCountry(fullCountryName);
+                                        const firstCity = citiesByCountry[fullCountryName]?.[0];
                                         if (firstCity) setCity(firstCity.name);
-                                    }}>
-                                        {/* Blended national flag background */}
-                                        <img 
-                                            src={`https://flagcdn.com/w160/${c.code.toLowerCase()}.png`} 
-                                            alt={`${c.name} flag`} 
-                                            className="rc-country-flag-bg"
-                                            draggable={false}
-                                        />
-                                        <span className="rc-country-code">{c.code}</span>
-                                        <span className="rc-country-name">{c.name}</span>
-                                    </div>
-                                ))
+                                    };
+
+                                    return (
+                                        <div 
+                                            key={c.code} 
+                                            className={`rc-country-item ${country === fullCountryName ? 'selected' : ''}`} 
+                                            onClick={() => {
+                                                if (country === fullCountryName) {
+                                                    // 이미 선택된 상태에서 다시 클릭하거나 빠른 두 번 클릭 시 바로 다음 단계로 이동
+                                                    handleNext();
+                                                } else {
+                                                    handleSelectCountry();
+                                                }
+                                            }}
+                                            onDoubleClick={() => {
+                                                handleSelectCountry();
+                                                handleNext();
+                                            }}
+                                        >
+                                            {/* Blended national flag background */}
+                                            <img 
+                                                src={`https://flagcdn.com/w160/${c.code.toLowerCase()}.png`} 
+                                                alt={`${c.name} flag`} 
+                                                className="rc-country-flag-bg"
+                                                draggable={false}
+                                            />
+                                            <span className="rc-country-code">{c.code}</span>
+                                            <span className="rc-country-name">{c.name}</span>
+                                        </div>
+                                    );
+                                })
                             ) : (
                                 <div className="text-center py-10 text-gray-400">준비 중인 지역입니다.</div>
                             )}
@@ -458,7 +482,21 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
                         <div className="rc-list-y">
                             {currentCities.length > 0 ? (
                                 currentCities.map(c => (
-                                    <div key={c.name} className={`rc-city-card ${city === c.name ? 'selected' : ''}`} onClick={() => setCity(c.name)}>
+                                    <div 
+                                        key={c.name} 
+                                        className={`rc-city-card ${city === c.name ? 'selected' : ''}`} 
+                                        onClick={() => {
+                                            if (city === c.name) {
+                                                handleNext();
+                                            } else {
+                                                setCity(c.name);
+                                            }
+                                        }}
+                                        onDoubleClick={() => {
+                                            setCity(c.name);
+                                            handleNext();
+                                        }}
+                                    >
                                         <img src={c.img} alt={c.name} draggable={false} />
                                         <div className="rc-city-overlay">
                                             <h3>{c.name}</h3>
