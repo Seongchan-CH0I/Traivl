@@ -101,12 +101,15 @@ class PlanService:
         ]
 
         if not candidates:
-            print(f"⚠️ [Plan] '{request.destination}'에 적재된 장소가 없습니다. 데이터 적재 상태를 확인하세요.")
-            raise NoPlacesFoundError(
-                f"'{request.destination}'에 대해 추천할 수 있는 장소 데이터가 아직 없습니다."
-            )
+            print(f"🌍 [Plan] '{request.destination}' DB 데이터 미존재 ➔ Gemini 3.5 Flash 실시간 랜드마크 생성 폴백 가동!")
+            candidates = await self._generate_places_with_gemini_fallback(request.destination, request.travel_style, count=dynamic_k)
+            
+            if not candidates:
+                raise NoPlacesFoundError(
+                    f"'{request.destination}'에 대해 추천할 수 있는 장소 데이터를 생성하지 못했습니다."
+                )
 
-        print(f"✅ [벡터 DB 검색] '{request.destination}' 후보 {len(candidates)}개 확보")
+        print(f"✅ [장소 후보 확보] '{request.destination}' 후보 {len(candidates)}개 확보")
 
         # [2단계] Gemini를 이용한 지능형 장소 선정 (거리에 따라 하루 2~5개 유동 할당을 위해 모수를 넉넉히 선별)
         target_count = travel_days * 4 # 하루 평균 4군데까지 유동적으로 넉넉히 선별
@@ -144,7 +147,8 @@ class PlanService:
 
 [유저 정보]
 - 이름: {request.user_name}
-- 목적지: {request.destination}
+- 여행 국가: {request.country}
+- 목적지(도시): {request.destination}
 - 여행 기간: {request.duration.days}일
 - 필수 포함 선호 스타일/테마: {', '.join(request.travel_style)}
 - 유저 DNA: {request.dna_type}
@@ -153,10 +157,11 @@ class PlanService:
 {candidates_text}
 
 [중요 임무]
-1. 위 유저 성향과 선호 테마({', '.join(request.travel_style)})에 맞는 명소와 맛집/식당/야경 장소를 골고루 조합하여 총 {count}개를 골라주세요.
-2. 유저가 '맛집투어'나 '야경투어', '액티비티'를 선택했다면 관련 장소가 반드시 포함되어야 합니다.
-3. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 친절한 가이드 말투"로 유익한 추천 사유를 1~2줄로 작성해 주세요.
-4. 반드시 아래 JSON 형식으로만 답변하세요.
+1. 위 후보 장소 리스트는 반드시 '{request.country}' '{request.destination}'에 위치한 장소들입니다. 이 중 유저 성향과 선호 테마({', '.join(request.travel_style)})에 맞는 명소와 맛집/식당/야경 장소를 골고루 조합하여 총 {count}개를 골라주세요.
+2. 타 국가(예: 한국, 타 지역 등)의 장소나 리스트 외의 엉뚱한 장소를 임의로 넣지 마세요.
+3. 유저가 '맛집투어'나 '야경투어', '액티비티'를 선택했다면 관련 장소가 반드시 포함되어야 합니다.
+4. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 친절한 가이드 말투"로 유익한 추천 사유를 1~2줄로 작성해 주세요.
+5. 반드시 아래 JSON 형식으로만 답변하세요.
 
 JSON 형식:
 {{
@@ -194,6 +199,66 @@ JSON 형식:
         except Exception as e:
             print(f"❌ Gemini 호출 오류: {e}")
             return [{"place": c, "reason": c.description or f"{c.title}의 매력을 깊이 경험할 수 있는 추천 장소입니다."} for c in candidates[:count]]
+
+    async def _generate_places_with_gemini_fallback(self, destination: str, travel_style: List[str], count: int = 16) -> List[PlaceCandidate]:
+        """
+        벡터 DB에 아직 장소가 적재되지 않은 글로벌 도시를 위해 Gemini가 신뢰도 높은 명소와 실좌표를 실시간 생성합니다.
+        """
+        if not self.client:
+            return []
+
+        prompt = f"""
+당신은 전 세계 여행 데이터베이스 전문가입니다.
+여행지 '{destination}'에서 여행자가 가장 사랑하는 핵심 관광 명소, 랜드마크, 맛집 {min(count, 20)}곳을 추천해 주세요.
+유저 선호 테마는 [{', '.join(travel_style)}] 입니다.
+
+[반드시 지켜야 할 사항]
+1. 실제 존재하는 정확한 위도(lat)와 경도(lng)를 소수점 4자리 이상으로 제공하세요.
+2. 카테고리는 '관광지' 또는 '맛집'으로만 지정하세요.
+3. 반드시 아래 JSON 배열 포맷으로만 응답하세요:
+
+[
+  {{
+    "title": "장소 이름 (한글 또는 영문 공식 명칭)",
+    "description": "이 장소의 핵심 매력과 볼거리 설명 (1~2줄)",
+    "category": "관광지",
+    "lat": 13.7563,
+    "lng": 100.5018,
+    "stay_duration_mins": 90
+  }}
+]
+"""
+        try:
+            response = self.client.models.generate_content(
+                model=self.target_model,
+                contents=prompt
+            )
+            raw_text = response.text.strip()
+            if raw_text.startswith("```"):
+                raw_text = raw_text.split("```")[1]
+                if raw_text.startswith("json"):
+                    raw_text = raw_text[4:]
+
+            places_json = json.loads(raw_text.strip())
+            candidates = []
+            for idx, p in enumerate(places_json):
+                candidates.append(
+                    PlaceCandidate(
+                        place_id=f"fallback_{destination}_{idx}",
+                        title=p.get('title', f"{destination} 명소 {idx+1}"),
+                        description=p.get('description', f"{destination}의 대표 여행지입니다."),
+                        tags=travel_style,
+                        category=p.get('category', '관광지'),
+                        lat=float(p.get('lat', 0.0)),
+                        lng=float(p.get('lng', 0.0)),
+                        stay_duration_mins=int(p.get('stay_duration_mins', 90))
+                    )
+                )
+            print(f"✨ [Gemini Fallback 성공] '{destination}' 글로벌 명소 {len(candidates)}개 실시간 생성 완료!")
+            return candidates
+        except Exception as e:
+            print(f"❌ [Gemini Fallback 실패] '{destination}': {e}")
+            return []
 
     async def _simulate_itinerary_v2(self, selected_data: List[Dict[str, Any]], duration: Any) -> List[DayItinerary]:
         """

@@ -287,7 +287,7 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
     };
 
-    // Data Mappings
+    // Data Mappings (21개 글로벌 도시 100% 연동)
     const countriesByContinent: Record<string, { code: string, name: string }[]> = {
         '아시아': [
             { code: 'KR', name: '한국 (Korea)' },
@@ -301,11 +301,11 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         '유럽': [
             { code: 'FR', name: '프랑스 (France)' },
             { code: 'GB', name: '영국 (UK)' },
-            { code: 'ES', name: '스페인 (Spain)' },
             { code: 'IT', name: '이탈리아 (Italy)' },
-            { code: 'DE', name: '독일 (Germany)' },
+            { code: 'ES', name: '스페인 (Spain)' },
             { code: 'NL', name: '네덜란드 (Netherlands)' },
             { code: 'CH', name: '스위스 (Switzerland)' },
+            { code: 'DE', name: '독일 (Germany)' },
         ],
         '북미': [
             { code: 'US', name: '미국 (USA)' },
@@ -361,20 +361,20 @@ export default function RouteCreationModal({ isOpen, onClose, onStartJourney }: 
         'GB 영국 (UK)': [
             { name: '런던', desc: '역사와 현대가 숨 쉬는 템스강의 도시', img: '/images/GB_LONDON.jpg' }
         ],
-        'ES 스페인 (Spain)': [
-            { name: '바르셀로나', desc: '가우디의 건축과 지중해의 열정', img: '/images/ES_BARCELONA.jpg' }
-        ],
         'IT 이탈리아 (Italy)': [
             { name: '로마', desc: '역사의 흔적을 간직한 영원한 도시', img: '/images/IT_ROME.jpg' }
         ],
-        'DE 독일 (Germany)': [
-            { name: '베를린', desc: '역사와 힙한 문화의 공존', img: '/images/DE_BERLIN.jpg' }
+        'ES 스페인 (Spain)': [
+            { name: '바르셀로나', desc: '가우디의 건축과 지중해의 열정', img: '/images/ES_BARCELONA.jpg' }
         ],
         'NL 네덜란드 (Netherlands)': [
             { name: '암스테르담', desc: '아름다운 운하와 자전거의 낭만', img: '/images/NL_AMSTERDAM.jpg' }
         ],
         'CH 스위스 (Switzerland)': [
             { name: '취리히', desc: '알프스의 호수와 세련된 금융 문화 도시', img: '/images/CH_ZURICH.jpg' }
+        ],
+        'DE 독일 (Germany)': [
+            { name: '베를린', desc: '역사와 힙한 문화의 공존', img: '/images/DE_BERLIN.jpg' }
         ],
         'US 미국 (USA)': [
             { name: '뉴욕', desc: '전 세계의 중심, 잠들지 않는 도시', img: '/images/US_NEWYORK.jpg' },

@@ -33,7 +33,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://postgres:password@database:5432/traivldb
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_HOST=redis
     ports:
       - "8000:8000"

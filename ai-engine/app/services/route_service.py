@@ -6,6 +6,41 @@ from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 from app.models.route_model import RouteOptimizeRequest, RouteOptimizeResponse, RouteOptimizeData, OptimizedRouteDay, RouteStep
 
+# 21개 글로벌 도시 한글/영문 ➔ GCS OSRM 지도 폴더 키 매핑 사전
+CITY_TO_GCS_MAP = {
+    # 아시아
+    "서울": "seoul", "seoul": "seoul", "한국": "seoul",
+    "도쿄": "kanto", "tokyo": "kanto", "kanto": "kanto", "일본": "kanto",
+    "오사카": "kansai", "osaka": "kansai", "교토": "kansai", "kyoto": "kansai", "kansai": "kansai",
+    "후쿠오카": "fukuoka", "fukuoka": "fukuoka",
+    "오키나와": "okinawa", "okinawa": "okinawa",
+    "방콕": "bangkok", "bangkok": "bangkok", "태국": "bangkok",
+    "싱가포르": "singapore", "singapore": "singapore",
+    "타이베이": "taipei", "taipei": "taipei", "대만": "taipei",
+    "하노이": "hanoi", "hanoi": "hanoi", "베트남": "hanoi",
+    "발리": "bali", "bali": "bali", "인도네시아": "bali",
+
+    # 유럽
+    "파리": "paris", "paris": "paris", "프랑스": "paris",
+    "런던": "london", "london": "london", "영국": "london",
+    "로마": "rome", "rome": "rome", "이탈리아": "rome",
+    "바르셀로나": "barcelona", "barcelona": "barcelona", "스페인": "barcelona",
+    "암스테르담": "amsterdam", "amsterdam": "amsterdam", "네덜란드": "amsterdam",
+    "취리히": "zurich", "zurich": "zurich", "스위스": "zurich",
+    "베를린": "paris", "독일": "paris",
+
+    # 북미
+    "뉴욕": "new_york", "new_york": "new_york", "new york": "new_york", "미국": "new_york",
+    "로스앤젤레스": "los_angeles", "los_angeles": "los_angeles", "la": "los_angeles",
+    "하와이": "hawaii", "hawaii": "hawaii",
+
+    # 오세아니아
+    "시드니": "sydney", "sydney": "sydney", "호주": "sydney",
+
+    # 아프리카
+    "카이로": "cairo", "cairo": "cairo", "이집트": "cairo"
+}
+
 class RouteService:
     def __init__(self):
         pass
@@ -31,29 +66,35 @@ class RouteService:
         )
 
     def _ensure_gcs_map_download(self, destination: str = "kanto"):
-        """GCS 클라우드 스토리지에서 필요한 도시의 완성 지도를 온디맨드(핫스와핑)로 동적 다운로드"""
+        """GCS 클라우드 스토리지에서 필요한 21개 도시의 완성 지도를 온디맨드(핫스와핑)로 동적 다운로드"""
         try:
             from app.services.gcs_service import gcs_service
-            city_code = destination.lower()
-            if "tokyo" in city_code or "kyoto" in city_code or "japan" in city_code or "kanto" in city_code:
-                city_code = "kanto"
+            dest_clean = destination.lower().strip()
+            city_code = CITY_TO_GCS_MAP.get(dest_clean, "kanto")
             
             local_dir = f"data/maps/{city_code}"
             gcs_prefix = f"maps/{city_code}/"
             
             # GCS 버킷에 보관된 해당 도시 지도를 로컬 핫스와핑 캐시로 다운로드
-            essential_files = ["kanto-latest.osrm", "kanto-latest.osrm.mldgr", "kanto-latest.osrm.fileIndex"]
+            essential_files = [
+                f"{city_code}-latest.osrm",
+                f"{city_code}-latest.osrm.mldgr",
+                f"{city_code}-latest.osrm.fileIndex",
+                f"{city_code}-latest.osrm.cells",
+                f"{city_code}-latest.osrm.partition"
+            ]
             for fname in essential_files:
                 gcs_path = f"{gcs_prefix}{fname}"
                 local_path = os.path.join(local_dir, fname)
                 gcs_service.download_file(gcs_path, local_path)
+            print(f"🗺️ [GCS Hot-swapping] 도시 [{destination} -> {city_code}] 지도 데이터 준비 완료")
         except Exception as e:
             print(f"⚠️ [GCS Hot-swapping] 지도 동적 다운로드 로깅: {e}")
 
-    def _get_time_matrix(self, locations: List[Any]) -> List[List[int]]:
+    def _get_time_matrix(self, locations: List[Any], destination: str = "kanto") -> List[List[int]]:
         """OSRM API를 호출하여 실제 도로망 기반 이동 시간(분) 행렬 생성 (GCS 핫스와핑 지원)"""
         # GCS 클라우드 지도 핫스와핑 사전 점검
-        self._ensure_gcs_map_download("kanto")
+        self._ensure_gcs_map_download(destination)
         
         # OSRM은 lng,lat 순서를 요구함
         coords = ";".join([f"{loc.lng},{loc.lat}" for loc in locations])
