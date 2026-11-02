@@ -116,6 +116,15 @@ export async function GET(request: Request) {
                 if (place.name === '봉포머구리') {
                     return { ...updated, imageUrl: '/images/places/bongpomuguri.jpg' };
                 }
+                if (place.name === '츄라우미') {
+                    return { ...updated, imageUrl: '/images/places/churaumi.webp' };
+                }
+                if (place.name === '만좌모') {
+                    return { ...updated, imageUrl: '/images/places/manzamo.jpg' };
+                }
+                if (place.name === '포크타마고') {
+                    return { ...updated, imageUrl: '/images/places/porktamago.jpg' };
+                }
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...updated, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
                 }

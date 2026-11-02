@@ -190,15 +190,15 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 
 -- [CITY: OKINAWA] - 검색 및 추천 결과 호출 전용 // 이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
-('JP_OKINAWA', '츄라우미', '관광지', '고래상어 수족관', 'https://ohh.okinawa/wpdir/wp-content/uploads/2018/10/28edf4533771a2e2d61c2efb71328057.jpg', 1, 'Okinawa, Motobu', 26.694, 127.877, '08:30-18:30', '', ARRAY['#수족관','#고래상어'], 21800, 4.8),
-('JP_OKINAWA', '만좌모', '관광지', '코끼리 바위', 'https://ohh.okinawa/wpdir/wp-content/uploads/2019/10/9cbf0eaca7edd93c81ba655a32da5848.jpg', 2, 'Okinawa, Onna', 26.505, 127.855, '00:00-24:00', '', ARRAY['#절벽','#인생샷'], 0, 4.6),
+('JP_OKINAWA', '츄라우미', '관광지', '고래상어 수족관', '/images/places/churaumi.webp', 1, 'Okinawa, Motobu', 26.694, 127.877, '08:30-18:30', '', ARRAY['#수족관','#고래상어'], 21800, 4.8),
+('JP_OKINAWA', '만좌모', '관광지', '코끼리 바위', '/images/places/manzamo.jpg', 2, 'Okinawa, Onna', 26.505, 127.855, '00:00-24:00', '', ARRAY['#절벽','#인생샷'], 0, 4.6),
 ('JP_OKINAWA', '코우리대교', '관광지', '드라이브 코스', 'https://img.etoday.co.kr/pto_db/2017/06/20170616055242_1080184_800_504.JPG', 3, 'Okinawa, Nakijin', 26.685, 128.014, '00:00-24:00', '', ARRAY['#바다','#드라이브'], 0, 4.7),
 ('JP_OKINAWA', '아메리칸빌리지', '관광지', '쇼핑 테마파크', 'https://img.activityjapan.com/wi/mihama_american_village_001.jpg', 4, 'Okinawa, Chatan', 26.316, 127.757, '10:00-22:00', '', ARRAY['#쇼핑','#관람차'], 0, 4.4),
 ('JP_OKINAWA', '국제거리', '관광지', '나하 중심지', 'https://img.activityjapan.com/wi/okinawa-international-street_top01.jpg', 5, 'Naha, Okinawa', 26.214, 127.685, '10:00-22:00', '', ARRAY['#기념품','#나하'], 0, 4.3),
 ('JP_OKINAWA', '잭스스테이크', '맛집', '오키나와 고기', 'https://kr.gogo-tour.com/info/wp-content/uploads/2025/03/%E1%84%8B%E1%85%A9%E1%84%8F%E1%85%B5%E1%84%82%E1%85%A1%E1%84%8B%E1%85%AA-%E1%84%86%E1%85%A1%E1%86%BA%E1%84%8C%E1%85%B5%E1%86%B8-%E1%84%8C%E1%85%A2%E1%86%A8%E1%84%89%E1%85%B3-%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%8F%E1%85%B3-%E1%84%92%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%89%E1%85%B3-24-860x573.jpg', 6, 'Naha, Okinawa', 26.212, 127.674, '11:00-23:00', '', ARRAY['#고기','#가성비'], 2500, 4.6),
 ('JP_OKINAWA', '키시모토', '맛집', '오키나와 소바', '/images/places/kishimoto.jpg', 7, 'Okinawa, Motobu', 26.662, 127.898, '11:00-17:00', '', ARRAY['#소바','#노포'], 800, 4.5),
 ('JP_OKINAWA', '쿠라스시', '맛집', '회전 초밥', 'https://article-image.travel.navitime.jp/img/NTJnews0303-ko/1-12.JPG', 8, 'Okinawa, Chatan', 26.315, 127.755, '11:00-23:00', '', ARRAY['#초밥','#가족'], 15000, 4.3),
-('JP_OKINAWA', '포크타마고', '맛집', '스팸 주먹밥', 'https://ohh.okinawa/wpdir/wp-content/uploads/2019/10/b835d70fcb0f7cb8a28b5c9db10a7548.jpg', 9, 'Naha, Okinawa', 26.213, 127.682, '07:00-21:00', '', ARRAY['#주먹밥','#간식'], 10000, 4.6),
+('JP_OKINAWA', '포크타마고', '맛집', '스팸 주먹밥', '/images/places/porktamago.jpg', 9, 'Naha, Okinawa', 26.213, 127.682, '07:00-21:00', '', ARRAY['#주먹밥','#간식'], 10000, 4.6),
 ('JP_OKINAWA', '우후야', '맛집', '백년가옥 맛집', 'https://www.okitour.co.kr/uploads/contents/restaurant/S1AHZ7Qpf', 10, 'Okinawa, Nago', 26.621, 127.962, '11:00-22:00', '', ARRAY['#분위기','#가옥'], 50000, 4.7);
 
 -- [CITY: PARIS] - 검색 및 추천 결과 호출 전용 //이미지 변경 완료
