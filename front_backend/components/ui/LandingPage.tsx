@@ -19,7 +19,7 @@ export default function LandingPage({ onLogin }: LandingPageProps) {
   ];
 
   return (
-    <div className="landing-container">
+    <div className="landing-container" suppressHydrationWarning>
       {/* 상단 브랜딩 영역 */}
       <div className="landing-header">
         {/* 로고 이미지 */}

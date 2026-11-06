@@ -536,6 +536,34 @@ export default function ProfilePage() {
     );
   };
 
+  // 여행일지 & 추억회상 전체 비우기 핸들러
+  const handleClearAllJournals = async () => {
+    if (journals.length === 0) return;
+    showConfirm(
+      "모든 지난 여행일지와 추억회상 기록을 완전히 삭제하시겠습니까?\n삭제된 기록은 복구할 수 없습니다.",
+      "전체 일지 삭제 🧹",
+      async () => {
+        try {
+          const res = await fetch(`/api/journals?clearAll=true&userId=${user?.id || 'user-1'}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (data.success) {
+            setJournals([]);
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('traivl_user_journals');
+            }
+            showAlert("모든 여행일지 및 추억회상 기록이 삭제되었습니다.", "삭제 완료");
+          } else {
+            showAlert(data.message || "삭제 중 오류가 발생했습니다.", "오류");
+          }
+        } catch (e) {
+          showAlert("여행일지 삭제 중 오류가 발생했습니다.", "오류");
+        }
+      }
+    );
+  };
+
   // 서버에서 받아온 실제 취향 데이터 (없을 경우 기본값 50)
   const stats = profileData?.dnaStat ? [
     { label: "문화", value: profileData.dnaStat.culture },
@@ -1090,27 +1118,54 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setIsCreateJournalOpen(true)}
-            style={{
-              fontSize: '12px',
-              fontWeight: 800,
-              padding: '8px 12px',
-              borderRadius: '10px',
-              border: 'none',
-              backgroundColor: '#8c52ff',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              boxShadow: '0 2px 8px rgba(140, 82, 255, 0.25)',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <Sparkles size={14} />
-            일지 생성
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {journals.length > 0 && (
+              <button
+                onClick={handleClearAllJournals}
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  padding: '7px 10px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#f1f5f9',
+                  color: '#64748b',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  whiteSpace: 'nowrap'
+                }}
+                title="전체 여행일지 비우기"
+              >
+                <Trash2 size={13} />
+                전체 비우기
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsCreateJournalOpen(true)}
+              style={{
+                fontSize: '12px',
+                fontWeight: 800,
+                padding: '8px 12px',
+                borderRadius: '10px',
+                border: 'none',
+                backgroundColor: '#8c52ff',
+                color: 'white',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 8px rgba(140, 82, 255, 0.25)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Sparkles size={14} />
+              일지 생성
+            </button>
+          </div>
         </div>
 
         {journalsLoading ? (

@@ -16,7 +16,7 @@ export default function CalendarPage() {
 
   const [loading, setLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  
+
   // DB에서 불러온 내 일정 리스트 중 가장 최근 일정을 활성화
   const [activeSchedule, setActiveSchedule] = useState<any>(null);
   const [activeDay, setActiveDay] = useState<number>(1);
@@ -150,7 +150,7 @@ export default function CalendarPage() {
         setItineraryData(clonedItinerary);
         setShowAccommodationSearch(false);
         setSearchQuery('');
-        
+
         setAlertTitle("숙소 추가 완료 ✨");
         setAlertMsg(`${hotel.name}이(가) 일정에 성공적으로 추가되었습니다.`);
         setAlertOpen(true);
@@ -433,7 +433,7 @@ export default function CalendarPage() {
     setIsSharingLoading(true);
 
     // 미입력 시 placeholder에 표시된 기본 예시 한줄평 자동 적용
-    const defaultContent = activeSchedule.city 
+    const defaultContent = activeSchedule.city
       ? `맛집 위주로 짠 실속 가득한 ${activeSchedule.city} 힐링 코스입니다! 😊`
       : "맛집 위주로 짠 실속 가득한 힐링 여행 코스입니다! 😊";
     const finalContent = shareContent.trim() || defaultContent;
@@ -452,12 +452,12 @@ export default function CalendarPage() {
       if (result.success) {
         setShowShareModal(false);
         setShareContent('');
-        
+
         // 성공 모달 띄우기
         setAlertTitle("공유 성공 ✨");
         setAlertMsg("선택하신 일정이 커뮤니티 피드에 공유되었습니다!\n다른 사용자들이 이 일정을 내 보관함으로 복사할 수 있습니다.");
         setAlertOpen(true);
-        
+
         // 로컬 상태 동기화
         setActiveSchedule({
           ...activeSchedule,
@@ -557,11 +557,11 @@ export default function CalendarPage() {
       const currentPlaceNames = new Set(
         (activeSchedule?.itineraryData?.itinerary || []).flatMap((d: any) => (d.places || []).map((p: any) => p.title || p.name))
       );
-      const candidates = candidateList.filter((p: any) => 
-        p.category !== '팁' && 
-        p.category !== '이벤트' && 
-        p.rank !== 11 && 
-        p.rank !== 12 && 
+      const candidates = candidateList.filter((p: any) =>
+        p.category !== '팁' &&
+        p.category !== '이벤트' &&
+        p.rank !== 11 &&
+        p.rank !== 12 &&
         !currentPlaceNames.has(p.name)
       );
       setSwapCandidates(candidates.slice(0, 4));
@@ -588,7 +588,7 @@ export default function CalendarPage() {
       const parsedLng = rawLng !== undefined && rawLng !== null && !isNaN(Number(rawLng)) ? Number(rawLng) : (oldPlace.lng || oldPlace.longitude);
 
       // 신규 장소 상세 설명 추출 (DB description 우선 사용)
-      const placeDesc = newPlace.description 
+      const placeDesc = newPlace.description
         ? (newPlace.description.length > 8 ? newPlace.description : `${newPlace.description}로 유명한 ${newPlace.name}입니다.`)
         : (newPlace.address ? `${newPlace.address}에 위치한 추천 명소입니다.` : `${newPlace.name} 방문 코스입니다.`);
 
@@ -684,7 +684,7 @@ export default function CalendarPage() {
   const displayTitle = activeSchedule?.title || itineraryData?.course_title || "나의 여행 일정";
   const displaySubtitle = activeSchedule?.shareContent || itineraryData?.course_subtitle || "AI가 추천하는 최적의 경로";
   const rawItinerary = activeSchedule?.itineraryData?.itinerary || itineraryData?.itinerary || [];
-  
+
   // 현재 활성화된 Day의 장소 목록
   const currentDayData = rawItinerary.find((d: any) => d.day === activeDay) || rawItinerary[0] || { places: [] };
   const places = currentDayData.places || [];
@@ -708,11 +708,11 @@ export default function CalendarPage() {
                 <div className="purple-path"></div>
               </div>
             </div>
-            
+
             <h2 className="empty-journey-title">
               아직 내 일정을<br />생성하지 않았습니다
             </h2>
-            
+
             <p className="empty-journey-subtitle">
               어디로 떠나고 싶으신가요?<br />
               나만의 설레는 여행 일정을 만들어보세요.
@@ -739,7 +739,7 @@ export default function CalendarPage() {
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     {!isEditing ? (
                       <>
-                        <button 
+                        <button
                           onClick={handleStartEditMode}
                           style={{
                             display: 'flex',
@@ -759,7 +759,7 @@ export default function CalendarPage() {
                           <Pencil size={13} />
                           일정 편집
                         </button>
-                        <button 
+                        <button
                           onClick={() => setShowShareModal(true)}
                           style={{
                             display: 'flex',
@@ -782,7 +782,7 @@ export default function CalendarPage() {
                       </>
                     ) : (
                       <>
-                        <button 
+                        <button
                           onClick={handleCancelEdit}
                           style={{
                             display: 'flex',
@@ -800,7 +800,7 @@ export default function CalendarPage() {
                         >
                           취소
                         </button>
-                        <button 
+                        <button
                           onClick={handleSaveEdit}
                           disabled={isSaving}
                           style={{
@@ -881,10 +881,10 @@ export default function CalendarPage() {
 
             {/* 일차 탭 스위처 */}
             {rawItinerary.length > 1 && (
-              <div style={{ 
-                display: 'flex', 
-                gap: '8px', 
-                margin: '16px 0', 
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                margin: '16px 0',
                 overflowX: 'auto',
                 paddingBottom: '4px'
               }}>
@@ -1018,10 +1018,10 @@ export default function CalendarPage() {
                     </div>
 
                     {/* 일정 카드 */}
-                    <div 
-                      className="timeline-card" 
-                      style={{ 
-                        cursor: isEditing ? 'default' : 'pointer',
+                    <div
+                      className="timeline-card"
+                      style={{
+                        cursor: 'default',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '12px',
@@ -1029,30 +1029,27 @@ export default function CalendarPage() {
                         border: isEditing ? '1.5px solid #ddd6fe' : undefined,
                         boxShadow: isEditing ? '0 8px 24px rgba(124, 58, 237, 0.08)' : undefined
                       }}
-                      onClick={() => {
-                        if (!isEditing) handlePlaceClick(item);
-                      }}
                     >
                       {/* 편집 모드 상단 액션 바 (순서 이동, 다른 곳 추천, 삭제) */}
                       {isEditing && (
-                        <div style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between', 
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
                           width: '100%',
                           paddingBottom: '10px',
                           borderBottom: '1px dashed #ede9fe'
                         }}>
                           <div style={{ display: 'flex', gap: '5px' }}>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); handleMovePlace(activeDay, idx, 'up'); }}
                               disabled={idx === 0}
-                              style={{ 
-                                padding: '4px 10px', 
-                                fontSize: '11px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #ddd6fe', 
-                                backgroundColor: idx === 0 ? '#f3f4f6' : '#ffffff', 
+                              style={{
+                                padding: '4px 10px',
+                                fontSize: '11px',
+                                borderRadius: '8px',
+                                border: '1px solid #ddd6fe',
+                                backgroundColor: idx === 0 ? '#f3f4f6' : '#ffffff',
                                 cursor: idx === 0 ? 'not-allowed' : 'pointer',
                                 color: idx === 0 ? '#9ca3af' : '#4c1d95',
                                 fontWeight: 700
@@ -1060,15 +1057,15 @@ export default function CalendarPage() {
                             >
                               ⬆️ 위로
                             </button>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); handleMovePlace(activeDay, idx, 'down'); }}
                               disabled={idx === places.length - 1}
-                              style={{ 
-                                padding: '4px 10px', 
-                                fontSize: '11px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #ddd6fe', 
-                                backgroundColor: idx === places.length - 1 ? '#f3f4f6' : '#ffffff', 
+                              style={{
+                                padding: '4px 10px',
+                                fontSize: '11px',
+                                borderRadius: '8px',
+                                border: '1px solid #ddd6fe',
+                                backgroundColor: idx === places.length - 1 ? '#f3f4f6' : '#ffffff',
                                 cursor: idx === places.length - 1 ? 'not-allowed' : 'pointer',
                                 color: idx === places.length - 1 ? '#9ca3af' : '#4c1d95',
                                 fontWeight: 700
@@ -1079,30 +1076,30 @@ export default function CalendarPage() {
                           </div>
 
                           <div style={{ display: 'flex', gap: '6px' }}>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); openSwapModal(activeDay, idx, item); }}
-                              style={{ 
-                                padding: '5px 12px', 
-                                fontSize: '11px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #c4b5fd', 
-                                backgroundColor: '#f5f3ff', 
-                                color: '#7c3aed', 
+                              style={{
+                                padding: '5px 12px',
+                                fontSize: '11px',
+                                borderRadius: '8px',
+                                border: '1px solid #c4b5fd',
+                                backgroundColor: '#f5f3ff',
+                                color: '#7c3aed',
                                 fontWeight: 800,
                                 cursor: 'pointer'
                               }}
                             >
                               🔄 다른 곳 추천
                             </button>
-                            <button 
+                            <button
                               onClick={(e) => { e.stopPropagation(); handleDeletePlace(activeDay, idx); }}
-                              style={{ 
-                                padding: '5px 12px', 
-                                fontSize: '11px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #fca5a5', 
-                                backgroundColor: '#fef2f2', 
-                                color: '#ef4444', 
+                              style={{
+                                padding: '5px 12px',
+                                fontSize: '11px',
+                                borderRadius: '8px',
+                                border: '1px solid #fca5a5',
+                                backgroundColor: '#fef2f2',
+                                color: '#ef4444',
                                 fontWeight: 800,
                                 cursor: 'pointer'
                               }}
@@ -1123,7 +1120,6 @@ export default function CalendarPage() {
                             <h3 className="timeline-card-title">
                               {item.title}
                             </h3>
-                            {!isEditing && <ChevronRight size={18} className="chevron-icon" />}
                           </div>
                           <p className="timeline-card-desc">
                             {item.location?.replace(/^\[.*?\]\s*/, '')}
@@ -1167,7 +1163,7 @@ export default function CalendarPage() {
                         <h3 className="timeline-card-title" style={{ color: '#8c52ff', fontSize: '16px' }}>
                           {currentAccommodation.name} 입실
                         </h3>
-                        <button 
+                        <button
                           onClick={() => setShowDeleteModal(true)}
                           style={{
                             background: 'none',
@@ -1198,8 +1194,8 @@ export default function CalendarPage() {
                   <div className="timeline-time" style={{ fontWeight: 700, color: '#94a3b8' }}>
                     🏨
                   </div>
-                  <div 
-                    className="timeline-card" 
+                  <div
+                    className="timeline-card"
                     style={{ border: '2px dashed #cbd5e1', cursor: 'pointer', background: '#fafbfc', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px 24px' }}
                     onClick={() => setShowAccommodationSearch(true)}
                   >
@@ -1267,9 +1263,9 @@ export default function CalendarPage() {
       {/* 캘린더 피커 모달 */}
       {showPicker && (
         <div className="survey-modal" style={{ padding: '0' }}>
-          <CalendarPicker 
-            onConfirm={handleConfirmDates} 
-            onCancel={closePicker} 
+          <CalendarPicker
+            onConfirm={handleConfirmDates}
+            onCancel={closePicker}
           />
         </div>
       )}
@@ -1298,17 +1294,17 @@ export default function CalendarPage() {
             <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1e293b', marginBottom: '8px', textAlign: 'center' }}>
               {activeSchedule.isShared ? "공유 한줄평 수정" : "피드에 일정 공유하기"}
             </h3>
-            <p style={{ 
-              fontSize: '13px', 
-              color: '#64748b', 
-              marginBottom: '20px', 
-              textAlign: 'center', 
+            <p style={{
+              fontSize: '13px',
+              color: '#64748b',
+              marginBottom: '20px',
+              textAlign: 'center',
               lineHeight: '1.5',
               wordBreak: 'keep-all'
             }}>
               나의 소중한 여행 경로를 다른 트래블러에게 자랑해보세요!
             </p>
-            
+
             <textarea
               value={shareContent}
               onChange={(e) => setShareContent(e.target.value)}
@@ -1419,7 +1415,7 @@ export default function CalendarPage() {
             {/* 리스트 영역 */}
             <div style={{ flex: 1, overflowY: 'auto', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px' }}>
               {searchQuery.trim().length > 0 && (
-                <div 
+                <div
                   onClick={() => handleSelectCustomAccommodation(searchQuery)}
                   style={{
                     padding: '12px',
@@ -1462,10 +1458,10 @@ export default function CalendarPage() {
 
             {/* 연박 설정 체크박스 */}
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '20px', padding: '0 4px' }}>
-              <input 
-                type="checkbox" 
-                checked={applyToRemaining} 
-                onChange={(e) => setApplyToRemaining(e.target.checked)} 
+              <input
+                type="checkbox"
+                checked={applyToRemaining}
+                onChange={(e) => setApplyToRemaining(e.target.checked)}
                 style={{ width: '16px', height: '16px', accentColor: '#8c52ff' }}
               />
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>
@@ -1578,24 +1574,24 @@ export default function CalendarPage() {
 
       {/* 🔄 대체 장소 추천 모달 팝업 */}
       {swapModalTarget && (
-        <div style={{ 
-          position: 'fixed', 
-          inset: 0, 
-          backgroundColor: 'rgba(0, 0, 0, 0.55)', 
-          zIndex: 9999, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.55)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           padding: '20px',
           backdropFilter: 'blur(3px)'
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
-            borderRadius: '24px', 
-            padding: '24px', 
-            maxWidth: '440px', 
-            width: '100%', 
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)' 
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            maxWidth: '440px',
+            width: '100%',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
           }}>
             <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 800, color: '#111827' }}>
               🔄 다른 장소로 교체하기
@@ -1613,14 +1609,14 @@ export default function CalendarPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto', marginBottom: '20px' }}>
                 {swapCandidates.length > 0 ? (
                   swapCandidates.map((cand: any) => (
-                    <div 
+                    <div
                       key={cand.id || cand.name}
                       onClick={() => handleSelectSwapPlace(cand)}
-                      style={{ 
-                        padding: '12px 14px', 
-                        borderRadius: '14px', 
-                        border: '1.5px solid #ede9fe', 
-                        backgroundColor: '#faf5ff', 
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '14px',
+                        border: '1.5px solid #ede9fe',
+                        backgroundColor: '#faf5ff',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
                         display: 'flex',
@@ -1643,15 +1639,15 @@ export default function CalendarPage() {
               </div>
             )}
 
-            <button 
+            <button
               onClick={closeSwapModal}
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '12px', 
-                border: '1px solid #e5e7eb', 
-                backgroundColor: '#f3f4f6', 
-                fontWeight: 700, 
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb',
+                backgroundColor: '#f3f4f6',
+                fontWeight: 700,
                 fontSize: '14px',
                 cursor: 'pointer'
               }}
@@ -1672,7 +1668,7 @@ export default function CalendarPage() {
       />
 
       {/* 플로팅 버튼 */}
-      <button 
+      <button
         className="calendar-fab"
         onClick={() => setShowPicker(true)}
       >
@@ -1680,9 +1676,9 @@ export default function CalendarPage() {
       </button>
 
       {/* 상세 정보 모달 */}
-      <PlaceDetailModal 
-        place={selectedPlace} 
-        onClose={closePlaceDetail} 
+      <PlaceDetailModal
+        place={selectedPlace}
+        onClose={closePlaceDetail}
       />
     </>
   );

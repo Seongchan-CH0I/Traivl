@@ -124,12 +124,54 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE /api/journals?id=xxx
+// DELETE /api/journals?id=xxx 또는 /api/journals?clearAll=true&userId=xxx 또는 /api/journals?ids=id1,id2
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
+    const ids = searchParams.get('ids');
+    const clearAll = searchParams.get('clearAll') === 'true';
+    const userId = searchParams.get('userId') || 'user-1';
 
+    // 1. 전체 비우기
+    if (clearAll) {
+      try {
+        await prisma.travelJournal.deleteMany({
+          where: {
+            OR: [
+              { userId },
+              { userId: 'user-1' }
+            ]
+          }
+        });
+      } catch (dbError) {
+        console.warn("Prisma travelJournal deleteMany failed:", dbError);
+      }
+      return NextResponse.json({
+        success: true,
+        message: '모든 여행일지 및 추억 기록이 삭제되었습니다.'
+      });
+    }
+
+    // 2. 다중 선택 삭제
+    if (ids) {
+      const idList = ids.split(',').filter(Boolean);
+      try {
+        await prisma.travelJournal.deleteMany({
+          where: {
+            id: { in: idList }
+          }
+        });
+      } catch (dbError) {
+        console.warn("Prisma travelJournal deleteMany(ids) failed:", dbError);
+      }
+      return NextResponse.json({
+        success: true,
+        message: '선택한 여행일지가 삭제되었습니다.'
+      });
+    }
+
+    // 3. 단일 삭제
     if (!id) {
       return NextResponse.json(
         { success: false, message: '삭제할 여행일지 id가 필요합니다.' },

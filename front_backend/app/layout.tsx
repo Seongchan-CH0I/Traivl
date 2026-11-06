@@ -524,7 +524,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
     if (entryStep === 'landing') {
         return (
-            <div className="app-container">
+            <div className="app-container" suppressHydrationWarning>
                 <LandingPage onLogin={() => setEntryStep('login')} />
             </div>
         );
@@ -532,7 +532,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
     if (entryStep === 'login') {
         return (
-            <div className="app-container">
+            <div className="app-container" suppressHydrationWarning>
                 <LoginScreen 
                     onBack={closeLogin} 
                     onLogin={() => setEntryStep('app')} 
@@ -542,7 +542,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="app-container">
+        <div className="app-container" suppressHydrationWarning>
             <div
                 className={`ai-menu-overlay ${isAiMenuOpen ? 'show' : ''}`}
                 onClick={() => setIsAiMenuOpen(false)}
