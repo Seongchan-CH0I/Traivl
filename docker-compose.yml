@@ -74,7 +74,7 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - ./osrm-data:/data
+      - ./ai-engine/data/maps/kanto:/data
     networks:
       - travel-network
 

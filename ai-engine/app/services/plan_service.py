@@ -1,4 +1,5 @@
 import os
+import re
 import math # 거리 계산 및 일정 배분용
 import json
 import numpy as np
@@ -16,6 +17,11 @@ from app.core.exceptions import NoPlacesFoundError, VectorSearchError
 # LangChain DB 관련 임포트 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.pgvector import PGVector
+
+def _clean_theme_tag(tag: str) -> str:
+    """프론트엔드 이모지 및 특수문자를 제거하여 DB 태그와 1:1 매칭되도록 정규화 (예: '🍜 맛집투어' -> '맛집투어')"""
+    clean = re.sub(r'[^\w\s가-힣]', '', tag).strip()
+    return clean if clean else tag.strip()
 
 # 🧮 두 위도/경도 간의 직선거리를 km 단위로 계산하는 공식 (Haversine)
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -39,6 +45,9 @@ class PlanService:
 
         # PostgreSQL(pgvector) 연동 초기화 설정 (환경 변수 사용)
         db_url = settings.DATABASE_URL
+        # psycopg2가 지원하지 않는 pgbouncer 등 URL 파라미터 제거
+        if "?" in db_url:
+            db_url = db_url.split("?")[0]
         if db_url.startswith("postgresql://"):
             db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
@@ -61,24 +70,33 @@ class PlanService:
 
     async def get_recommended_plan(self, request: PlanRequest) -> PlanResponse:
         
-        # 1. 사용자가 선택한 태그를 쿼리로 변환
-        search_query = f"{', '.join(request.travel_style)} 분위기가 가득한 장소"  
+        # 1. 사용자가 선택한 태그(이모지 포함 가능)를 순수 텍스트 태그로 정규화
+        cleaned_styles = [_clean_theme_tag(s) for s in request.travel_style if _clean_theme_tag(s)]
+        if not cleaned_styles:
+            cleaned_styles = ["인스타감성", "힐링"]
+            
+        search_query = f"{', '.join(cleaned_styles)} 분위기가 가득한 장소"  
         
         # 유저의 여행일수에 따라 검색할 K(개수)를 동적으로 계산!
         travel_days = request.duration.days if request.duration.days > 0 else 1 # 최소 1일 보장
         
-        # 1. RAG 후보군 당김 개수를 12개 ➔ 30~50개 넉넉한 모수로 대폭 확대 (294개 DB 모수 100% 활용)
+        # 1. RAG 후보군 당김 개수를 넉넉한 모수로 확보 (35~50개)
         dynamic_k = max(35, travel_days * 10)
 
-        print(f"🔍 [벡터 DB 검색] 쿼리: {search_query} | 여행일수: {travel_days}일 -> RAG 넓은 모수 당김: {dynamic_k}개")
-        # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색
-        # 검색이 실패하거나 결과가 비면 예외로 올린다. 다른 도시의 대체 장소를 끼워 넣으면
-        # 잘못된 일정이 "성공"으로 응답되어 장애를 아무도 눈치채지 못한다.
+        print(f"🔍 [벡터 DB 검색] 정규화 쿼리: {search_query} | 테마: {cleaned_styles} | K: {dynamic_k}개")
+        # 2. PostgreSQL(pgvector)에서 유사 장소 RAG 검색 (명소 + 맛집 병행 확보)
         try:
+            # 유저 취향 명소 검색
             results = self.vector_db.similarity_search(
-                query=search_query,                         # 유저가 선택한 여행 스타일
-                k=dynamic_k,                                # 35개 이상 넉넉한 모수 당김
-                filter={"destination": request.destination} # 유저가 선택한 도시
+                query=search_query,
+                k=dynamic_k,
+                filter={"destination": request.destination}
+            )
+            # 맛집/식당 후보군도 항상 별도로 넉넉히(15개 이상) 확보하여 점심/저녁 보장
+            food_results = self.vector_db.similarity_search(
+                query="현지 맛집 전통 음식 로컬 식당 미식 디너 런치",
+                k=15,
+                filter={"destination": request.destination}
             )
         except Exception as db_err:
             print(f"❌ [벡터 DB 검색 실패] destination={request.destination}: {db_err}")
@@ -86,38 +104,116 @@ class PlanService:
                 f"벡터 DB 검색에 실패했습니다 (destination={request.destination}): {db_err}"
             ) from db_err
 
-        candidates = [
-            PlaceCandidate(
+        # 3. DB 메타데이터에서 원본 태그를 100% 보존하고, 식사(Food)와 명소(Attraction)로 분류
+        def parse_place_doc(doc):
+            raw_tags = doc.metadata.get('tags', [])
+            if isinstance(raw_tags, str):
+                raw_tags = [t.strip() for t in raw_tags.split(',') if t.strip()]
+            elif not isinstance(raw_tags, list):
+                raw_tags = []
+                
+            category = doc.metadata.get('category')
+            title = doc.metadata.get('name', '')
+            desc = doc.page_content or ''
+            title_lower = title.lower()
+            text_all = f"{title} {desc} {' '.join(raw_tags)}".lower()
+
+            # 명소/자연/유적 명백한 장소는 설명에 맛집 단어가 있어도 맛집으로 분류하지 않음
+            is_definitely_attraction = any(k in title_lower for k in [
+                '비치', '해변', '사찰', '성당', '산', '공원', '타워', '브릿지', '다리', '사원',
+                '박물관', '미술관', '궁전', '광장', '유적', '바나힐', '케이블카', '전망대'
+            ])
+
+            is_food_place = False
+            if not is_definitely_attraction:
+                is_food_place = (
+                    category in ['맛집', '식당', '카페'] or
+                    any(t in ['맛집투어', '맛집', '미식'] for t in raw_tags) or
+                    any(k in title_lower for k in ['식당', '레스토랑', '카페', '키친', '하우스', '베이커리', '라멘', '스시', '구루메', '바베큐', '쌀국수']) or
+                    (any(k in text_all for k in ['식당', '레스토랑', '전문점']) and '맛집' in text_all)
+                )
+
+            if is_food_place and (not category or category == '명소'):
+                category = '맛집'
+            elif not category or category == '명소':
+                category = '관광지'
+
+            return PlaceCandidate(
                 place_id=doc.metadata['place_id'],
-                title=doc.metadata['name'],
-                description=doc.page_content, # 해당 장소 설명
-                tags=[],
-                category=doc.metadata.get('category', '명소'),
+                title=title,
+                description=desc,
+                tags=raw_tags,
+                category=category,
                 lat=doc.metadata['lat'],
                 lng=doc.metadata['lng'],
-                stay_duration_mins=doc.metadata.get('duration_mins', 90)
-            )
-            for doc in results
-        ]
+                stay_duration_mins=doc.metadata.get('duration_mins', 75 if is_food_place else 90)
+            ), is_food_place
+
+        seen_ids = set()
+        food_candidates: List[PlaceCandidate] = []
+        attraction_candidates: List[PlaceCandidate] = []
+
+        # 명소 및 전체 후보 파싱
+        for doc in results:
+            pid = doc.metadata.get('place_id')
+            if not pid or pid in seen_ids:
+                continue
+            seen_ids.add(pid)
+            place_cand, is_food = parse_place_doc(doc)
+            if is_food:
+                food_candidates.append(place_cand)
+            else:
+                attraction_candidates.append(place_cand)
+
+        # 전용 맛집 후보 파싱 추가
+        for doc in food_results:
+            pid = doc.metadata.get('place_id')
+            if not pid or pid in seen_ids:
+                continue
+            seen_ids.add(pid)
+            place_cand, is_food = parse_place_doc(doc)
+            if is_food:
+                food_candidates.append(place_cand)
+            else:
+                attraction_candidates.append(place_cand)
+
+        # 태그 일치도 스코어링 정렬 (명소 후보군)
+        def score_place(p: PlaceCandidate):
+            return len(set(cleaned_styles) & set(p.tags))
+
+        attraction_candidates.sort(key=score_place, reverse=True)
+
+        # 결합된 candidates (하위 호환 및 Gemini 선별용)
+        candidates = attraction_candidates + food_candidates
 
         if not candidates:
             print(f"🌍 [Plan] '{request.destination}' DB 데이터 미존재 ➔ Gemini 3.5 Flash 실시간 랜드마크 생성 폴백 가동!")
-            candidates = await self._generate_places_with_gemini_fallback(request.destination, request.travel_style, count=dynamic_k)
+            candidates = await self._generate_places_with_gemini_fallback(request.destination, cleaned_styles, count=dynamic_k)
+            # 폴백 생성 시에도 맛집/명소 분리
+            food_candidates = [c for c in candidates if c.category == '맛집' or any(t in ['맛집', '맛집투어'] for t in c.tags)]
+            attraction_candidates = [c for c in candidates if c not in food_candidates]
             
             if not candidates:
                 raise NoPlacesFoundError(
                     f"'{request.destination}'에 대해 추천할 수 있는 장소 데이터를 생성하지 못했습니다."
                 )
 
-        print(f"✅ [장소 후보 확보] '{request.destination}' 후보 {len(candidates)}개 확보")
+        print(f"✅ [장소 후보 확보] '{request.destination}' 명소 {len(attraction_candidates)}개, 전용 맛집 {len(food_candidates)}개 확보 완료")
 
-        # [2단계] Gemini를 이용한 지능형 장소 선정 (거리에 따라 하루 2~5개 유동 할당을 위해 모수를 넉넉히 선별)
-        target_count = travel_days * 4 # 하루 평균 4군데까지 유동적으로 넉넉히 선별
+        # [2단계] Gemini를 이용한 지능형 장소 선정
+        # 유저 취향에 맞는 명소들과 점심/저녁 맛집들을 균형 있게 추천 사유 생성
+        target_count = travel_days * 5
         selected_data = await self._select_places_with_gemini(candidates, request, count=target_count)
 
-        # [3단계] 최종 시간표 생성 (itinerary 시뮬레이션)
-        # Gemini가 선정한 장소들을 K-Means 클러스터링과 OSRM 경로최적화로 시간표를 구성합니다.
-        itinerary = await self._simulate_itinerary_v2(selected_data, request.duration)
+        # [3단계] 최종 시간표 생성: Day별 점심/저녁 맛집 고정 + 태그 명소 슬롯 최적화
+        itinerary = await self._simulate_itinerary_v3(
+            selected_data=selected_data,
+            food_pool=food_candidates,
+            attraction_pool=attraction_candidates,
+            duration=request.duration,
+            destination=request.destination,
+            travel_styles=cleaned_styles
+        )
 
         return PlanResponse(
             status="success",
@@ -136,9 +232,14 @@ class PlanService:
             # AI 키가 없을 경우 하위 호환을 위해 상위 N개 반환 (기존 로직)
             return [{"place": c, "reason": "AI 추천 장소"} for c in candidates[:count]]
 
-        # 후보지 정보를 텍스트로 정리
+        # 정규화된 유저 스타일 추출
+        cleaned_styles = [_clean_theme_tag(s) for s in request.travel_style if _clean_theme_tag(s)]
+        if not cleaned_styles:
+            cleaned_styles = ["인스타감성", "힐링"]
+
+        # 후보지 정보를 텍스트로 정리 (카테고리, 태그, 체류시간 포함하여 AI에 전달)
         candidates_text = "\n".join([
-            f"- ID: {c.place_id}, 이름: {c.title}, 설명: {c.description}"
+            f"- ID: {c.place_id}, 이름: {c.title}, 카테고리: {c.category}, 태그: [{', '.join(c.tags)}], 체류: {c.stay_duration_mins}분, 설명: {c.description}"
             for c in candidates
         ])
 
@@ -150,18 +251,20 @@ class PlanService:
 - 여행 국가: {request.country}
 - 목적지(도시): {request.destination}
 - 여행 기간: {request.duration.days}일
-- 필수 포함 선호 스타일/테마: {', '.join(request.travel_style)}
+- 필수 포함 선호 스타일/테마: {', '.join(cleaned_styles)}
 - 유저 DNA: {request.dna_type}
 
 [후보 장소 리스트]
 {candidates_text}
 
 [중요 임무]
-1. 위 후보 장소 리스트는 반드시 '{request.country}' '{request.destination}'에 위치한 장소들입니다. 이 중 유저 성향과 선호 테마({', '.join(request.travel_style)})에 맞는 명소와 맛집/식당/야경 장소를 골고루 조합하여 총 {count}개를 골라주세요.
-2. 타 국가(예: 한국, 타 지역 등)의 장소나 리스트 외의 엉뚱한 장소를 임의로 넣지 마세요.
-3. 유저가 '맛집투어'나 '야경투어', '액티비티'를 선택했다면 관련 장소가 반드시 포함되어야 합니다.
-4. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 친절한 가이드 말투"로 유익한 추천 사유를 1~2줄로 작성해 주세요.
-5. 반드시 아래 JSON 형식으로만 답변하세요.
+1. 위 후보 장소 리스트는 반드시 '{request.country}' '{request.destination}'에 위치한 장소들입니다.
+2. ⭐️ [태그 매칭 최우선]: 유저가 선택한 테마({', '.join(cleaned_styles)})와 태그가 일치하는 장소를 반드시 우선적으로 선별하세요.
+   - 유저가 '맛집투어'를 선택했다면 점심/저녁에 방문할 맛집/식당을 반드시 포함하세요.
+   - 유저가 '야경투어'를 선택했다면 일몰 후 방문할 야경/루프탑/야시장 명소를 반드시 포함하세요.
+   - '액티비티', '문화체험', '자연', '힐링', '쇼핑' 등 선택된 테마의 장소를 충실히 반영하세요.
+3. 각 장소마다 이 유저에게 왜 추천하는지 "1인칭 친절한 가이드 말투"로 유익한 추천 사유를 1~2줄로 작성해 주세요.
+4. 반드시 아래 JSON 형식으로만 답변하세요.
 
 JSON 형식:
 {{
@@ -260,7 +363,277 @@ JSON 형식:
             print(f"❌ [Gemini Fallback 실패] '{destination}': {e}")
             return []
 
-    async def _simulate_itinerary_v2(self, selected_data: List[Dict[str, Any]], duration: Any) -> List[DayItinerary]:
+    def _assign_time_windows_for_day(self, day_items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        일차별 장소들의 태그/특성을 분석하여 점심/저녁/야경/주간 골든타임 시간창(Time Window)을 자동 부여합니다.
+        (단위: 00:00 자정 기준 분)
+        """
+        has_lunch = False
+        has_dinner = False
+        has_night = False
+        
+        # 1차 판별
+        for it in day_items:
+            place = it['place']
+            tags = getattr(place, 'tags', []) or []
+            text_desc = (getattr(place, 'title', '') or '') + ' ' + (getattr(place, 'description', '') or '') + ' ' + (it.get('reason') or '')
+            
+            is_food = any(t in ['맛집투어', '맛집'] for t in tags) or any(k in text_desc for k in ['식당', '미식', '맛집', '푸드', '카페', '디저트', '소바', '스시', '라멘', '구루메', '레스토랑'])
+            is_night = any(t in ['야경투어', '야경'] for t in tags) or any(k in text_desc for k in ['야경', '루프탑', '야시장', '펍', '바', '나이트', '선셋', '일몰'])
+            
+            it['_is_food'] = is_food
+            it['_is_night'] = is_night
+
+        # 2차 시간창 배분
+        for idx, it in enumerate(day_items):
+            is_food = it['_is_food']
+            is_night = it['_is_night']
+            
+            if is_night and not has_night:
+                # 야경 골든타임: 18:30 ~ 22:30 (1110 ~ 1350분)
+                it['opening_hours'] = [1110, 1350]
+                has_night = True
+            elif is_food:
+                if not has_lunch:
+                    # 점심 골든타임: 11:30 ~ 13:30 (690 ~ 810분)
+                    it['opening_hours'] = [690, 810]
+                    has_lunch = True
+                elif not has_dinner:
+                    # 저녁 골든타임: 17:30 ~ 20:30 (1050 ~ 1230분)
+                    it['opening_hours'] = [1050, 1230]
+                    has_dinner = True
+                else:
+                    # 디저트/카페: 14:00 ~ 17:30 (840 ~ 1050분)
+                    it['opening_hours'] = [840, 1050]
+            else:
+                # 일반 관광지: 첫 장소는 오전, 나머지는 오후
+                if idx == 0 and not has_lunch:
+                    it['opening_hours'] = [570, 720] # 09:30 ~ 12:00
+                else:
+                    it['opening_hours'] = [810, 1080] # 13:30 ~ 18:00
+
+        # 시간창 시작 시각(opening_hours[0]) 기준 오름차순 정렬하여 가장 이른 오전 명소가 시작점이 되도록 설정
+        day_items.sort(key=lambda x: x.get('opening_hours', [570, 1080])[0])
+        return day_items
+
+    async def _simulate_itinerary_v3(
+        self,
+        selected_data: List[Dict[str, Any]],
+        food_pool: List[PlaceCandidate],
+        attraction_pool: List[PlaceCandidate],
+        duration: Any,
+        destination: str = "kanto",
+        travel_styles: List[str] = None
+    ) -> List[DayItinerary]:
+        """
+        [1일 황금 밸런스 슬롯 아키텍처]
+        각 일자(Day)마다:
+        1. 점심 식사 (11:30~13:30) 맛집 고정 필수 배치
+        2. 저녁 식사 (17:30~20:00) 맛집 고정 필수 배치
+        3. 오전 명소 (09:30~11:30) 유저 테마 명소 배치
+        4. 오후 명소 (13:30~17:30) 유저 테마 명소 1~2개 배치
+        5. 야경 명소 (19:30~22:00) '야경투어' 선택 시 우선 배치
+        이후 OR-Tools VRPTW 엔진으로 실제 이동시간 및 현실적 도착 시간표 최적화
+        """
+        if travel_styles is None:
+            travel_styles = []
+
+        days_count = duration.days
+        selected_map = {item['place'].place_id: item['reason'] for item in selected_data}
+
+        # 1. 사용 가능한 맛집 풀과 명소 풀 정돈 (중복 방지용 Set)
+        used_place_ids = set()
+
+        def get_reason(place: PlaceCandidate, default_reason: str) -> str:
+            return selected_map.get(place.place_id, place.description or default_reason)
+
+        is_night_tour = any(t in ['야경투어', '야경'] for t in travel_styles)
+
+        days_itineraries = []
+
+        # 날짜별로 슬롯 채우기
+        for day_idx in range(days_count):
+            day_items: List[Dict[str, Any]] = []
+
+            # (1) 오전 명소 1개 (09:30 ~ 11:30)
+            avail_attractions = [p for p in attraction_pool if p.place_id not in used_place_ids]
+            # 야경 전용이 아닌 일반 관광지 우선
+            morning_cand = next(
+                (p for p in avail_attractions if not any(t in ['야경투어', '야경'] for t in p.tags)),
+                avail_attractions[0] if avail_attractions else None
+            )
+            if morning_cand:
+                used_place_ids.add(morning_cand.place_id)
+                day_items.append({
+                    "place": morning_cand,
+                    "reason": get_reason(morning_cand, f"{destination}의 대표 명소에서 상쾌하게 하루 일정을 시작합니다."),
+                    "slot": "morning",
+                    "opening_hours": [570, 660]  # 09:30 ~ 11:00
+                })
+
+            # (2) 점심 식사 맛집 필수 배치 (12:00 ~ 13:30)
+            avail_foods = [p for p in food_pool if p.place_id not in used_place_ids]
+            # 오전 장소와 가까운 맛집 우선 선택 (거리 계산)
+            if morning_cand and avail_foods:
+                avail_foods.sort(key=lambda f: (f.lat - morning_cand.lat)**2 + (f.lng - morning_cand.lng)**2)
+            
+            lunch_cand = avail_foods[0] if avail_foods else None
+            if lunch_cand:
+                used_place_ids.add(lunch_cand.place_id)
+                day_items.append({
+                    "place": lunch_cand,
+                    "reason": get_reason(lunch_cand, f"오전 여행 후 즐기는 {destination} 현지 로컬 점심 맛집입니다."),
+                    "slot": "lunch",
+                    "opening_hours": [720, 810]  # 12:00 ~ 13:30
+                })
+
+            # (3) 오후 명소 1~2개 (14:00 ~ 17:30)
+            avail_attractions = [p for p in attraction_pool if p.place_id not in used_place_ids]
+            afternoon_cands = [p for p in avail_attractions if not any(t in ['야경투어', '야경'] for t in p.tags)][:2]
+            for p_cand in afternoon_cands:
+                used_place_ids.add(p_cand.place_id)
+                day_items.append({
+                    "place": p_cand,
+                    "reason": get_reason(p_cand, f"오후 시간대에 여유롭게 둘러보는 취향 맞춤 명소입니다."),
+                    "slot": "afternoon",
+                    "opening_hours": [840, 1050]  # 14:00 ~ 17:30
+                })
+
+            # (4) 저녁 식사 맛집 필수 배치 (18:00 ~ 20:00)
+            avail_foods = [p for p in food_pool if p.place_id not in used_place_ids]
+            last_afternoon = afternoon_cands[-1] if afternoon_cands else (lunch_cand or morning_cand)
+            if last_afternoon and avail_foods:
+                avail_foods.sort(key=lambda f: (f.lat - last_afternoon.lat)**2 + (f.lng - last_afternoon.lng)**2)
+            
+            dinner_cand = avail_foods[0] if avail_foods else None
+            if dinner_cand:
+                used_place_ids.add(dinner_cand.place_id)
+                day_items.append({
+                    "place": dinner_cand,
+                    "reason": get_reason(dinner_cand, f"하루의 피로를 풀고 즐기는 {destination} 특별한 저녁 미식 코스입니다."),
+                    "slot": "dinner",
+                    "opening_hours": [1080, 1200]  # 18:00 ~ 20:00
+                })
+
+            # (5) 야경 명소 / 힐링 산책 (20:00 ~ 22:30) - 야경투어 선호 시 또는 여유 슬롯
+            if is_night_tour:
+                avail_attractions = [p for p in attraction_pool if p.place_id not in used_place_ids]
+                night_cand = next(
+                    (p for p in avail_attractions if any(t in ['야경투어', '야경'] for t in p.tags)),
+                    None
+                )
+                if night_cand:
+                    used_place_ids.add(night_cand.place_id)
+                    day_items.append({
+                        "place": night_cand,
+                        "reason": get_reason(night_cand, f"화려한 조명과 야경이 아름다운 로맨틱 나이트 코스입니다."),
+                        "slot": "night",
+                        "opening_hours": [1200, 1350]  # 20:00 ~ 22:30
+                    })
+
+            # 만약 슬롯으로 다 못 채웠다면 Gemini 선정 장소 중 미사용된 것 추가 (최대 5개 맞춤)
+            if len(day_items) < 4:
+                leftover = [item for item in selected_data if item['place'].place_id not in used_place_ids]
+                for item in leftover[:(4 - len(day_items))]:
+                    used_place_ids.add(item['place'].place_id)
+                    day_items.append({
+                        "place": item['place'],
+                        "reason": item['reason'],
+                        "slot": "extra",
+                        "opening_hours": [840, 1080]
+                    })
+
+            # 시간순(opening_hours 시작 시각)으로 정렬하여 오전 -> 점심 -> 오후 -> 저녁 -> 야경 순서 확립
+            day_items.sort(key=lambda x: x.get('opening_hours', [540, 1440])[0])
+
+            # (6) OR-Tools VRPTW 경로 최적화 실행
+            start_item = day_items[0]
+            start_window = start_item.get('opening_hours', [570, 690])
+
+            places_to_visit = [
+                PlaceVisitItem(
+                    place_id=item['place'].place_id,
+                    lat=item['place'].lat,
+                    lng=item['place'].lng,
+                    stay_duration_mins=item['place'].stay_duration_mins,
+                    opening_hours=item.get('opening_hours', [540, 1440])
+                ) for item in day_items[1:]
+            ]
+
+            route_req = RouteOptimizeRequest(
+                destination=destination,
+                start_location=Location(
+                    lat=start_item['place'].lat,
+                    lng=start_item['place'].lng,
+                    stay_duration_mins=start_item['place'].stay_duration_mins,
+                    opening_hours=start_window
+                ),
+                places_to_visit=places_to_visit,
+                max_days=1
+            )
+
+            print(f"🛣️ [Plan VRPTW 황금슬롯] {day_idx+1}일차 점심/저녁 보장 최적화 중... (장소 {len(day_items)}개)")
+            final_day_items = []
+            try:
+                route_res = await route_service.optimize_route(route_req)
+                if route_res.data.optimized_routes and route_res.data.optimized_routes[0].route:
+                    prev_it = None
+                    for step in route_res.data.optimized_routes[0].route:
+                        pid = start_item['place'].place_id if step.place_id == "START_POINT" else step.place_id
+                        matched = next((item for item in day_items if item['place'].place_id == pid), None)
+                        if matched:
+                            travel_mins = 15
+                            travel_km = 2.0
+                            if prev_it:
+                                dist = np.sqrt((matched['place'].lat - prev_it['place'].lat)**2 + (matched['place'].lng - prev_it['place'].lng)**2) * 111.0
+                                travel_km = round(max(0.6, dist), 1)
+                                travel_mins = int(max(6, travel_km * 3 + 5))
+
+                            final_day_items.append(PlaceItem(
+                                place_id=matched['place'].place_id,
+                                suggested_time=step.expected_arrival,
+                                title=matched['place'].title,
+                                location=f"[{travel_mins}분|{travel_km}km] " + matched['reason'],
+                                category=matched['place'].category or "관광지",
+                                tags=matched['place'].tags or [],
+                                lat=matched['place'].lat,
+                                lng=matched['place'].lng
+                            ))
+                            prev_it = matched
+            except Exception as e:
+                print(f"⚠️ [Plan VRPTW] 최적화 폴백 전환 ({e})")
+
+            # 최적화 폴백 (실제 현실적인 황금 타임테이블 직결)
+            if not final_day_items:
+                slot_times = {
+                    "morning": "09:30",
+                    "lunch": "12:00",
+                    "afternoon": "14:30",
+                    "dinner": "18:00",
+                    "night": "20:00",
+                    "extra": "16:00"
+                }
+                for it in day_items:
+                    assigned_time = slot_times.get(it.get('slot', 'morning'), "10:00")
+                    final_day_items.append(PlaceItem(
+                        place_id=it['place'].place_id,
+                        suggested_time=assigned_time,
+                        title=it['place'].title,
+                        location=it['reason'],
+                        category=it['place'].category or "관광지",
+                        tags=it['place'].tags or [],
+                        lat=it['place'].lat,
+                        lng=it['place'].lng
+                    ))
+
+            days_itineraries.append(DayItinerary(
+                day=day_idx + 1,
+                places=final_day_items
+            ))
+
+        return days_itineraries
+
+    async def _simulate_itinerary_v2(self, selected_data: List[Dict[str, Any]], duration: Any, destination: str = "kanto") -> List[DayItinerary]:
         """
         Gemini가 선정한 장소들을 K-Means 공간 밀도 및 OSRM 지리적 거리에 기반하여 (2개~4개)로 동적 배분합니다.
         """
@@ -314,13 +687,18 @@ JSON 형식:
                 clusters[min_day].append(it)
 
         days = []
-        # 2. 각 일자별 TSP 최적화 (RouteService 연동)
+        # 2. 각 일자별 VRPTW (시간 창 제약 TSP) 최적화 (RouteService 연동)
         for d in range(duration.days):
             day_batch = clusters.get(d, [])
             if not day_batch: continue
             
-            # Route 최적화를 위한 Request 생성 (가상의 첫 장소를 시작점으로)
+            # ⭐️ [VRPTW 핵심]: 각 장소의 성격에 맞춰 골든타임 시간창(Time Window) 자동 부여 및 시작점 정렬
+            day_batch = self._assign_time_windows_for_day(day_batch)
+
+            # Route 최적화를 위한 Request 생성 (가장 이른 오전 명소를 시작점으로)
             start_item = day_batch[0]
+            start_window = start_item.get('opening_hours', [540, 570])
+
             places_to_visit = []
             if len(day_batch) > 1:
                 places_to_visit = [
@@ -329,21 +707,23 @@ JSON 형식:
                         lat=item['place'].lat, 
                         lng=item['place'].lng, 
                         stay_duration_mins=item['place'].stay_duration_mins, 
-                        opening_hours=[0, 1440]
+                        opening_hours=item.get('opening_hours', [540, 1440])
                     ) for item in day_batch[1:]
                 ]
             
             route_req = RouteOptimizeRequest(
+                destination=destination,
                 start_location=Location(
                     lat=start_item['place'].lat, 
                     lng=start_item['place'].lng,
-                    stay_duration_mins=start_item['place'].stay_duration_mins
+                    stay_duration_mins=start_item['place'].stay_duration_mins,
+                    opening_hours=start_window
                 ),
                 places_to_visit=places_to_visit,
                 max_days=1
             )
             
-            print(f"🛣️ [Plan] {d+1}일차 경로 최적화 중... (노드 {len(day_batch)}개)")
+            print(f"🛣️ [Plan VRPTW] {d+1}일차 시간창 경로 최적화 중... (노드 {len(day_batch)}개)")
             day_items = []
             try:
                 route_res = await route_service.optimize_route(route_req)
@@ -366,20 +746,26 @@ JSON 형식:
                                 suggested_time=step.expected_arrival,
                                 title=matched_item['place'].title,
                                 location=f"[{travel_mins}분|{travel_km}km] " + matched_item['reason'], # 백엔드 동적 지표 인코딩
+                                category=matched_item['place'].category or "관광지",
+                                tags=matched_item['place'].tags or [],
                                 lat=matched_item['place'].lat,
                                 lng=matched_item['place'].lng
                             ))
                             prev_item = matched_item
             except Exception as route_err:
-                print(f"❌ [Plan] 경로 최적화 중 에러 발생: {route_err}. 단순 시간 순배치 폴백을 시작합니다.")
+                print(f"❌ [Plan] 경로 최적화 중 에러 발생: {route_err}. 현실적 시간표 폴백을 시작합니다.")
             
-            if not day_items: # Fallback (혹시 최적화 실패 시 기존 방식)
+            if not day_items: # Fallback (혹시 최적화 실패 시 현실적인 기본 시간표 적용)
+                default_times = ["09:30", "11:45", "14:15", "18:30", "20:30"]
                 for i, item in enumerate(day_batch):
+                    fallback_time = default_times[min(i, len(default_times)-1)]
                     day_items.append(PlaceItem(
                         place_id=item['place'].place_id,
-                        suggested_time=f"{10 + i * 3}:00",
+                        suggested_time=fallback_time,
                         title=item['place'].title,
                         location=item['reason'],
+                        category=item['place'].category or "관광지",
+                        tags=item['place'].tags or [],
                         lat=item['place'].lat,
                         lng=item['place'].lng
                     ))

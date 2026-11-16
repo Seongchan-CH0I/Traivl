@@ -34,6 +34,8 @@ class PlaceItem(BaseModel):
     suggested_time: str
     title: str
     location: str
+    category: Optional[str] = "관광지"
+    tags: List[str] = []
     lat: Optional[float] = None
     lng: Optional[float] = None
 
