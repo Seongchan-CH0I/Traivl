@@ -125,6 +125,9 @@ export async function GET(request: Request) {
                 if (place.name === '포크타마고') {
                     return { ...updated, imageUrl: '/images/places/porktamago.jpg' };
                 }
+                if (place.name === '협재해변' || place.name === '협재 해수욕장') {
+                    return { ...updated, imageUrl: '/images/places/hyeopjae.webp' };
+                }
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...updated, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
                 }

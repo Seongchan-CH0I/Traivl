@@ -100,7 +100,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 -- [CITY: JEJU] - 실시간 인기 도시 사용//이미지 변경완료
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('KR_JEJU', '성산일출봉', '관광지', '유네스코 화산', 'https://t1.daumcdn.net/cfile/tistory/99E3E54C5D4A36B618', 1, '서귀포시 성산읍', 33.458, 126.942, '07:00-20:00', '064-783-0959', ARRAY['#일출','#유네스코'], 5000, 4.8),
-('KR_JEJU', '협재해변', '관광지', '에메랄드 바다', 'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=b75e4d87-56e3-4ab5-8603-21d204c60bbc', 2, '제주시 한림읍', 33.393, 126.239, '09:00-19:00', '064-728-3981', ARRAY['#바다','#비양도'], 0, 4.7),
+('KR_JEJU', '협재해변', '관광지', '에메랄드 바다', '/images/places/hyeopjae.webp', 2, '제주시 한림읍', 33.393, 126.239, '09:00-19:00', '064-728-3981', ARRAY['#바다','#비양도'], 0, 4.7),
 ('KR_JEJU', '만장굴', '관광지', '용암 동굴', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHmkBhiqVI7-RInpCbeymgysKsCTMba3opiA&s', 3, '제주시 구좌읍', 33.528, 126.771, '09:00-18:00', '064-710-7903', ARRAY['#동굴','#신비'], 4000, 4.6),
 ('KR_JEJU', '카멜리아힐', '관광지', '동백꽃 정원', 'https://cdn.ardentnews.co.kr/news/photo/202509/7779_37042_1731.jpg', 4, '서귀포시 안덕면', 33.289, 126.369, '08:30-19:00', '064-792-0088', ARRAY['#동백','#사진'], 8000, 4.5),
 ('KR_JEJU', '탄산온천', '관광지', '산방산 온천', 'https://www.telltrip.com/wp-content/uploads/2025/12/sanbangsan-carbonated-hot-springs-winter-trip1.webp', 5, '서귀포시 안덕면', 33.248, 126.302, '06:00-23:00', '064-792-8300', ARRAY['#온천','#힐링'], 12000, 4.4),
@@ -162,7 +162,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('JP_KYOTO', '오와리야', '맛집', '메밀 소바', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/20/00/a2000017/img/ko/a2000017_parts_5cd5281bcd88c.jpg?20200911085619&q=80', 9, 'Kyoto, Nakagyo Ward', 35.012, 135.762, '11:00-19:00', '', ARRAY['#소바','#노포'], 20000, 4.4),
 ('JP_KYOTO', '이즈쥬', '맛집', '고등어 초밥', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FD92Va%2FbtrZ9N19NIx%2FAAAAAAAAAAAAAAAAAAAAABLfosBzpR_5HlCf3SZzBkDjL8zsKr8z5MOfiLuUZvbb%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3D3ngT6ImSWp56dKyfY4VFsHGOuXo%253D', 10, 'Kyoto, Higashiyama', 35.003, 135.778, '10:30-19:00', '', ARRAY['#스시','#전통'], 3000, 4.3);
 
--- [CITY: TOKYO] - 실시간 인기 도시 사용//이미지변경완료
+-- [CITY: TOKYO] - 실시간 인기 도시 사용//협재해변
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES
 ('JP_TOKYO', '시부야스카이', '관광지', '시부야 전망', 'https://www.datocms-assets.com/101439/1702617733-shibuya-sky.webp?fit=crop&h=800&w=1200&fm=avif', 1, 'Tokyo, Shibuya', 35.658, 139.702, '10:00-22:00', '', ARRAY['#야경','#명소'], 20000, 4.8),
 ('JP_TOKYO', '센소지', '관광지', '아사쿠사 사찰', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Sensoji_Temple_%2840909716384%29.jpg/500px-Sensoji_Temple_%2840909716384%29.jpg', 2, 'Asakusa, Taito', 35.714, 139.796, '06:00-17:00', '', ARRAY['#전통','#아사쿠사'], 0, 4.6),

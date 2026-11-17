@@ -42,7 +42,7 @@ async function main() {
     // --- JEJU (10) ---
     { destinationId: 'KR_JEJU', name: '연돈', category: '맛집', description: '인생 돈까스 맛집', imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800', rank: 1, tags: ['#돈까스'], rating: 4.7 },
     { destinationId: 'KR_JEJU', name: '성산일출봉', category: '관광지', description: '세계자연유산 일출 명소', imageUrl: 'https://t1.daumcdn.net/cfile/tistory/99E3E54C5D4A36B618', rank: 2, tags: ['#일출'], rating: 4.8 },
-    { destinationId: 'KR_JEJU', name: '협재 해수욕장', category: '관광지', description: '에메랄드 바다', imageUrl: 'https://cdn.visitkorea.or.kr/img/call?cmd=VIEW&id=b75e4d87-56e3-4ab5-8603-21d204c60bbc', rank: 3, tags: ['#바다'], rating: 4.7 },
+    { destinationId: 'KR_JEJU', name: '협재 해수욕장', category: '관광지', description: '에메랄드 바다', imageUrl: '/images/places/hyeopjae.webp', rank: 3, tags: ['#바다'], rating: 4.7 },
     { destinationId: 'KR_JEJU', name: '오는정김밥', category: '맛집', description: '예약 필수 김밥', imageUrl: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=800', rank: 4, tags: ['#김밥'], rating: 4.6 },
     { destinationId: 'KR_JEJU', name: '우진해장국', category: '맛집', description: '고사리 육개장', imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=800', rank: 5, tags: ['#해장국'], rating: 4.4 },
     { destinationId: 'KR_JEJU', name: '만장굴', category: '관광지', description: '거대 용암 동굴', imageUrl: 'https://images.unsplash.com/photo-1612977810181-3448e5040f7b?q=80&w=800', rank: 6, tags: ['#동굴'], rating: 4.6 },
