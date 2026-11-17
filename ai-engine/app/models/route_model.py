@@ -8,6 +8,7 @@ class Location(BaseModel):
     lat: float
     lng: float
     stay_duration_mins: int = 90
+    opening_hours: List[int] = [540, 570] # 09:00 ~ 09:30 출발 시간대
 
 class PlaceVisitItem(BaseModel):
     place_id: str
@@ -17,6 +18,7 @@ class PlaceVisitItem(BaseModel):
     opening_hours: List[int] = [0, 1440] # [시작인덱스분, 종료인덱스분] 기본값 하루 전체
 
 class RouteOptimizeRequest(BaseModel):
+    destination: str = "kanto"
     start_location: Location
     places_to_visit: List[PlaceVisitItem]
     max_days: int
