@@ -160,7 +160,7 @@ INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", r
 ('JP_KYOTO', '오멘우동', '맛집', '수제 우동', 'https://www.okitour.co.kr/uploads/editor/SJL-G6q8z', 7, 'Kyoto, Sakyo Ward', 35.012, 135.793, '11:00-21:00', '', ARRAY['#우동','#깔끔'], 20000, 4.5),
 ('JP_KYOTO', '카네요', '맛집', '장어 덮밥', 'https://img.siksinhot.com/place/1462775159586035.jpg?w=640&h=840&c=Y', 8, 'Kyoto, Nakagyo Ward', 35.007, 135.766, '11:30-21:00', '', ARRAY['#장어','#전통'], 40000, 4.6),
 ('JP_KYOTO', '오와리야', '맛집', '메밀 소바', 'https://rimage.gnst.jp/livejapan.com/public/article/detail/a/20/00/a2000017/img/ko/a2000017_parts_5cd5281bcd88c.jpg?20200911085619&q=80', 9, 'Kyoto, Nakagyo Ward', 35.012, 135.762, '11:00-19:00', '', ARRAY['#소바','#노포'], 20000, 4.4),
-('JP_KYOTO', '이즈쥬', '맛집', '고등어 초밥', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FD92Va%2FbtrZ9N19NIx%2FAAAAAAAAAAAAAAAAAAAAABLfosBzpR_5HlCf3SZzBkDjL8zsKr8z5MOfiLuUZvbb%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1777561199%26allow_ip%3D%26allow_referer%3D%26signature%3D3ngT6ImSWp56dKyfY4VFsHGOuXo%253D', 10, 'Kyoto, Higashiyama', 35.003, 135.778, '10:30-19:00', '', ARRAY['#스시','#전통'], 3000, 4.3);
+('JP_KYOTO', '이즈쥬', '맛집', '고등어 초밥', '/images/places/izuju.jpg', 10, 'Kyoto, Higashiyama', 35.003, 135.778, '10:30-19:00', '', ARRAY['#스시','#전통'], 3000, 4.3);
 
 -- [CITY: TOKYO] - 실시간 인기 도시 사용//협재해변
 INSERT INTO "Place" ("destinationId", name, category, description, "imageUrl", rank, address, latitude, longitude, "openingHours", "phoneNumber", tags, "averagePrice", rating) VALUES

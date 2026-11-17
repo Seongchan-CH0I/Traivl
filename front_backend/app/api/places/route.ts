@@ -128,6 +128,9 @@ export async function GET(request: Request) {
                 if (place.name === '협재해변' || place.name === '협재 해수욕장') {
                     return { ...updated, imageUrl: '/images/places/hyeopjae.webp' };
                 }
+                if (place.name === '이즈쥬') {
+                    return { ...updated, imageUrl: '/images/places/izuju.jpg' };
+                }
                 if (place.imageUrl && place.imageUrl.includes('tetsugakunomichi_spring_1.jpg')) {
                     return { ...updated, imageUrl: '/images/tetsugakunomichi_spring_1.jpg' };
                 }

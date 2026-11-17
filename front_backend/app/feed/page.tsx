@@ -197,63 +197,49 @@ export default function FeedPage() {
     return (
         <>
             {/* 상단 통합 헤더 */}
-            <header className="feed-header" style={{ paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-                    <h1 className="feed-header-title" style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>
+            <header className="feed-header">
+                <div className="feed-header-content">
+                    <h1 className="feed-header-title">
                         여행 실시간 가이드
                     </h1>
 
-                    {/* 내 여행지 필터 배지 */}
-                    <div
-                        className={`location-badge ${showMyDestination ? 'active' : ''}`}
-                        onClick={() => {
-                            if (feedMode === 'guide') {
-                                setShowMyDestination(!showMyDestination);
-                            }
-                        }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '6px 12px',
-                            borderRadius: '20px',
-                            backgroundColor: showMyDestination && feedMode === 'guide' ? '#e8dbff' : '#f1f5f9',
-                            color: showMyDestination && feedMode === 'guide' ? '#8c52ff' : '#64748b',
-                            fontSize: '13px',
-                            fontWeight: 700,
-                            cursor: feedMode === 'guide' ? 'pointer' : 'default',
-                            opacity: feedMode === 'guide' ? 1 : 0.6,
-                            transition: 'all 0.2s',
-                            userSelect: 'none'
-                        }}
-                    >
-                        <span className="location-text">{showMyDestination && selectedCity ? selectedCity : '내 여행지'}</span>
-                        <Plane size={12} className="location-icon" />
-                        {showMyDestination && feedMode === 'guide' && <X size={14} className="location-close" style={{ marginLeft: '2px' }} />}
-                    </div>
+                    <div className="feed-header-actions">
+                        {/* 내 여행지 필터 배지 */}
+                        <div
+                            className={`location-badge ${showMyDestination ? 'active' : ''}`}
+                            onClick={() => {
+                                if (feedMode === 'guide') {
+                                    setShowMyDestination(!showMyDestination);
+                                }
+                            }}
+                            style={{
+                                backgroundColor: showMyDestination && feedMode === 'guide' ? '#e8dbff' : '#f1f5f9',
+                                color: showMyDestination && feedMode === 'guide' ? '#8c52ff' : '#64748b',
+                                cursor: feedMode === 'guide' ? 'pointer' : 'default',
+                                opacity: feedMode === 'guide' ? 1 : 0.6,
+                                userSelect: 'none'
+                            }}
+                        >
+                            <span className="location-text">{showMyDestination && selectedCity ? selectedCity : '내 여행지'}</span>
+                            <Plane size={12} className="location-icon" />
+                            {showMyDestination && feedMode === 'guide' && <X size={14} className="location-close" style={{ marginLeft: '2px' }} />}
+                        </div>
 
-                    {/* ✨ 유저 추천 코스 토글 버튼 */}
-                    <button
-                        onClick={() => setFeedMode(feedMode === 'guide' ? 'recommend' : 'guide')}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '6px 12px',
-                            borderRadius: '20px',
-                            border: feedMode === 'recommend' ? '1.5px solid #c084fc' : '1.5px solid #e2e8f0',
-                            backgroundColor: feedMode === 'recommend' ? '#f3e8ff' : '#ffffff',
-                            color: feedMode === 'recommend' ? '#8c52ff' : '#64748b',
-                            fontSize: '13px',
-                            fontWeight: 800,
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            boxShadow: feedMode === 'recommend' ? '0 2px 8px rgba(140, 82, 255, 0.15)' : 'none'
-                        }}
-                    >
-                        <span>✨</span>
-                        <span>유저 추천 코스</span>
-                    </button>
+                        {/* ✨ 유저 추천 코스 토글 버튼 */}
+                        <button
+                            onClick={() => setFeedMode(feedMode === 'guide' ? 'recommend' : 'guide')}
+                            className="feed-mode-btn"
+                            style={{
+                                border: feedMode === 'recommend' ? '1.5px solid #c084fc' : '1.5px solid #e2e8f0',
+                                backgroundColor: feedMode === 'recommend' ? '#f3e8ff' : '#ffffff',
+                                color: feedMode === 'recommend' ? '#8c52ff' : '#64748b',
+                                boxShadow: feedMode === 'recommend' ? '0 2px 8px rgba(140, 82, 255, 0.15)' : 'none'
+                            }}
+                        >
+                            <span>✨</span>
+                            <span>유저 추천 코스</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
