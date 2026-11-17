@@ -694,10 +694,10 @@ export default function CalendarPage() {
 
   return (
     <>
-      <div className="calendar-content">
+      <div className={`calendar-content ${!activeSchedule ? 'empty-view' : ''}`}>
         {!activeSchedule ? (
           <div className="empty-schedule-container">
-            <header className="feed-header" style={{ marginBottom: '40px', background: 'transparent', border: 'none' }}>
+            <header className="feed-header" style={{ marginBottom: '24px', background: 'transparent', border: 'none', width: '100%', justifyContent: 'center' }}>
               <h1 className="feed-header-title">여행 가이드</h1>
             </header>
 
@@ -1666,14 +1666,6 @@ export default function CalendarPage() {
         message={alertMsg}
         onConfirm={closeAlert}
       />
-
-      {/* 플로팅 버튼 */}
-      <button
-        className="calendar-fab"
-        onClick={() => setShowPicker(true)}
-      >
-        <Plus size={32} strokeWidth={1.5} />
-      </button>
 
       {/* 상세 정보 모달 */}
       <PlaceDetailModal
