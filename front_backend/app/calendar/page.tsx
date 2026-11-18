@@ -728,15 +728,19 @@ export default function CalendarPage() {
           <>
             {/* 상단 헤더 */}
             <div className="calendar-header" style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <h1 className="calendar-title" style={{ fontSize: '20px', fontWeight: 800 }}>{displayTitle}</h1>
-                  <p className="calendar-subtitle" style={{ fontSize: '13px', marginTop: '4px' }}>
-                    {activeSchedule?.city || "추천 도시"} • {rawItinerary.length}일간의 여정
-                  </p>
-                </div>
+              {/* 1행: 타이틀 (100% 폭으로 가독성 극대화 및 단어 쪼개짐 방지) */}
+              <h1 className="calendar-title" style={{ fontSize: '20px', fontWeight: 800, wordBreak: 'keep-all', overflowWrap: 'break-word', margin: 0 }}>
+                {displayTitle}
+              </h1>
+
+              {/* 2행: 서브타이틀 및 액션 버튼 (좌우 정렬 & 모바일 반응형) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap', gap: '8px' }}>
+                <p className="calendar-subtitle" style={{ fontSize: '13px', margin: 0, color: '#64748b', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  {activeSchedule?.city || "추천 도시"} • {rawItinerary.length}일간의 여정
+                </p>
+
                 {activeSchedule && (
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
                     {!isEditing ? (
                       <>
                         <button
@@ -744,15 +748,17 @@ export default function CalendarPage() {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            padding: '8px 12px',
-                            borderRadius: '12px',
+                            gap: '4px',
+                            padding: '6px 10px',
+                            borderRadius: '10px',
                             border: '1.5px solid #8c52ff',
                             backgroundColor: '#ffffff',
                             color: '#8c52ff',
-                            fontSize: '13px',
+                            fontSize: '12px',
                             fontWeight: 700,
                             cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
                             transition: 'all 0.2s'
                           }}
                         >
@@ -764,19 +770,21 @@ export default function CalendarPage() {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '6px',
-                            padding: '8px 12px',
-                            borderRadius: '12px',
+                            gap: '4px',
+                            padding: '6px 10px',
+                            borderRadius: '10px',
                             border: '1.5px solid #8c52ff',
                             backgroundColor: activeSchedule.isShared ? '#f3eeff' : '#ffffff',
                             color: '#8c52ff',
-                            fontSize: '13px',
+                            fontSize: '12px',
                             fontWeight: 700,
                             cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
                             transition: 'all 0.2s'
                           }}
                         >
-                          <Share2 size={14} />
+                          <Share2 size={13} />
                           {activeSchedule.isShared ? "공유 완료" : "피드에 공유"}
                         </button>
                       </>
@@ -788,14 +796,16 @@ export default function CalendarPage() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '4px',
-                            padding: '8px 12px',
-                            borderRadius: '12px',
+                            padding: '6px 10px',
+                            borderRadius: '10px',
                             border: '1.5px solid #e2e8f0',
                             backgroundColor: '#ffffff',
                             color: '#64748b',
-                            fontSize: '13px',
+                            fontSize: '12px',
                             fontWeight: 700,
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0
                           }}
                         >
                           취소
@@ -806,15 +816,17 @@ export default function CalendarPage() {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            padding: '8px 14px',
-                            borderRadius: '12px',
+                            gap: '4px',
+                            padding: '6px 12px',
+                            borderRadius: '10px',
                             border: 'none',
                             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                             color: '#ffffff',
-                            fontSize: '13px',
+                            fontSize: '12px',
                             fontWeight: 800,
                             cursor: isSaving ? 'not-allowed' : 'pointer',
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
                             boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
                           }}
                         >

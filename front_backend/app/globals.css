@@ -73,7 +73,7 @@
         min-height: 0;
         overflow-y: auto;
         overflow-x: hidden;
-        padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
         -webkit-overflow-scrolling: touch;
     }
 
@@ -83,10 +83,12 @@
 
     /* Bottom Navigation */
     .bottom-nav {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 480px !important;
         height: calc(65px + env(safe-area-inset-bottom, 0px));
         padding-bottom: env(safe-area-inset-bottom, 0px);
         background-color: var(--nav-bg);
@@ -94,7 +96,7 @@
         justify-content: space-around;
         align-items: center;
         border-top: 1px solid #eeeeee;
-        z-index: 100;
+        z-index: 9999 !important;
     }
 
     .nav-item {
@@ -766,14 +768,14 @@
 
     /* AI Menu Overlay */
     .ai-menu-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
         background-color: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
-        z-index: 9500;
+        z-index: 9990 !important;
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s ease;
@@ -786,23 +788,24 @@
 
     /* AI Floating Buttons Container */
     .ai-options-container {
-        position: absolute;
-        bottom: 115px;
-        left: 50%;
-        transform: translateX(-50%);
+        position: fixed !important;
+        bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: flex-end;
         gap: 15px;
-        z-index: 9600;
-        width: 100%;
+        z-index: 9995 !important;
+        width: 100% !important;
+        max-width: 480px !important;
         pointer-events: none;
         transition: bottom 0.4s ease;
     }
 
     .ai-options-container.on-map {
-        bottom: 260px;
+        bottom: 260px !important;
         /* Lift it above the journey map sheet */
     }
 
@@ -1432,23 +1435,25 @@
     }
 
     .calendar-header {
-        margin-top: 16px;
-        margin-bottom: 40px;
+        margin-top: 8px;
+        margin-bottom: 20px;
     }
 
     .calendar-title {
-        font-size: 30px;
-        font-weight: 900;
+        font-size: 20px;
+        font-weight: 800;
         color: #0f172a;
         letter-spacing: -0.025em;
         margin: 0;
+        word-break: keep-all;
+        overflow-wrap: break-word;
     }
 
     .calendar-subtitle {
-        color: #94a3b8;
-        font-size: 15px;
+        color: #64748b;
+        font-size: 13px;
         font-weight: 500;
-        margin-top: 8px;
+        margin-top: 4px;
         margin-bottom: 0;
     }
 
