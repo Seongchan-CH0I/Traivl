@@ -21,4 +21,4 @@ EXPOSE 8000
 
 # uvicorn 서버 실행
 # app.main:app 로 변경 (app 폴더 내부의 main.py 실행)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

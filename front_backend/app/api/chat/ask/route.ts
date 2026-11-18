@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://localhost:8000";
+  const AI_ENGINE_URL = process.env.AI_ENGINE_URL || "http://ai-server:8000";
 
   try {
     const response = await fetch(`${AI_ENGINE_URL}/api/v1/chat/ask`, {
